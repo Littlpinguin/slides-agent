@@ -125,6 +125,19 @@ The frame is fixed. Anything below `y=1000` collides with the bottom chrome row.
 - After every meaningful change, run `python scripts/qa.py presentations/<your-deck>.html`. It opens the deck in headless Chromium at 1920×1080, advances every slide, and reports any element overflowing the frame or invading the chrome safe-zone (16px gap above the bottom row).
 - Don't ship a deck that returns anything other than `All slides clean`.
 
+### 4b. Print rendering pitfalls (Chromium PDF pipeline)
+
+Some CSS features that look right on screen render broken in the exported PDF. The print CSS in `templates/base.html` already neutralises these globally — do not re-introduce them under `body.printing-pdf`:
+
+- **All shadows** (`box-shadow`, `text-shadow`, `filter: drop-shadow(...)`, `backdrop-filter: blur(...)`) — banding, halos, mis-positioned blur. Removed in print via a global `* { ...: none }` reset.
+- **Background grids** (`.dust-grid`, `.graticule`, repeating linear-gradients, mask-image radial fades) — 1px gradient lines render thicker, mask fades aren't honoured. Hidden in print via class allow-list. If you invent a new grid class, EITHER name it from the list below OR add `data-pdf-hide` on the element.
+
+  Pre-listed grid classes that are auto-hidden in PDF:
+  `.aurora` · `.dust-grid` · `.graticule` · `.grid-bg` · `.bg-grid` · `.grid-pattern` · `.background-grid` · `.dot-grid-bg` · `.ambient-grid` · `.pattern-bg` · `[data-pdf-hide]`
+
+- **`filter: blur(...)` halos / aurora** — same family. Use `display: none` in `body.printing-pdf`, do not try to "make them work in print".
+- **Animations and CSS keyframes** — must be forced to final state under `body.printing-pdf .my-component { animation: none !important; ...stable-final-state... }`. The base template covers `.reveal`, `[data-stagger]`, `.pipeline-anim`, `.roadmap-track::before`, `.roadmap-phase::before`, `.funnel-bar::before`, `.dot-grid .d.us`. Add an entry for any new animated component you build.
+
 ### 5. Typography traps (resolved patterns)
 
 | Symptom | Cause | Fix |
@@ -214,3 +227,18 @@ The template assumes you have access to a typical Claude Code skill set. Invoke 
 - Inline external trackers, analytics, or remote scripts. The deck must remain offline-functional.
 - Use any colour or font outside `brand/tokens.css`.
 - Ship without QA.
+- **Cite a previous deck file as a "reference to study" or "starter inspiration".** Even citing a past deck as "gold standard" contaminates new productions — Claude re-reads it and duplicates its arc, components, metaphor, and visual through-line, even when told not to. The only authorised reference is the current `templates/base.html` skeleton + the `templates/components.md` catalogue + `brand/guidelines.md`. Each new deck invents its own metaphor and compositions from the brief, not from a past deck. If a similar topic was decked before, do not look at the previous output — start fresh from the brief.
+
+---
+
+## Pre-delivery checklist (mandatory)
+
+Before declaring a deck done, every item must pass:
+
+- [ ] `python scripts/qa.py presentations/<deck>.html` returns "All slides clean — no overflow"
+- [ ] `python scripts/export_pdf.py presentations/<deck>.html` produces a PDF whose size is plausible — at least ~150 KB per slide on average. A 20-slide deck with a 250 KB PDF means most pages collapsed to nothing; investigate before shipping.
+- [ ] Every CSS rule that uses `background-clip: text` has its selector listed in `GRADIENT_TEXT_SELECTORS` (search the file for `background-clip: text` and cross-check). Missing entries = silent blank text in PDF, no error.
+- [ ] No em-dash `—` in user-visible text. Run: `grep "—" presentations/<deck>.html | grep -v "<!--"` — should return nothing or only matches inside CSS comments.
+- [ ] The chrome `tag-folio` (`Plate 0X / N` or equivalent) is correct on every slide. Auto-counter in the nav-rail updates from JS, but the in-slide chrome folios are manual.
+- [ ] Manually opened in Chrome, navigated all slides ←/→, tested O / P / drag bar / wheel / 1-9+Enter / Esc.
+- [ ] Each `<section class="slide">` has a `data-eyebrow` and `data-heading` attribute (used by the overview panel — empty thumbs mean the attributes were forgotten).

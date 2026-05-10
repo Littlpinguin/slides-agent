@@ -7,6 +7,18 @@
 **Reference quality bar:** Monocle × Bloomberg viz × MIT Tech Review print.
 What you get out is a long way from "AI startup 2025" generic.
 
+**Built on top of two excellent design intelligence skills** that the agent invokes during slide generation:
+- [`ui-ux-pro-max`](https://github.com/the-ai-toolkit/ui-ux-pro-max) by [@the-ai-toolkit](https://github.com/the-ai-toolkit) — 50+ design styles, 161 colour palettes, 57 font pairings, 99 UX heuristics, 25 chart types
+- [21st.dev MCP tools](https://21st.dev) (`mcp__magic__21st_magic_component_*`) — production-grade UI component inspiration, refinement and search
+
+Both are used as **inspiration sources** during art direction (Phase 2) and component design (Phase 3). Their output is always reworked into the 1920×1080 frame and re-tokenised through `brand/tokens.css` before landing in a slide. Credit and respect to both teams — without them, the output of this template would be markedly more generic.
+
+---
+
+## Example output
+
+[`presentations/examples/qiplim-launch.pdf`](presentations/examples/qiplim-launch.pdf) — a real public-launch deck for [Qiplim](https://qiplim.com), generated end-to-end with this template. Periwinkle/Golden/Cream brand, GT Walsheim Pro Condensed typography, full editorial chrome system, gradient text, blob mascots, exported PDF.
+
 ---
 
 ## What this template gives you
@@ -123,6 +135,13 @@ For online sharing, the deck is a single self-contained HTML file. See [`docs/ho
 - A modern browser (Chrome / Chromium / Edge) for presenting
 
 ---
+
+## Credits
+
+- **[`ui-ux-pro-max`](https://github.com/the-ai-toolkit/ui-ux-pro-max)** — design intelligence skill that informs colour systems, font pairings, and visual style choices when the brand guidelines are sparse. Citation in `CLAUDE.md` and `.claude/skills/create-slides.md`.
+- **[21st.dev](https://21st.dev)** (`mcp__magic__21st_magic_*`) — UI component inspiration and refinement, especially for hero treatments, complex tables, and navigation chrome details.
+- **Editorial print magazines** — Monocle, Bloomberg Businessweek, Aeon, MIT Tech Review — for the visual quality bar.
+- **Nancy Duarte** (sparkline narrative arcs) and **Garr Reynolds** (presentation Zen) for the narrative-craft principles documented in `CLAUDE.md`.
 
 ## License
 

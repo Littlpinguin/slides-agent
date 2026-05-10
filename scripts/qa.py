@@ -54,6 +54,23 @@ def main() -> int:
     parser.add_argument("deck", help="path to the presentation HTML file")
     parser.add_argument("--viewport", default="1920x1080", help="viewport size (default: 1920x1080)")
     parser.add_argument("--screenshots", action="store_true", help="save per-slide PNGs to /tmp/slides-qa/")
+    parser.add_argument(
+        "--with-pdf",
+        action="store_true",
+        help=(
+            "Also generate a PDF (via headless Chromium) and check its size is "
+            "plausible. Fails if average page weight is below MIN_KB_PER_SLIDE "
+            "(default 40 KB) — symptom of a print CSS issue collapsing pages. "
+            "Bump this for image-heavy decks (e.g. 200+ KB if you embed "
+            "atmospheric backgrounds). Output: /tmp/slides-qa/<deck-stem>.pdf"
+        ),
+    )
+    parser.add_argument(
+        "--min-kb-per-slide",
+        type=int,
+        default=40,
+        help="threshold for --with-pdf (default: 40 KB per slide average)",
+    )
     args = parser.parse_args()
 
     deck_path = Path(args.deck)
@@ -156,11 +173,60 @@ def main() -> int:
             else:
                 print(f"  slide {i:02d} · ok")
 
+        # Optional PDF size sanity check
+        pdf_status = None
+        if args.with_pdf:
+            TMP_DIR.mkdir(parents=True, exist_ok=True)
+            pdf_path = TMP_DIR / f"{deck_path.stem}.pdf"
+            try:
+                page.evaluate("() => window.__enablePrintMode && window.__enablePrintMode()")
+                page.evaluate("() => window.__rasterizeGradients && window.__rasterizeGradients()")
+                page.wait_for_timeout(600)
+                page.pdf(
+                    path=str(pdf_path),
+                    width="1920px",
+                    height="1080px",
+                    print_background=True,
+                    margin={"top": "0", "bottom": "0", "left": "0", "right": "0"},
+                )
+                size_bytes = pdf_path.stat().st_size
+                size_kb = size_bytes / 1024
+                avg_kb = size_kb / max(1, total)
+                pdf_status = {
+                    "path": pdf_path,
+                    "size_kb": size_kb,
+                    "avg_kb_per_slide": avg_kb,
+                    "ok": avg_kb >= args.min_kb_per_slide,
+                }
+            except Exception as exc:
+                pdf_status = {"error": str(exc)}
+
         browser.close()
 
         print()
+        if pdf_status:
+            if "error" in pdf_status:
+                print(f"pdf · FAIL · could not generate PDF: {pdf_status['error']}")
+            else:
+                marker = "ok" if pdf_status["ok"] else "FAIL"
+                print(
+                    f"pdf · {marker} · {pdf_status['path']} · "
+                    f"{pdf_status['size_kb']:.0f} KB total · "
+                    f"{pdf_status['avg_kb_per_slide']:.0f} KB/slide "
+                    f"(threshold ≥ {args.min_kb_per_slide} KB/slide)"
+                )
+                if not pdf_status["ok"]:
+                    print(
+                        "pdf · suspect collapsed pages — verify @media print rules, "
+                        "GRADIENT_TEXT_SELECTORS coverage, and that __enablePrintMode + "
+                        "__rasterizeGradients ran successfully."
+                    )
+
         if all_issues:
             print(f"FAIL · {len(all_issues)} of {total} slides have issues")
+            return 1
+        if pdf_status and not pdf_status.get("ok", True):
+            print("FAIL · PDF size check did not pass")
             return 1
         print(f"All slides clean · {total} / {total}")
         return 0

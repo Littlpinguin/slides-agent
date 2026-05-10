@@ -94,6 +94,56 @@ html, body {
   background: var(--brand-neutral-dark);
   color: var(--brand-neutral-light);
 }
+/* Background variants — brand-agnostic via tokens. Use to alternate texture
+   across the deck without always toggling cream <-> charcoal hard. */
+.slide.soft {
+  background: var(--brand-neutral-light-soft);
+}
+.slide.cream {
+  background: var(--brand-neutral-light-deep);
+}
+
+/* ============================================================
+   SLIDE-BG — full-bleed atmospheric image layer
+   Use for cover, mapview, endpaper-style slides where an
+   atmospheric background image should sit behind the content.
+   ============================================================
+   Z-INDEX DISCIPLINE (do not violate):
+     0  → .slide-bg (image + dark gradient overlay)
+     2  → slide content (titles, body, CTAs) — must opt-in via
+          position: relative + z-index: 2
+     5  → .chrome (always above content via .chrome's existing z-index: 5)
+   Without this discipline, content disappears behind the image
+   or the chrome ends up under the image.
+   ============================================================ */
+.slide-bg {
+  position: absolute; inset: 0; z-index: 0;
+  pointer-events: none; user-select: none;
+}
+.slide-bg img {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center;
+  display: block;
+}
+/* Default readability overlay — adjustable per slide via inline style if needed */
+.slide-bg::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(27, 31, 37, 0.35) 0%,
+    rgba(27, 31, 37, 0.55) 70%,
+    rgba(27, 31, 37, 0.80) 100%
+  );
+}
+/* When slide is on cream, lighten the overlay so the image stays visible */
+.slide:not(.dark) .slide-bg::after {
+  background: linear-gradient(
+    180deg,
+    rgba(250, 242, 223, 0.10) 0%,
+    rgba(250, 242, 223, 0.25) 70%,
+    rgba(250, 242, 223, 0.50) 100%
+  );
+}
 
 /* ============================================================
    CHROME — editorial frame on every slide
@@ -397,12 +447,34 @@ h1.display strong { font-weight: 700; }
   body.printing-pdf .roadmap-phase::before { transform: scale(1) !important; animation: none !important; }
   body.printing-pdf .funnel-bar::before { transform: scaleX(var(--width, 1)) !important; transition: none !important; }
   body.printing-pdf .dot-grid .d.us { animation: none !important; }
-  /* Filter blur and 1px gradient lines render unreliably in PDF */
+  /* Background grids and atmospheric layers render unreliably in
+     Chromium PDF (1px gradient lines render thicker, mask-image
+     radial fades aren't honoured, repeating gradients band).
+     Hide them entirely. Add your own grid class to this list if
+     you invent a new one. */
   body.printing-pdf .aurora,
-  body.printing-pdf .dust-grid { display: none !important; }
-  body.printing-pdf * {
+  body.printing-pdf .dust-grid,
+  body.printing-pdf .graticule,
+  body.printing-pdf .grid-bg,
+  body.printing-pdf .bg-grid,
+  body.printing-pdf .grid-pattern,
+  body.printing-pdf .background-grid,
+  body.printing-pdf .dot-grid-bg,
+  body.printing-pdf .ambient-grid,
+  body.printing-pdf .pattern-bg,
+  body.printing-pdf [data-pdf-hide] { display: none !important; }
+  /* Strip ALL shadows (box, text, drop-shadow filter) — they render
+     unreliably in Chromium PDF (banding, halos, mis-positioned blur).
+     Remove globally, not just on body, so filter chains are reset too. */
+  body.printing-pdf *,
+  body.printing-pdf *::before,
+  body.printing-pdf *::after {
     box-shadow: none !important;
     text-shadow: none !important;
+    filter: none !important;
+    -webkit-filter: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
   }
 }
 </style>
@@ -717,17 +789,25 @@ h1.display strong { font-weight: 700; }
   // texts to PNG via canvas before window.print(), then restore
   // them on the afterprint event.
   // -----------------------------------------------------------
-  // -----------------------------------------------------------
-  // GRADIENT_TEXT_SELECTORS
-  // -----------------------------------------------------------
-  // Every selector that uses `background-clip: text` + `linear-gradient`
-  // MUST be listed here, otherwise the corresponding text will show
-  // coloured fringe artefacts in the PDF (Chromium PDF pipeline bug).
+  // ============================================================
+  // ⚠️  CRITICAL — GRADIENT_TEXT_SELECTORS  ⚠️
+  // ============================================================
+  // EVERY CSS rule that uses `background-clip: text` + a gradient
+  // MUST have its selector listed here. Without it:
+  //   • the text WILL appear blank in the exported PDF
+  //   • there is NO error, NO warning, NO visible failure in dev
+  //   • only the final PDF reveals the missing entry
   //
-  // Append as you add new components. The included examples below
-  // match the components in templates/components.md — uncomment / add
-  // the ones your deck actually uses.
-  // -----------------------------------------------------------
+  // VERIFICATION: search the file for `background-clip: text` and
+  // confirm every matching selector has a corresponding entry below.
+  //
+  //   grep -c 'background-clip: *text' presentations/<deck>.html
+  //   → should match the count of selectors in this array
+  //
+  // The base `.gradient-text` utility is always included.
+  // Add component-scoped selectors below as you build the deck.
+  // Examples (uncomment the ones your deck uses, or add your own):
+  // ============================================================
   const GRADIENT_TEXT_SELECTORS = [
     '.gradient-text',
     // '.hero-num',           // hero
@@ -766,7 +846,47 @@ h1.display strong { font-weight: 700; }
       });
     })(el);
 
-    // Group runs into visual lines using Range API
+    // Split a text node into per-visual-line chunks using Range API.
+    // For each character index, we test whether the surrounding range is
+    // on the same visual line (same top y) as the previous one. If not,
+    // we break here. This gives correct text content per line even when
+    // a single text node soft-wraps over multiple visual lines.
+    function splitTextByLine(textNode) {
+      const text = textNode.textContent;
+      if (!text) return [];
+      const segments = [];
+      let segStart = 0;
+      let prevTop = null;
+      const range = document.createRange();
+      for (let i = 0; i < text.length; i++) {
+        range.setStart(textNode, i);
+        range.setEnd(textNode, i + 1);
+        const rect = range.getBoundingClientRect();
+        if (!rect.height) continue;
+        if (prevTop !== null && Math.abs(rect.top - prevTop) > 4) {
+          // Soft wrap detected — close previous segment, start new one
+          segments.push({ text: text.slice(segStart, i), top: prevTop });
+          segStart = i;
+        }
+        prevTop = rect.top;
+      }
+      if (segStart < text.length) {
+        segments.push({ text: text.slice(segStart), top: prevTop });
+      }
+      // Compute width bounds per segment
+      return segments.map(seg => {
+        const startIdx = text.indexOf(seg.text, segStart - seg.text.length);
+        const localStart = text.indexOf(seg.text); // first match; good enough for non-repeating fragments
+        const r2 = document.createRange();
+        const idx = Math.max(0, text.indexOf(seg.text));
+        r2.setStart(textNode, idx);
+        r2.setEnd(textNode, idx + seg.text.length);
+        const rb = r2.getBoundingClientRect();
+        return { text: seg.text, top: seg.top, left: rb.left, right: rb.right, height: rb.height };
+      });
+    }
+
+    // Group runs into visual lines (real per-line text, not duplicated full text)
     const lines = [];
     let curLine = null;
     runs.forEach(run => {
@@ -775,20 +895,14 @@ h1.display strong { font-weight: 700; }
         lines.push({ text: '', top: 0, height: parseFloat(cs.lineHeight) || parseFloat(cs.fontSize) * 1.2 });
         return;
       }
-      const text = run.node.textContent;
-      const range = document.createRange();
-      range.selectNodeContents(run.node);
-      const rects = Array.from(range.getClientRects());
-      if (!rects.length) return;
-      // approximate one line per rect
-      rects.forEach((r, i) => {
-        const slice = i === 0 && rects.length === 1 ? text : text; // fine-grain split is overkill; whole text per line
-        if (!curLine || Math.abs(curLine.top - r.top) > 4) {
+      const segs = splitTextByLine(run.node);
+      segs.forEach(seg => {
+        if (!curLine || Math.abs(curLine.top - seg.top) > 4) {
           if (curLine) lines.push(curLine);
-          curLine = { text: '', top: r.top, height: r.height, left: r.left, right: r.right };
+          curLine = { text: '', top: seg.top, height: seg.height, left: seg.left, right: seg.right };
         }
-        curLine.text += slice;
-        curLine.right = r.right;
+        curLine.text += seg.text;
+        curLine.right = seg.right;
       });
     });
     if (curLine) lines.push(curLine);
@@ -837,21 +951,45 @@ h1.display strong { font-weight: 700; }
         { pos: 1, color: getCss('--brand-secondary') || '#F0BA4C' },
       ]
     };
-    const m = /linear-gradient\(([^)]+)\)/.exec(bg);
+    const m = /linear-gradient\(([^]+)\)\s*$/.exec(bg) || /linear-gradient\(([^]+?)\)/.exec(bg);
     if (!m) return fallback;
-    const parts = m[1].split(/,(?![^()]*\))/).map(s => s.trim());
-    // first part may be angle; ignore it
-    const stopParts = parts.filter(p => /#|rgb|hsl|var\(/i.test(p));
+    // Walk char-by-char to split on top-level commas only — necessary because
+    // rgb(R, G, B) and rgba(R, G, B, A) contain commas inside parens.
+    const parts = [];
+    let depth = 0, buf = '';
+    for (const ch of m[1]) {
+      if (ch === '(') { depth++; buf += ch; }
+      else if (ch === ')') { depth--; buf += ch; }
+      else if (ch === ',' && depth === 0) { parts.push(buf.trim()); buf = ''; }
+      else buf += ch;
+    }
+    if (buf.trim()) parts.push(buf.trim());
+
+    // Drop the optional angle / direction (e.g. "90deg", "to right", "135deg")
+    const stopParts = parts.filter(p =>
+      /#|rgb|hsl|var\(|currentColor/i.test(p) &&
+      !/^(to\s|-?[\d.]+(deg|rad|turn|grad)\b)/i.test(p)
+    );
     if (!stopParts.length) return fallback;
-    return {
-      stops: stopParts.map((s, i) => {
-        const tokens = s.split(/\s+/);
-        const color = tokens.shift();
-        const posTok = tokens.find(t => /%$/.test(t));
-        const pos = posTok ? parseFloat(posTok) / 100 : i / (stopParts.length - 1);
-        return { pos: Math.max(0, Math.min(1, pos)), color };
-      })
-    };
+
+    // For each stop, the position (if present) is the LAST whitespace-separated
+    // token ending in % or a length unit. The colour is everything before it.
+    const stops = stopParts.map((s, i) => {
+      const posMatch = s.match(/(\S+)\s*$/);
+      const lastTok = posMatch ? posMatch[1] : '';
+      const hasPct = /%$/.test(lastTok);
+      let color, pos;
+      if (hasPct) {
+        color = s.slice(0, posMatch.index).trim();
+        pos = parseFloat(lastTok) / 100;
+      } else {
+        color = s.trim();
+        pos = stopParts.length === 1 ? 0 : i / (stopParts.length - 1);
+      }
+      if (!isFinite(pos)) pos = stopParts.length === 1 ? 0 : i / Math.max(1, stopParts.length - 1);
+      return { pos: Math.max(0, Math.min(1, pos)), color: color || stopParts[0] };
+    });
+    return { stops };
   }
 
   function getCss(name) {
