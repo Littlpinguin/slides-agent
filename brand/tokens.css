@@ -1,0 +1,59 @@
+/* ============================================================
+   BRAND TOKENS — populated during onboarding
+   ------------------------------------------------------------
+   These CSS custom properties are inlined into every
+   generated presentation. Edit them to retune the entire
+   visual system in one place.
+
+   Replace each TODO value with your brand's actual values,
+   or run the onboarding flow (open this project in
+   Claude Code and follow CLAUDE.md) to fill them automatically
+   from your website.
+   ============================================================ */
+
+:root {
+  /* ---------- Colour ---------- */
+  /* Primary brand colour — accents, highlights, key CTAs */
+  --brand-primary: #23B5D3;
+  --brand-primary-deep: #1A95B0;
+  --brand-primary-soft: rgba(35, 181, 211, 0.12);
+
+  /* Secondary brand colour — complementary accent, gradient pair */
+  --brand-secondary: #F0BA4C;
+  --brand-secondary-deep: #D49C2C;
+  --brand-secondary-soft: rgba(240, 186, 76, 0.12);
+
+  /* Light neutral — primary slide background ("cream" / "paper") */
+  --brand-neutral-light: #FAF2DF;
+  --brand-neutral-light-soft: #FDF8EE;
+  --brand-neutral-light-deep: #F2E8CC;
+
+  /* Dark neutral — alternating slide background, primary text on light */
+  --brand-neutral-dark: #292E35;
+  --brand-neutral-dark-soft: #3A4049;
+  --brand-neutral-dark-deep: #1B1F25;
+
+  /* Hairline rules — both directions */
+  --rule: rgba(41, 46, 53, 0.10);
+  --rule-light: rgba(250, 242, 223, 0.18);
+
+  /* Brand gradient (primary → secondary) */
+  --brand-gradient: linear-gradient(90deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
+  --brand-gradient-vertical: linear-gradient(180deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
+
+  /* ---------- Type ---------- */
+  /* Display family — used for headlines, hero numbers, body */
+  --font-display: 'Outfit', system-ui, sans-serif;
+
+  /* Mono family — used for captions, eyebrows, tag labels */
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* ---------- Motion ---------- */
+  --ease-slow: 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-med:  0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-fast: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* ---------- Geometry ---------- */
+  --radius-tight: 4px;
+  --radius-pill: 999px;
+}

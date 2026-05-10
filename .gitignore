@@ -1,0 +1,39 @@
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Build output
+dist/
+out/
+*.pdf.tmp
+
+# Local env
+.env
+.env.local
+
+# Playwright
+test-results/
+playwright-report/
+
+# Generated screenshots from QA runs
+/tmp-qa/
+*.qa.png
+
+# Personal presentation drafts (uncomment if you want presentations to stay local)
+# presentations/*.html
+# !presentations/example.html
