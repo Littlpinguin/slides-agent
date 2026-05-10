@@ -31,13 +31,13 @@ description: Generate brand-aligned standalone HTML presentations using the slid
 ### Phase 2 — Art direction
 
 5. Pick a visual through-line metaphor that aligns with the brand and the deck topic. The metaphor is a recurring motif (an animation, a visual marker, an ambient watermark) that anchors the narrative.
-6. Confirm typographic system from `brand/tokens.css`: contrast pair (e.g. weight 200 vs 700/900), display vs body sizes, mono captions.
+6. Confirm typographic system from `brand/tokens.css`: contrast pair (e.g. weight 200 vs 700/900), display vs body sizes, mono captions. **If `brand/guidelines.md` is sparse**, invoke the `ui-ux-pro-max` skill to pick a coherent style + colour system + font pairing aligned with the brand's positioning before going further.
 7. Lock the grid: 1920×1080 frame, chrome inset 36×60, slide padding 80×120.
 8. Animation principles: slow easing (1.1s `cubic-bezier(0.16, 1, 0.3, 1)`), 0.12s stagger, no bouncy springs, no fast cuts.
 
 ### Phase 3 — Components
 
-9. Decide which `templates/components/` you'll reuse. Build any new component in isolation first, test at 1920×1080, then weave in.
+9. Decide which patterns from `templates/components.md` you'll reuse. Build any new component in isolation first, test at 1920×1080, then weave in. **When a slide beat doesn't fit any documented component**, invoke `frontend-design` to design a new pattern. For richer or more polished references (hero treatments, complex layouts, navigation chrome details), use the 21st.dev MCP tools (`mcp__magic__21st_magic_component_builder` / `inspiration` / `refiner`). Treat their output as inspiration: rework geometry to the 1920×1080 frame, respect the chrome safe-zone, and re-apply tokens from `brand/tokens.css` — never paste a generated component verbatim.
 10. Test the very first component via Playwright before adding any others — catches scale/typography bugs early.
 
 ### Phase 4 — Assets

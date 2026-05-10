@@ -179,15 +179,32 @@ The deck is a single HTML file with all assets either inlined or referenced via 
 
 ---
 
-## Skills you should invoke (priority order)
+## Skills and tools you should invoke
 
-1. **`superpowers:brainstorming`** — *before* any creative work when the user starts from a blank page (Path B above).
+The template assumes you have access to a typical Claude Code skill set. Invoke these proactively — don't just "remember the principles". They evolve and are tuned beyond what this CLAUDE.md captures.
+
+### Process discipline (always)
+
+1. **`superpowers:brainstorming`** — *before* any creative work when the user starts from a blank page (Path B above). Non-skippable.
 2. **`superpowers:writing-plans`** — when generating a deck of >15 slides; draft the slide map before writing HTML.
-3. **`superpowers:verification-before-completion`** — before claiming the deck is done, confirm QA passes and the user has previewed it.
-4. **`design`** / **`design-system`** — for asset generation needs (logos, icons) the user hasn't provided.
-5. **`frontend-design`** — for component-level visual inspiration when a slide layout doesn't fit any existing component.
+3. **`superpowers:verification-before-completion`** — before claiming the deck is done, confirm QA passes and the user has previewed the deck in a browser.
 
-Skill discipline: invoke them — don't just "remember the principles". Skills evolve.
+### Visual / UX quality (during phases 2–3, art direction and components)
+
+4. **`ui-ux-pro-max`** — primary reference for visual direction. Use it to pick a colour system, font pairing, design style (editorial, brutalism, minimalism, etc.) that matches the brand and the deck's emotional arc. Especially valuable when `brand/guidelines.md` is sparse or the brand has no strong existing visual identity. Also covers chart styles for data slides.
+5. **`frontend-design`** — for component-level visual inspiration when a slide beat doesn't fit any of the 19 patterns in `templates/components.md`. Use it to design a new pattern, then port the result into a slide-shaped (1920×1080, chrome-aware) version.
+6. **`mcp__magic__21st_magic_component_*`** (21st.dev MCP tools) — when you need polished component variants beyond what frontend-design produces. Useful for hero treatments, complex tables, navigation chrome details. Treat the output as inspiration, not a drop-in: rework geometry to fit the 1920×1080 frame and the chrome safe-zone, and re-apply the brand tokens.
+
+### Asset generation (when the user has gaps in `assets/`)
+
+7. **`design`** — generate brand-aligned assets (logos, banners, icons, social photos) when the user hasn't provided them. Especially valuable for icon sets and atmospheric hero imagery. Save outputs into the right `assets/` subfolder.
+8. **`design-system`** — when the brand has no token discipline yet, use it to formalise primitive → semantic → component tokens before populating `brand/tokens.css`.
+
+### Discipline
+
+- If a skill is relevant, invoke it. The fastest way to ship a generic-looking deck is to skip these.
+- Don't stack skills redundantly. `frontend-design` covers most component needs; reach for `21st_magic_*` only when you need a richer reference.
+- Output from any visual skill must still pass through `brand/tokens.css` and the chrome system. Never paste a generated component verbatim if it violates brand restraint.
 
 ---
 
