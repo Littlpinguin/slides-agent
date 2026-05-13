@@ -46,7 +46,7 @@ Both are used as **inspiration sources** during art direction (Phase 2) and comp
 ### Option 2 — Manual copy
 
 ```bash
-git clone https://github.com/<your-org>/slides-agent.git my-decks
+git clone https://github.com/Littlpinguin/slides-agent.git my-decks
 cd my-decks
 rm -rf .git && git init
 ```
