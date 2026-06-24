@@ -29,6 +29,7 @@ except ImportError:
 
 
 SAFE_GAP_PX = 16  # min gap between bottom-most content and chrome bottom row
+MIN_FONT_PX = 16  # readable floor (px) for on-screen content text; mono + chrome labels are exempt
 TMP_DIR = Path("/tmp/slides-qa")
 
 
@@ -70,6 +71,16 @@ def main() -> int:
         type=int,
         default=40,
         help="threshold for --with-pdf (default: 40 KB per slide average)",
+    )
+    parser.add_argument(
+        "--min-font",
+        type=float,
+        default=MIN_FONT_PX,
+        help=(
+            f"readable floor in px for on-screen content text (default: {MIN_FONT_PX}). "
+            "Mono and chrome labels (folio, signature, eyebrow) are exempt. "
+            "Raise to 18-20 for large-venue projection."
+        ),
     )
     args = parser.parse_args()
 
@@ -162,14 +173,49 @@ def main() -> int:
                     "lowest": issues["chrome_gap"]["lowest"],
                 })
 
+            # Type floor: flag content text smaller than the readable minimum.
+            # Mono fonts and chrome / eyebrow-style labels are intentionally exempt.
+            small = page.evaluate(
+                """(min) => {
+                    const slide = document.querySelector('.slide.active') || document.querySelectorAll('.slide')[0];
+                    const out = [];
+                    slide.querySelectorAll('*').forEach(el => {
+                        if (el.closest('.chrome')) return;
+                        if (el.classList.contains('aurora') || el.classList.contains('dust-grid')) return;
+                        const cs = getComputedStyle(el);
+                        if ((cs.fontFamily || '').toLowerCase().includes('mono')) return;
+                        const ls = parseFloat(cs.letterSpacing) || 0;
+                        if (cs.textTransform === 'uppercase' && ls >= 0.5) return;
+                        const hasText = Array.from(el.childNodes).some(n => n.nodeType === 3 && n.textContent.trim().length > 1);
+                        if (!hasText) return;
+                        const fs = parseFloat(cs.fontSize);
+                        if (fs && fs < min) {
+                            out.push({
+                                cls: ((el.className || '') + '').trim().split(/\\s+/)[0].slice(0, 30),
+                                size: Math.round(fs * 10) / 10,
+                                text: el.textContent.trim().replace(/\\s+/g, ' ').slice(0, 32)
+                            });
+                        }
+                    });
+                    const seen = new Set();
+                    return out.filter(o => { const k = o.cls + '|' + o.size; if (seen.has(k)) return false; seen.add(k); return true; }).slice(0, 5);
+                }""",
+                args.min_font,
+            )
+            for st in small:
+                slide_issues.append({"type": "small_type", "size": st["size"], "cls": st["cls"], "text": st["text"]})
+
             if slide_issues:
                 all_issues[i] = slide_issues
                 print(f"  slide {i:02d} · ISSUES")
                 for issue in slide_issues:
-                    if "cls" in issue:
-                        print(f"    overflow .{issue['cls']:<40} oR={issue['oR']} oB={issue['oB']} oL={issue['oL']} oT={issue['oT']}")
-                    else:
+                    t = issue.get("type")
+                    if t == "small_type":
+                        print(f"    tiny text {issue['size']}px (floor {args.min_font:g}px) · .{issue['cls']} \"{issue['text']}\"")
+                    elif t == "chrome_gap":
                         print(f"    chrome gap {issue['gap']}px (need ≥ {SAFE_GAP_PX}) — lowest content y={issue['lowest']}")
+                    else:
+                        print(f"    overflow .{issue['cls']:<40} oR={issue['oR']} oB={issue['oB']} oL={issue['oL']} oT={issue['oT']}")
             else:
                 print(f"  slide {i:02d} · ok")
 
