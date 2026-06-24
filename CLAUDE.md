@@ -221,6 +221,27 @@ The template assumes you have access to a typical Claude Code skill set. Invoke 
 
 ---
 
+## Recent techniques (apply by default)
+
+Validated on real projected decks (mid-2026). They matter for professional, room-readable output.
+
+### Presentation mode (fullscreen)
+`templates/base.html` ships a `⛶` button and the `F` shortcut. They request OS fullscreen; while active, `body.presenting` is set, the slide scales to fill the whole screen (no nav reserved), and the nav-rail auto-hides — it reappears when the cursor nears the bottom edge. Nothing to wire per deck.
+
+### Minimum on-screen type size
+A slide is read from across a room. **No content text below ~18-20px** in the 1920×1080 frame (an 18pt projected floor; comfortable body is 20-24pt). Only mono chrome labels (folio, signature, eyebrow) may sit at 12-14px. Never shrink a real sentence to caption size to make it fit: split the slide or cut words instead.
+
+### Block-centering to kill empty middles
+For a "title + content" slide, center the whole block (title + grid/table/cards) as one unit, not "title pinned to the top + content centered in the leftover space" (which leaves a void between them). Give the slide `justify-content: center` and make the content wrapper `flex: 0 0 auto`, so the title and its content read as one centered group.
+
+### Icons: inline stroke SVG, not emoji
+Use inline Lucide-style SVGs (`stroke: currentColor; stroke-width: 1.75; fill: none`) tinted with a brand token, inside a soft tinted chip. They stay crisp at any scale and on-brand. Never paste OS emoji into slides.
+
+### Static decorative elements
+Decorative illustrations / mascots stay still: no looping float/bob animation (it distracts during a talk). Only the one-shot reveal-on-enter transition is allowed.
+
+---
+
 ## What this template never does
 
 - Generate decks intended as PowerPoint exports (different file format, different design constraints — out of scope).
@@ -239,6 +260,6 @@ Before declaring a deck done, every item must pass:
 - [ ] `python scripts/export_pdf.py presentations/<deck>.html` produces a PDF whose size is plausible — at least ~150 KB per slide on average. A 20-slide deck with a 250 KB PDF means most pages collapsed to nothing; investigate before shipping.
 - [ ] Every CSS rule that uses `background-clip: text` has its selector listed in `GRADIENT_TEXT_SELECTORS` (search the file for `background-clip: text` and cross-check). Missing entries = silent blank text in PDF, no error.
 - [ ] No em-dash `—` in user-visible text. Run: `grep "—" presentations/<deck>.html | grep -v "<!--"` — should return nothing or only matches inside CSS comments.
-- [ ] The chrome `tag-folio` (`Plate 0X / N` or equivalent) is correct on every slide. Auto-counter in the nav-rail updates from JS, but the in-slide chrome folios are manual.
-- [ ] Manually opened in Chrome, navigated all slides ←/→, tested O / P / drag bar / wheel / 1-9+Enter / Esc.
+- [ ] The chrome `tag-folio` (`Plate 0X / N` or equivalent) is correct on every slide. Auto-counter in the nav-rail and the in-slide folios are both auto-numbered from DOM order by JS (no manual edits needed).
+- [ ] Manually opened in Chrome, navigated all slides ←/→, tested O / P / F (fullscreen) / drag bar / wheel / 1-9+Enter / Esc.
 - [ ] Each `<section class="slide">` has a `data-eyebrow` and `data-heading` attribute (used by the overview panel — empty thumbs mean the attributes were forgotten).

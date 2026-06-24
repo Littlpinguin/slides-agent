@@ -42,9 +42,18 @@
 
 ## Photography & illustration
 
+<!--
+The `generate-image` skill reads this section (plus the palette in
+brand/tokens.css) to style every AI-generated illustration to your brand.
+Fill in "Illustration style" and "Banned visual tropes" so generated visuals
+look on-brand. Leave them as TODO and image generation falls back to a neutral
+default. AI image generation is optional — see .env.example / the skill.
+-->
+
 - **Photography style**: TODO (editorial, warm, desaturated, etc.)
-- **Illustration style**: TODO (line, flat, atmospheric, etc.)
-- **What we never use**: TODO (e.g. "stock photography of people in suits", "3D renders")
+- **Illustration style**: TODO (line, flat, atmospheric, monoline, etc. — read by `generate-image`)
+- **Banned visual tropes**: TODO (e.g. "stock photography of people in suits", "generic 3D renders", "cliché AI violet→neon gradients", "robot mascots", "lens flare" — read by `generate-image`)
+- **What we never use**: TODO (anything else off-limits visually)
 
 ## Motion
 

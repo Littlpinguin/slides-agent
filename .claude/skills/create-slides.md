@@ -159,6 +159,15 @@ See `docs/pdf-export.md` for full detail.
 - Banned vocabulary lives in `brand/guidelines.md` "Avoid" section. Re-read before writing copy.
 - Every assertion is anchored to a number, date, or named source.
 
+## Recent techniques (apply by default)
+
+- **Presentation mode**: `templates/base.html` ships a `⛶` button + `F` shortcut that go fullscreen; the slide then fills the screen and the nav-rail auto-hides (reappears near the bottom edge). Inherited by every deck.
+- **Min type size**: no content text below ~18-20px in the 1920×1080 frame (18pt projected floor). Only mono chrome labels stay at 12-14px.
+- **Block-centering**: center "title + content" as one block (`justify-content: center` + content wrapper `flex: 0 0 auto`) to avoid an empty middle.
+- **Icons**: inline Lucide-style stroke SVG tinted with a token, never OS emoji.
+- **Static decorations**: no looping float animations; reveal-on-enter only.
+- **Folios** auto-number from DOM order, so inserting/deleting slides renumbers automatically.
+
 ## Final deliverable
 
 A single file: `presentations/<topic>-<date>-<version>.html`, alongside any third-party logo files referenced via relative path. Self-contained (opens in Chrome with no server needed), shareable as-is via `./scripts/serve.sh`, exportable to PDF via `./scripts/export-pdf.sh`, hostable on any static host (see `docs/hosting.md`).

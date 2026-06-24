@@ -42,8 +42,17 @@ The deck is a sparkline of emotional beats (Duarte / Reynolds). Pick components 
 | Lead magnets / artefacts | `leadmags` | 3 mock book covers. The deliverables. |
 | KPI strata | `kpi-strata` | 3 horizontal bands of stacked metrics. |
 | Engagement / ask | `engage-stage` | Big number left + obligations list right. |
+| Numbered process | `process-flow` | 1→2→3→4 steps with arrow connectors + synthesis banner. The "how it works" slide. |
+| Competitive matrix | `comparison-table` | You vs A vs B, yes/no cells, your column highlighted. The differentiation slide. |
+| Dense feature set | `item-wall` | Grid of small icon + label cards + an "and more" highlight card. The "everything we cover" slide. |
+| Roadmap board | `kanban-board` | In-progress / Up-next columns, cards with tag + progress bar. The "where we are" slide. |
+| Pricing / offer | `pricing` | 2–3 anchored tiers + one "recommended" highlight, or an offer card (year 1 / year 2). The money slide. |
+| Vision schema | `three-step` | A → B → C with arrows, highlighted middle box. The "our model" slide. |
+| Team | `team-grid` | Round photos / initials + name + role, 3 columns. The "who we are" slide. |
 
 A 24-slide deck typically uses 12–16 components, with 3–4 `silence` slides interleaved.
+
+Every illustrative mark in these components is an **inline Lucide-style SVG** (`stroke: currentColor`), never an emoji. See [Iconography](#iconography) for the rule and the reusable pastille pattern.
 
 ## Components
 
@@ -714,6 +723,527 @@ Huge date display + context. Used as the penultimate slide before the decision.
 ```
 
 > Add `.date-mega .day` to `GRADIENT_TEXT_SELECTORS`.
+
+---
+
+### `process-flow` — numbered steps with arrows
+
+Four numbered steps (1 → 2 → 3 → 4) joined by arrow connectors, with a synthesis banner underneath. The canonical "here's how it works, end to end" slide.
+
+```html
+<section class="slide" data-eyebrow="how it works" data-heading="Process">
+  <div class="chrome"><!-- chrome rows --></div>
+  <div class="section-head reveal" style="height:auto;">
+    <span class="eyebrow">the method</span>
+    <h1 class="display">Four steps, one outcome.</h1>
+  </div>
+  <div class="process-flow reveal" data-stagger>
+    <div class="process-step">
+      <span class="process-num">1</span>
+      <h3>Capture</h3>
+      <p>One short line on what happens at this step.</p>
+    </div>
+    <div class="process-arrow" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+    </div>
+    <div class="process-step">
+      <span class="process-num">2</span>
+      <h3>Structure</h3>
+      <p>One short line on what happens at this step.</p>
+    </div>
+    <div class="process-arrow" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+    </div>
+    <div class="process-step">
+      <span class="process-num">3</span>
+      <h3>Review</h3>
+      <p>One short line on what happens at this step.</p>
+    </div>
+    <div class="process-arrow" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+    </div>
+    <div class="process-step">
+      <span class="process-num">4</span>
+      <h3>Ship</h3>
+      <p>One short line on what happens at this step.</p>
+    </div>
+  </div>
+  <div class="process-banner reveal">
+    <span>end to end</span>
+    <strong>From raw input to published result in a single loop.</strong>
+  </div>
+</section>
+```
+
+```css
+.process-flow { display:grid; grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr; gap:24px; align-items:stretch; margin-top:56px; }
+.process-step { background:var(--brand-neutral-light-soft); border:1px solid var(--rule); border-radius:8px; padding:32px; display:flex; flex-direction:column; gap:14px; }
+.process-num { display:flex; align-items:center; justify-content:center; width:48px; height:48px; border-radius:var(--radius-pill); background:var(--brand-primary-soft); color:var(--brand-primary-deep); font-family:var(--font-mono); font-size:20px; font-weight:500; }
+.process-step h3 { font-size:24px; font-weight:500; line-height:1.2; }
+.process-step p { font-size:18px; line-height:1.5; opacity:0.75; }
+.process-arrow { display:flex; align-items:center; justify-content:center; color:var(--brand-secondary-deep); }
+.process-arrow svg { width:36px; height:36px; }
+.process-banner { display:flex; align-items:baseline; gap:24px; margin-top:32px; padding:28px 36px; border-radius:8px; background:var(--brand-neutral-dark); color:var(--brand-neutral-light); }
+.process-banner span { font-family:var(--font-mono); font-size:13px; letter-spacing:0.08em; opacity:0.6; white-space:nowrap; }
+.process-banner strong { font-size:24px; font-weight:300; line-height:1.3; }
+```
+
+> On a dark slide, swap `.process-step` to `background:var(--brand-neutral-dark-soft); border-color:var(--rule-light);` and the banner to `background:var(--brand-neutral-light); color:var(--brand-neutral-dark);` for contrast.
+
+---
+
+### `comparison-table` — you vs A vs B
+
+A competitive matrix: rows of criteria, one "you" column highlighted, the rest neutral. Cells are yes/no marks (inline SVG, never emoji). The classic differentiation slide.
+
+```html
+<section class="slide" data-eyebrow="differentiation" data-heading="Comparison">
+  <div class="chrome"><!-- chrome rows --></div>
+  <div class="section-head reveal" style="height:auto;">
+    <span class="eyebrow">how we compare</span>
+    <h1 class="display">What only we do.</h1>
+  </div>
+  <div class="comparison reveal">
+    <table class="comparison-table">
+      <thead>
+        <tr>
+          <th scope="col" class="c-criteria">Capability</th>
+          <th scope="col" class="c-you">You</th>
+          <th scope="col">Competitor A</th>
+          <th scope="col">Competitor B</th>
+        </tr>
+      </thead>
+      <tbody data-stagger>
+        <tr>
+          <th scope="row">Self-hosted &amp; sovereign</th>
+          <td class="c-you"><span class="mark yes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></td>
+          <td><span class="mark no"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span></td>
+          <td><span class="mark no"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span></td>
+        </tr>
+        <tr>
+          <th scope="row">Flat per-seat pricing</th>
+          <td class="c-you"><span class="mark yes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></td>
+          <td><span class="mark yes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></td>
+          <td><span class="mark no"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span></td>
+        </tr>
+        <tr>
+          <th scope="row">No vendor lock-in</th>
+          <td class="c-you"><span class="mark yes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></td>
+          <td><span class="mark no"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span></td>
+          <td><span class="mark no"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+```
+
+```css
+.comparison { margin-top:48px; }
+.comparison-table { width:100%; border-collapse:collapse; font-size:20px; }
+.comparison-table th, .comparison-table td { padding:22px 28px; text-align:center; border-bottom:1px solid var(--rule); }
+.comparison-table thead th { font-family:var(--font-mono); font-size:13px; font-weight:500; letter-spacing:0.06em; text-transform:lowercase; opacity:0.6; border-bottom:1px solid var(--brand-neutral-dark); }
+.comparison-table .c-criteria, .comparison-table tbody th { text-align:left; font-weight:400; opacity:1; }
+.comparison-table tbody th { font-size:20px; }
+.comparison-table .c-you { background:var(--brand-primary-soft); }
+.comparison-table thead th.c-you { color:var(--brand-primary-deep); opacity:1; font-weight:700; border-bottom:2px solid var(--brand-primary); }
+.comparison-table .mark { display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:var(--radius-pill); }
+.comparison-table .mark svg { width:20px; height:20px; }
+.comparison-table .mark.yes { background:var(--brand-primary-soft); color:var(--brand-primary-deep); }
+.comparison-table .mark.no { color:var(--brand-neutral-dark); opacity:0.28; }
+```
+
+> On a dark slide, the highlighted column reads better with `.c-you { background:var(--rule-light); }` and marks using `--brand-secondary` tones.
+
+---
+
+### `item-wall` — dense feature grid + "and more"
+
+A wall of small cards, each an inline icon + a short label, ending on a highlighted "and more" card. Use when you need to show breadth (every use case, every integration, every format) without a wall of text.
+
+```html
+<section class="slide" data-eyebrow="coverage" data-heading="Item wall">
+  <div class="chrome"><!-- chrome rows --></div>
+  <div class="section-head reveal" style="height:auto;">
+    <span class="eyebrow">what it covers</span>
+    <h1 class="display">One tool, every format.</h1>
+  </div>
+  <div class="item-wall reveal" data-stagger>
+    <div class="item-card">
+      <span class="item-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span>
+      <strong>Documents</strong>
+    </div>
+    <div class="item-card">
+      <span class="item-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg></span>
+      <strong>Slides</strong>
+    </div>
+    <div class="item-card">
+      <span class="item-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15V6a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v9"/><rect x="3" y="13" width="18" height="8" rx="2"/></svg></span>
+      <strong>Tables</strong>
+    </div>
+    <div class="item-card">
+      <span class="item-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg></span>
+      <strong>Charts</strong>
+    </div>
+    <div class="item-card">
+      <span class="item-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/></svg></span>
+      <strong>Images</strong>
+    </div>
+    <div class="item-card">
+      <span class="item-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4V8Z"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg></span>
+      <strong>Video</strong>
+    </div>
+    <div class="item-card">
+      <span class="item-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span>
+      <strong>Code</strong>
+    </div>
+    <div class="item-card more">
+      <span class="item-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></span>
+      <strong>and more</strong>
+    </div>
+  </div>
+</section>
+```
+
+```css
+.item-wall { display:grid; grid-template-columns: repeat(4, 1fr); gap:20px; margin-top:48px; }
+.item-card { display:flex; align-items:center; gap:18px; padding:24px 28px; background:var(--brand-neutral-light-soft); border:1px solid var(--rule); border-radius:8px; }
+.item-ico { display:flex; align-items:center; justify-content:center; width:44px; height:44px; flex:0 0 44px; border-radius:var(--radius-tight); background:var(--brand-primary-soft); color:var(--brand-primary-deep); }
+.item-ico svg { width:24px; height:24px; }
+.item-card strong { font-size:20px; font-weight:500; }
+.item-card.more { background:var(--brand-neutral-dark); border-color:transparent; color:var(--brand-neutral-light); }
+.item-card.more .item-ico { background:var(--rule-light); color:var(--brand-secondary); }
+```
+
+> Scales to any count — keep `repeat(4, 1fr)` and let rows grow, but cap at 12 cards (3 rows) so the bottom row clears the chrome safe-zone.
+
+---
+
+### `kanban-board` — roadmap board
+
+Two columns ("In progress" / "Up next"), each a stack of cards. Cards carry a tag + title + description; in-progress cards add a progress bar. The "where we are right now" slide.
+
+```html
+<section class="slide" data-eyebrow="roadmap" data-heading="Board">
+  <div class="chrome"><!-- chrome rows --></div>
+  <div class="section-head reveal" style="height:auto;">
+    <span class="eyebrow">what's shipping</span>
+    <h1 class="display">In progress, and next.</h1>
+  </div>
+  <div class="kanban reveal" data-stagger>
+    <div class="kanban-col">
+      <div class="kanban-col-head">
+        <span class="kanban-dot in"></span>
+        <span>In progress</span>
+      </div>
+      <div class="kanban-card">
+        <span class="kanban-tag">core</span>
+        <h4>Self-hosted runtime</h4>
+        <p>Single-binary deploy, no external dependencies.</p>
+        <div class="kanban-progress"><span style="--p:0.7"></span></div>
+      </div>
+      <div class="kanban-card">
+        <span class="kanban-tag">api</span>
+        <h4>Public REST surface</h4>
+        <p>Documented endpoints, token auth, rate limits.</p>
+        <div class="kanban-progress"><span style="--p:0.4"></span></div>
+      </div>
+    </div>
+    <div class="kanban-col">
+      <div class="kanban-col-head">
+        <span class="kanban-dot next"></span>
+        <span>Up next</span>
+      </div>
+      <div class="kanban-card">
+        <span class="kanban-tag">collab</span>
+        <h4>Shared workspaces</h4>
+        <p>Teams, roles, and per-project access control.</p>
+      </div>
+      <div class="kanban-card">
+        <span class="kanban-tag">mobile</span>
+        <h4>Companion app</h4>
+        <p>Review and approve on the move.</p>
+      </div>
+    </div>
+  </div>
+</section>
+```
+
+```css
+.kanban { display:grid; grid-template-columns: 1fr 1fr; gap:32px; margin-top:48px; align-items:start; }
+.kanban-col { display:flex; flex-direction:column; gap:18px; }
+.kanban-col-head { display:flex; align-items:center; gap:10px; font-family:var(--font-mono); font-size:13px; letter-spacing:0.06em; text-transform:lowercase; opacity:0.7; padding-bottom:6px; border-bottom:1px solid var(--rule); }
+.kanban-dot { width:10px; height:10px; border-radius:var(--radius-pill); }
+.kanban-dot.in { background:var(--brand-primary); }
+.kanban-dot.next { background:var(--brand-secondary); }
+.kanban-card { background:var(--brand-neutral-light-soft); border:1px solid var(--rule); border-radius:8px; padding:24px 28px; display:flex; flex-direction:column; gap:10px; }
+.kanban-tag { font-family:var(--font-mono); font-size:12px; letter-spacing:0.08em; text-transform:lowercase; color:var(--brand-primary-deep); }
+.kanban-card h4 { font-size:22px; font-weight:500; line-height:1.2; }
+.kanban-card p { font-size:18px; line-height:1.45; opacity:0.72; }
+.kanban-progress { height:6px; border-radius:var(--radius-pill); background:var(--rule); overflow:hidden; margin-top:6px; }
+.kanban-progress span { display:block; height:100%; width:calc(var(--p, 0.5) * 100%); background:var(--brand-gradient); border-radius:var(--radius-pill); }
+```
+
+> On a dark slide, swap cards to `background:var(--brand-neutral-dark-soft); border-color:var(--rule-light);`. The progress bars use a static fill (no transition), so they need no print override.
+
+---
+
+### `pricing` — anchored tiers + offer card
+
+Two variants. **Variant A**: 2–3 priced tiers side by side, the middle one marked `recommended` and visually lifted. **Variant B**: a single offer card anchoring two amounts (year 1 vs year 2). The money slide.
+
+**Variant A — tiers**
+
+```html
+<section class="slide" data-eyebrow="pricing" data-heading="Plans">
+  <div class="chrome"><!-- chrome rows --></div>
+  <div class="section-head reveal" style="height:auto;">
+    <span class="eyebrow">what it costs</span>
+    <h1 class="display">Simple, flat pricing.</h1>
+  </div>
+  <div class="pricing reveal" data-stagger>
+    <div class="price-tier">
+      <span class="price-name">Free</span>
+      <span class="price-amount"><span class="cur">€</span>0</span>
+      <span class="price-period">forever</span>
+      <ul class="price-list">
+        <li>20 AI credits / month</li>
+        <li>Single workspace</li>
+        <li>Community support</li>
+      </ul>
+    </div>
+    <div class="price-tier featured">
+      <span class="price-badge">recommended</span>
+      <span class="price-name">Team</span>
+      <span class="price-amount"><span class="cur">€</span>50</span>
+      <span class="price-period">per seat / year</span>
+      <ul class="price-list">
+        <li>Unlimited AI credits</li>
+        <li>Shared workspaces</li>
+        <li>Priority support</li>
+      </ul>
+    </div>
+    <div class="price-tier">
+      <span class="price-name">Sovereign</span>
+      <span class="price-amount">Custom</span>
+      <span class="price-period">self-hosted</span>
+      <ul class="price-list">
+        <li>On-premise deploy</li>
+        <li>SSO &amp; audit logs</li>
+        <li>Dedicated SLA</li>
+      </ul>
+    </div>
+  </div>
+</section>
+```
+
+```css
+.pricing { display:grid; grid-template-columns: repeat(3, 1fr); gap:28px; margin-top:48px; align-items:start; }
+.price-tier { position:relative; padding:40px 36px; border:1px solid var(--rule); border-radius:10px; display:flex; flex-direction:column; gap:8px; background:var(--brand-neutral-light-soft); }
+.price-tier.featured { background:var(--brand-neutral-dark); color:var(--brand-neutral-light); border-color:transparent; padding-top:52px; }
+.price-badge { position:absolute; top:24px; right:28px; font-family:var(--font-mono); font-size:11px; letter-spacing:0.08em; text-transform:lowercase; padding:6px 12px; border-radius:var(--radius-pill); background:var(--brand-secondary); color:var(--brand-neutral-dark); }
+.price-name { font-family:var(--font-mono); font-size:14px; letter-spacing:0.06em; text-transform:lowercase; opacity:0.7; }
+.price-amount { font-size:84px; font-weight:200; line-height:1; }
+.price-amount .cur { font-size:0.45em; vertical-align:super; opacity:0.7; }
+.price-period { font-family:var(--font-mono); font-size:13px; opacity:0.6; margin-bottom:16px; }
+.price-list { list-style:none; display:flex; flex-direction:column; gap:12px; border-top:1px solid var(--rule); padding-top:24px; font-size:18px; }
+.price-tier.featured .price-list { border-top-color:var(--rule-light); }
+.price-list li { line-height:1.4; opacity:0.85; }
+```
+
+**Variant B — offer card (year 1 / year 2)**
+
+```html
+<section class="slide" data-eyebrow="offer" data-heading="Offer">
+  <div class="chrome"><!-- chrome rows --></div>
+  <div class="offer-stage">
+    <div class="offer-intro reveal">
+      <span class="eyebrow">launch offer</span>
+      <h2 class="offer-head">Locked-in pricing for early adopters.</h2>
+      <p class="offer-note">Same flat rate for two years. No usage metering, no surprise renewal.</p>
+    </div>
+    <div class="offer-card reveal">
+      <div class="offer-row">
+        <span class="offer-row-label">Year 1</span>
+        <span class="offer-row-amount gradient-text">€50</span>
+        <span class="offer-row-unit">/ seat</span>
+      </div>
+      <div class="offer-row">
+        <span class="offer-row-label">Year 2</span>
+        <span class="offer-row-amount">€50</span>
+        <span class="offer-row-unit">/ seat</span>
+      </div>
+      <div class="offer-foot">until 1 Oct 2026</div>
+    </div>
+  </div>
+</section>
+```
+
+```css
+.offer-stage { display:grid; grid-template-columns: 1fr 1fr; gap:96px; align-items:center; height:100%; }
+.offer-intro { display:flex; flex-direction:column; gap:24px; }
+.offer-head { font-size:56px; font-weight:300; line-height:1.2; max-width:640px; }
+.offer-note { font-size:20px; line-height:1.5; opacity:0.75; max-width:560px; }
+.offer-card { padding:48px; border:1px solid var(--rule); border-radius:12px; background:var(--brand-neutral-light-soft); display:flex; flex-direction:column; gap:28px; }
+.offer-row { display:flex; align-items:baseline; gap:16px; padding-bottom:24px; border-bottom:1px solid var(--rule); }
+.offer-row:nth-of-type(2) { border-bottom:none; padding-bottom:0; }
+.offer-row-label { font-family:var(--font-mono); font-size:14px; letter-spacing:0.06em; opacity:0.6; min-width:90px; }
+.offer-row-amount { font-size:96px; font-weight:200; line-height:0.9; }
+.offer-row-unit { font-family:var(--font-mono); font-size:15px; opacity:0.6; }
+.offer-foot { font-family:var(--font-mono); font-size:13px; letter-spacing:0.06em; opacity:0.55; padding-top:8px; }
+```
+
+> **Add `.offer-row-amount.gradient-text`** (variant B) to `GRADIENT_TEXT_SELECTORS` in base.html so it rasterises cleanly in PDF. Variant A has no gradient text.
+
+---
+
+### `three-step` — A → B → C schema
+
+Three boxes joined by arrows, the middle one highlighted. Use for a model / mechanism in three moves (input → transformation → outcome, or problem → product → result) where the centre is the load-bearing idea.
+
+```html
+<section class="slide" data-eyebrow="model" data-heading="Schema">
+  <div class="chrome"><!-- chrome rows --></div>
+  <div class="section-head reveal" style="height:auto;">
+    <span class="eyebrow">how it works</span>
+    <h1 class="display">Three moves, one model.</h1>
+  </div>
+  <div class="three-step reveal" data-stagger>
+    <div class="ts-box">
+      <span class="ts-label">A · Input</span>
+      <h3>Scattered knowledge</h3>
+      <p>Notes, files, and tools that don't talk to each other.</p>
+    </div>
+    <div class="ts-arrow" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+    </div>
+    <div class="ts-box ts-feature">
+      <span class="ts-label">B · Engine</span>
+      <h3>One sovereign workspace</h3>
+      <p>Everything in one place, on your own infrastructure.</p>
+    </div>
+    <div class="ts-arrow" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+    </div>
+    <div class="ts-box">
+      <span class="ts-label">C · Outcome</span>
+      <h3>Work that compounds</h3>
+      <p>Reusable, searchable, and owned end to end.</p>
+    </div>
+  </div>
+</section>
+```
+
+```css
+.three-step { display:grid; grid-template-columns: 1fr auto 1fr auto 1fr; gap:28px; align-items:stretch; margin-top:64px; }
+.ts-box { padding:36px 32px; border:1px solid var(--rule); border-radius:10px; background:var(--brand-neutral-light-soft); display:flex; flex-direction:column; gap:14px; }
+.ts-box.ts-feature { background:var(--brand-neutral-dark); color:var(--brand-neutral-light); border-color:transparent; box-shadow:0 24px 60px var(--brand-primary-soft); }
+.ts-label { font-family:var(--font-mono); font-size:13px; letter-spacing:0.06em; text-transform:lowercase; color:var(--brand-primary-deep); }
+.ts-box.ts-feature .ts-label { color:var(--brand-secondary); }
+.ts-box h3 { font-size:26px; font-weight:500; line-height:1.2; }
+.ts-box p { font-size:18px; line-height:1.5; opacity:0.78; }
+.ts-arrow { display:flex; align-items:center; justify-content:center; color:var(--brand-secondary-deep); }
+.ts-arrow svg { width:36px; height:36px; }
+```
+
+> The shadow on `.ts-feature` is stripped automatically in PDF (the print block removes all shadows). No extra override needed.
+
+---
+
+### `team-grid` — people, 3 columns
+
+Round portraits (or initials when no photo) + name + role, in a 3-column grid. The "who's behind this" slide for founders or a core team.
+
+```html
+<section class="slide" data-eyebrow="team" data-heading="Team">
+  <div class="chrome"><!-- chrome rows --></div>
+  <div class="section-head reveal" style="height:auto;">
+    <span class="eyebrow">who we are</span>
+    <h1 class="display">The people behind it.</h1>
+  </div>
+  <div class="team-grid reveal" data-stagger>
+    <div class="team-member">
+      <div class="team-photo"><img src="../assets/illustrations/portrait-1.jpg" alt=""></div>
+      <strong>First Last</strong>
+      <span>Co-founder · CEO</span>
+    </div>
+    <div class="team-member">
+      <!-- No photo? Use initials in the same circle. -->
+      <div class="team-photo initials">FL</div>
+      <strong>First Last</strong>
+      <span>Co-founder · CTO</span>
+    </div>
+    <div class="team-member">
+      <div class="team-photo initials">FL</div>
+      <strong>First Last</strong>
+      <span>Head of Design</span>
+    </div>
+  </div>
+</section>
+```
+
+```css
+.team-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:48px; margin-top:56px; }
+.team-member { display:flex; flex-direction:column; align-items:center; text-align:center; gap:14px; }
+.team-photo { width:180px; height:180px; border-radius:var(--radius-pill); overflow:hidden; border:1px solid var(--rule); }
+.team-photo img { width:100%; height:100%; object-fit:cover; display:block; }
+.team-photo.initials { display:flex; align-items:center; justify-content:center; background:var(--brand-primary-soft); color:var(--brand-primary-deep); font-family:var(--font-mono); font-size:48px; font-weight:500; }
+.team-member strong { font-size:26px; font-weight:500; line-height:1.1; }
+.team-member span { font-family:var(--font-mono); font-size:13px; letter-spacing:0.04em; opacity:0.65; }
+```
+
+> For 4–6 people, keep `repeat(3, 1fr)` and let it wrap to a second row; drop `.team-photo` to `140px` square so two rows clear the chrome safe-zone.
+
+---
+
+### Iconography
+
+**Never use emoji** (no ☠️, 💡, ✨, ✅, ❌). Every icon in this system is an **inline Lucide-style SVG**: a 24×24 `viewBox`, `fill: none`, `stroke: currentColor`, `stroke-width: 1.75` (use `2` for small marks under ~24px), with `stroke-linecap: round` and `stroke-linejoin: round`. Because the stroke is `currentColor`, the icon inherits the text colour of whatever pastille or context it sits in — so a single markup works on cream and on dark slides without edits.
+
+The reusable unit is a **pastille**: a tokenised rounded container holding one icon. Drop it anywhere — list bullets, stat headers, feature rows.
+
+```html
+<section class="slide" data-eyebrow="iconography" data-heading="Icons">
+  <div class="chrome"><!-- chrome rows --></div>
+  <div class="section-head reveal" style="height:auto;">
+    <span class="eyebrow">the rule</span>
+    <h1 class="display">Inline strokes, never emoji.</h1>
+  </div>
+  <div class="ico-demo reveal" data-stagger>
+    <div class="ico-item">
+      <span class="pastille"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-7 7c0 2.4 1.2 4 2.5 5.5.7.8 1 1.3 1 2.5h7c0-1.2.3-1.7 1-2.5C18.8 13 20 11.4 20 9a7 7 0 0 0-7-7Z"/><path d="M9 21h6"/></svg></span>
+      <strong>Insight</strong>
+      <span class="ico-cap">primary pastille</span>
+    </div>
+    <div class="ico-item">
+      <span class="pastille alt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.7 8.9a1 1 0 0 1-.6 0C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.2-2.7a1 1 0 0 1 1.5 0C14.5 3.8 17 5 19 5a1 1 0 0 1 1 1Z"/></svg></span>
+      <strong>Sovereign</strong>
+      <span class="ico-cap">secondary pastille</span>
+    </div>
+    <div class="ico-item">
+      <span class="pastille solid"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg></span>
+      <strong>Crafted</strong>
+      <span class="ico-cap">solid pastille</span>
+    </div>
+  </div>
+</section>
+```
+
+```css
+.ico-demo { display:grid; grid-template-columns: repeat(3, 1fr); gap:48px; margin-top:56px; }
+.ico-item { display:flex; flex-direction:column; align-items:flex-start; gap:14px; }
+.ico-item strong { font-size:24px; font-weight:500; }
+.ico-cap { font-family:var(--font-mono); font-size:13px; letter-spacing:0.04em; opacity:0.6; }
+
+/* Reusable pastille — copy this anywhere you need an icon chip */
+.pastille { display:inline-flex; align-items:center; justify-content:center; width:56px; height:56px; border-radius:var(--radius-tight); background:var(--brand-primary-soft); color:var(--brand-primary-deep); }
+.pastille svg { width:28px; height:28px; }
+.pastille.alt { background:var(--brand-secondary-soft); color:var(--brand-secondary-deep); }
+.pastille.solid { background:var(--brand-primary); color:var(--brand-neutral-light); }
+.slide.dark .pastille { background:var(--rule-light); color:var(--brand-secondary); }
+```
+
+> **Where to find icons.** Copy any path from [lucide.dev](https://lucide.dev) — the SVGs are already stroked with `currentColor` and 24×24. Strip the wrapping `<svg>` attributes Lucide ships and replace with the canonical set above (`stroke-width:1.75`). Keep `fill="none"`. The pastille (`.pastille`, `.pastille.alt`, `.pastille.solid`) is shared by `process-flow`, `item-wall`, `team-grid` initials, and the yes/no marks in `comparison-table` — reuse it instead of inventing new chips. No icon ever introduces a hard-coded colour: it is always `currentColor` over a tokenised background.
 
 ---
 

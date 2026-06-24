@@ -27,6 +27,7 @@ Both are used as **inspiration sources** during art direction (Phase 2) and comp
 - A **component library** of editorial slide layouts (hero, breathing-number, big quote, KPI strata, roadmap, decision, etc.).
 - A **standalone HTML output** — one file, no dependencies, fits on a USB stick, opens in any modern browser.
 - **Three navigation modes** baked in: arrow keys, drag bar, overview grid (`O`), quick-jump.
+- **Presentation mode** — fullscreen via the `F` key or the ⛶ button: the slide fills the screen and the nav-rail auto-hides.
 - **Clean PDF export** at 1920×1080 (gradient text rasterised to PNG to avoid Chromium PDF artefacts).
 - **Anti-overflow QA** via Playwright — every slide is verified to stay within frame before delivery.
 - **Zero-config hosting** — drop the folder on Netlify Drop, GitHub Pages, S3, or any static host.
@@ -70,6 +71,20 @@ When you open the project in Claude Code, the agent will:
 
 ---
 
+## Optional — AI illustrations (Nano Banana Pro)
+
+The biggest lever on render quality is your `assets/` folder. To go further, connect a **Gemini Nano Banana Pro** API key and let the agent generate **on-brand illustrations on demand** (heroes, scene illustrations, mascots, metaphors). Every prompt is auto-prefixed with *your* configured brand style — palette from `brand/tokens.css`, illustration style and banned tropes from `brand/guidelines.md` — so the output adapts to whatever brand you set up. It is **optional**: without a key, decks rely on your assets, inline icons, and tokens.
+
+```bash
+cp .env.example .env
+# then set GOOGLE_AI_API_KEY=...   (a Google AI Studio key)
+# GOOGLE_AI_IMAGE_MODEL defaults to gemini-3-pro-image-preview
+```
+
+The `generate-image` skill builds every prompt with the Nano Banana Pro doctrine (natural-language prose, identity lock, keep/change), journals each generation, and saves outputs to `assets/illustrations/`. See `scripts/gen-image.py` and `.claude/skills/generate-image.md`.
+
+---
+
 ## Generating a deck
 
 Two ways:
@@ -91,7 +106,12 @@ Two ways:
 
 # QA — verify no overflow on any slide
 python scripts/qa.py presentations/your-deck.html
+
+# Capture specific slides for a quick visual check
+python scripts/shots.py presentations/your-deck.html 3 8 18
 ```
+
+Press **`F`** (or the ⛶ button) for fullscreen **presentation mode**: the slide fills the screen and the nav-rail auto-hides (it reappears when the cursor nears the bottom edge).
 
 For online sharing, the deck is a single self-contained HTML file. See [`docs/hosting.md`](docs/hosting.md) for Netlify Drop, GitHub Pages, S3, and other targets.
 
@@ -110,13 +130,17 @@ For online sharing, the deck is a single self-contained HTML file. See [`docs/ho
 │   ├── illustrations/         # Brand illustrations
 │   ├── photos/                # Editorial photography
 │   └── icons/                 # Custom icon set
+├── .env.example               # GOOGLE_AI_API_KEY for optional AI illustrations
+├── .claude/skills/            # create-slides, generate-image
 ├── templates/
-│   ├── base.html              # Standalone deck skeleton (chrome, nav, print mode)
-│   ├── components.md          # Component library catalogue
-│   └── components/            # Paste-ready slide layouts
+│   ├── base.html              # Standalone deck skeleton (chrome, nav, fullscreen, print)
+│   └── components.md          # Component catalogue (flow, comparison, item-wall, kanban, pricing, three-step, team…)
 ├── presentations/             # Your generated decks live here
 ├── scripts/
-│   ├── qa.py                  # Playwright overflow check
+│   ├── README.md              # Index of every script
+│   ├── qa.py                  # Playwright overflow + chrome-gap check
+│   ├── shots.py               # Capture specific slides for visual review
+│   ├── gen-image.py           # AI illustration generation (needs an API key)
 │   ├── serve.sh               # Local static server
 │   └── export-pdf.sh          # Headless Chromium PDF export
 └── docs/
@@ -133,6 +157,7 @@ For online sharing, the deck is a single self-contained HTML file. See [`docs/ho
 - **Node.js ≥ 18** (for the local server and PDF export, both via `npx`)
 - **Python ≥ 3.10 + Playwright** for QA: `pip install playwright && playwright install chromium`
 - A modern browser (Chrome / Chromium / Edge) for presenting
+- *(Optional)* A **Google AI Studio API key** (Gemini Nano Banana Pro) for on-brand AI illustrations — see [Optional — AI illustrations](#optional--ai-illustrations-nano-banana-pro)
 
 ---
 
