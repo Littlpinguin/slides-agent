@@ -24,13 +24,27 @@ Both are used as **inspiration sources** during art direction (Phase 2) and comp
 ## What this template gives you
 
 - A **brand-aware design system** that auto-configures from your website (colours, typography, voice).
-- A **component library** of editorial slide layouts (hero, breathing-number, big quote, KPI strata, roadmap, decision, etc.).
+- A **layout library of 104 editorial slide layouts** in 7 families, indexed with a "reach for it when" line each, all **executed and self-captioned** in a browsable catalogue deck.
 - A **standalone HTML output** — one file, no dependencies, fits on a USB stick, opens in any modern browser.
 - **Three navigation modes** baked in: arrow keys, drag bar, overview grid (`O`), quick-jump.
 - **Presentation mode** — fullscreen via the `F` key or the ⛶ button: the slide fills the screen and the nav-rail auto-hides.
 - **Clean PDF export** at 1920×1080 (gradient text rasterised to PNG to avoid Chromium PDF artefacts).
 - **Anti-overflow QA** via Playwright — every slide is verified to stay within frame before delivery.
 - **Zero-config hosting** — drop the folder on Netlify Drop, GitHub Pages, S3, or any static host.
+
+---
+
+## The layout library
+
+Most decks fail the same way: three card grids, two tables, and a wall of bullets. The library exists to make that harder.
+
+- **`reference/LAYOUTS.md`** indexes 104 layouts across 7 families — opening, editorial, data-viz, schemas, tables, proof, closing. Each row says what the layout does and when to reach for it, so you choose by narrative beat rather than by browsing.
+- **`reference/catalogue-layouts.html`** is a deck where every one of them is executed on a fictional brand. Every slide carries its own caption: the layout name and its use case. Open it, press `O` for the grouped overview, and pick.
+- **`templates/components.md`** holds paste-ready HTML and scoped CSS for the ported ones, each with the traps that cost time the first time — waterfall spacer arithmetic, orbit collision points, rails that need forcing to their final state in PDF.
+
+**The variety rule the agent applies:** no layout twice in a row, none more than twice in a deck.
+
+The catalogue is deliberately built on an invented brand with invented figures. That is what lets it be read as a layout reference without contaminating a new deck with someone else's narrative, and what keeps this repository free of client material.
 
 ---
 
@@ -134,7 +148,10 @@ For online sharing, the deck is a single self-contained HTML file. See [`docs/ho
 ├── .claude/skills/            # create-slides, generate-image
 ├── templates/
 │   ├── base.html              # Standalone deck skeleton (chrome, nav, fullscreen, print)
-│   └── components.md          # Component catalogue (flow, comparison, item-wall, kanban, pricing, three-step, team…)
+│   └── components.md          # Paste-ready HTML + CSS for the ported layouts
+├── reference/
+│   ├── LAYOUTS.md             # Index of 104 layouts in 7 families, with selection guidance
+│   └── catalogue-layouts.html # 104 layouts executed and captioned, on a fictional brand
 ├── presentations/             # Your generated decks live here
 ├── scripts/
 │   ├── README.md              # Index of every script

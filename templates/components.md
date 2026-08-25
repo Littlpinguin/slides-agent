@@ -1258,3 +1258,221 @@ If none of the above fits a beat in your deck, build a new one:
 5. Run QA. Verify the bottom-content gap to chrome ≥ 16px on every viewport.
 
 The discipline that keeps the system coherent: copy what's there before inventing something new.
+
+---
+
+## Ported layouts
+
+The eight below were harvested from decks built with this system and rewritten against `brand/tokens.css`. Full index of what else exists, and what is not yet ported: `reference/LAYOUTS.md`. Everything executed and captioned: `reference/catalogue-layouts.html`.
+
+---
+
+### `waterfall` — a total, decomposed
+
+The strongest layout for "where does this number come from". Each step is a floating block; its spacer pushes it up to where the previous one ended. Gains in one colour, a different colour for anything you want read separately, gradient on the total.
+
+```html
+<div class="wf reveal">
+  <div class="wc up"><div class="v">25 200</div><div class="sp" style="height:244px"></div><div class="blk" style="height:136px"></div></div>
+  <div class="wc up"><div class="v">12 857</div><div class="sp" style="height:175px"></div><div class="blk" style="height:69px"></div></div>
+  <div class="wc alt"><div class="v">31 416</div><div class="sp" style="height:0"></div><div class="blk" style="height:170px"></div></div>
+  <div class="wc total"><div class="v">79 673</div><div class="sp" style="height:0"></div><div class="blk" style="height:380px"></div></div>
+</div>
+<div class="wf-x"><span>Step one</span><span>Step two</span><span>Step three</span><span><b>Total</b></span></div>
+```
+
+```css
+.wf { display:flex; align-items:stretch; gap:30px; height:380px; margin-top:44px; border-bottom:2px solid var(--rule-strong); }
+.wf .wc { flex:1; display:flex; flex-direction:column; justify-content:flex-end; }
+.wf .wc .blk { border-radius:10px; }
+.wf .wc .v { text-align:center; font-family:var(--font-display); font-size:27px; margin-bottom:10px; }
+.wf .wc .sp { flex-shrink:0; }
+.wf .wc.up .blk { background:var(--brand-primary-soft); }
+.wf .wc.alt .blk { background:var(--brand-secondary); }
+.wf .wc.total .blk { background:var(--brand-gradient); }
+.wf-x { display:flex; gap:30px; padding-top:16px; }
+.wf-x span { flex:1; text-align:center; font-size:16px; line-height:1.3; }
+```
+
+> **Arithmetic to respect.** `spacer + block` must equal the plate height for the first step, and each following spacer equals the running cumulative height. Get this wrong and the staircase reads as noise. Compute the pixel heights before writing the HTML.
+
+---
+
+### `before-after` — selling a transformation
+
+Two mirrored panels. The left one is flat and grey, the right one is raised and accented. Items must mirror one another line by line, otherwise the comparison does not land.
+
+```html
+<div class="ba" data-stagger>
+  <div class="pane before"><span class="bt">today</span><ul><li>…</li><li>…</li></ul></div>
+  <div class="pane after"><span class="bt">with the work</span><ul><li>…</li><li>…</li></ul></div>
+</div>
+```
+
+```css
+.ba { display:grid; grid-template-columns:1fr 1fr; gap:32px; margin-top:44px; }
+.ba .pane { border-radius:22px; padding:38px; }
+.ba .pane .bt { font-size:15px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; margin-bottom:22px; display:block; }
+.ba .before { background:var(--brand-neutral-light-soft); border:1px solid var(--rule); }
+.ba .after { background:#fff; border:2px solid var(--brand-primary); box-shadow:var(--shadow-card); }
+.ba .after .bt { color:var(--brand-primary-deep); }
+.ba ul { list-style:none; display:flex; flex-direction:column; gap:16px; }
+.ba li { font-size:18px; line-height:1.45; padding-left:30px; position:relative; }
+.ba .before li::before { content:''; position:absolute; left:0; top:9px; width:14px; height:2px; background:var(--rule-strong); }
+.ba .after li::before { content:''; position:absolute; left:0; top:6px; width:13px; height:13px; border-radius:50%; background:var(--brand-gradient); }
+```
+
+---
+
+### `orbits` — a centre and its satellites
+
+Maps actors, systems or teams by proximity to a centre. Two rings is the maximum that stays readable.
+
+```html
+<div class="orbit reveal">
+  <div class="oring o2"></div><div class="oring o1"></div>
+  <div class="osun">The centre</div>
+  <div class="osat" style="left:360px; top:110px">Inner one</div>
+  <div class="osat far" style="left:132px; top:72px">Outer one</div>
+</div>
+```
+
+```css
+.orbit { position:relative; width:720px; height:600px; flex-shrink:0; }
+.orbit .oring { position:absolute; border:1.5px solid var(--rule); border-radius:50%; }
+.orbit .o1 { left:170px; top:110px; width:380px; height:380px; }
+.orbit .o2 { left:60px; top:0; width:600px; height:600px; }
+.orbit .osun { position:absolute; left:360px; top:300px; transform:translate(-50%,-50%); width:180px; height:180px; border-radius:50%; background:var(--brand-gradient); display:flex; align-items:center; justify-content:center; text-align:center; font-weight:700; font-size:20px; padding:16px; line-height:1.25; }
+.orbit .osat { position:absolute; z-index:2; transform:translate(-50%,-50%); border:1px solid var(--rule); border-radius:999px; padding:12px 22px; font-size:17px; font-weight:600; white-space:nowrap; background:#fff; }
+.orbit .osat.far { background:transparent; font-weight:500; opacity:.7; }
+```
+
+> **Place satellites at the cardinal points of the inner ring and the diagonals of the outer one.** Anything else and the pills collide. Centre is `(360, 300)`; inner radius 190, outer 300. Long labels on the horizontal axis will touch the sun: shorten them or nudge outward.
+
+---
+
+### `y-split` — one trunk, two paths
+
+The most distinctive schema in the library. A shared sequence that forks into two named tracks, with a caption sitting on the fork itself.
+
+```html
+<div class="parcours">
+  <div class="shared">
+    <div class="step-pill"><span class="sp-n">1</span><div><div class="sp-t">Shared step</div></div></div>
+    <div class="lk">→</div>
+    <div class="step-pill"><span class="sp-n">2</span><div><div class="sp-t">Shared step</div></div></div>
+  </div>
+  <div class="y-split">
+    <div class="ys-stem"></div><div class="ys-bar"></div>
+    <div class="ys-leg ys-l"></div><div class="ys-leg ys-r"></div>
+    <span class="ys-label">then it forks</span>
+  </div>
+  <div class="tracks">
+    <div class="track a"><div class="track-head"><span class="th-name">Track A</span></div><div class="track-def">…</div></div>
+    <div class="track b"><div class="track-head"><span class="th-name">Track B</span></div><div class="track-def">…</div></div>
+  </div>
+</div>
+```
+
+```css
+.parcours { display:flex; flex-direction:column; align-items:center; margin-top:18px; }
+.shared { display:flex; align-items:stretch; justify-content:center; gap:18px; }
+.step-pill { display:flex; align-items:center; gap:16px; background:var(--brand-neutral-light-soft); border:1px solid var(--rule); border-radius:18px; padding:16px 24px; max-width:460px; }
+.y-split { position:relative; width:100%; height:58px; margin:6px 0 2px; }
+.y-split .ys-stem { position:absolute; top:0; left:50%; transform:translateX(-50%); width:2px; height:22px; background:var(--rule-strong); }
+.y-split .ys-bar { position:absolute; top:22px; left:25%; width:50%; height:2px; background:var(--rule-strong); }
+.y-split .ys-leg { position:absolute; top:22px; width:2px; height:24px; background:var(--rule-strong); }
+.y-split .ys-leg.ys-l { left:25%; } .y-split .ys-leg.ys-r { left:75%; }
+.y-split .ys-label { position:absolute; top:11px; left:50%; transform:translateX(-50%); background:var(--plate-bg); padding:0 14px; font-family:var(--font-mono); font-size:12px; letter-spacing:.16em; text-transform:uppercase; white-space:nowrap; }
+.tracks { display:grid; grid-template-columns:1fr 1fr; gap:26px; width:100%; }
+.track { border-radius:24px; padding:22px 30px 24px; display:flex; flex-direction:column; }
+.track.a { background:var(--brand-primary-soft); border:1px solid var(--brand-primary); }
+.track.b { background:var(--brand-secondary-soft); border:1px solid var(--brand-secondary); }
+.track-def { font-size:18px; line-height:1.4; margin-top:10px; padding-bottom:14px; border-bottom:1px solid var(--rule); }
+```
+
+> `.ys-label` needs the **plate background colour**, not transparent — it has to mask the bar it sits on.
+
+---
+
+### `file-tree` — architecture as a tree
+
+An indented tree with an animated rail. Built for site architecture, but works for any hierarchy the audience will navigate.
+
+```html
+<div class="sitetree">
+  <div class="st-root"><span class="fold">▸</span><span class="rn">root</span></div>
+  <div class="st-tree">
+    <div class="st-rail"></div>
+    <div class="st-row"><span class="st-dot"></span><div class="st-bar"><span class="de">level</span><span class="nm">Name</span><span class="ds">What it holds</span></div></div>
+    <div class="st-row child"><span class="st-elbow"></span><div class="st-bar"><span class="nm">Child</span></div></div>
+  </div>
+</div>
+```
+
+```css
+.sitetree { position:relative; margin-top:36px; }
+.st-root { display:inline-flex; align-items:center; gap:14px; }
+.st-tree { position:relative; margin-top:6px; padding-left:18px; }
+.st-rail { position:absolute; left:18px; top:30px; width:2px; height:calc(100% - 62px); background:var(--brand-gradient-vertical); transform:scaleY(0); transform-origin:top; transition:transform .85s var(--ease-slow) .15s; }
+.plate.active .st-rail { transform:scaleY(1); }
+.st-row { position:relative; display:flex; align-items:center; padding:7px 0; }
+.st-row::before { content:''; position:absolute; left:18px; top:50%; transform:translateY(-50%); width:32px; height:2px; background:var(--rule-strong); }
+.st-dot { position:absolute; left:12px; top:50%; transform:translateY(-50%); width:14px; height:14px; border-radius:50%; background:var(--brand-gradient); box-shadow:0 0 0 5px #fff; z-index:2; }
+.st-bar { display:flex; align-items:center; gap:22px; margin-left:50px; background:#fff; border:1px solid var(--rule); border-radius:14px; padding:15px 26px; box-shadow:var(--shadow-card); flex:1; }
+.st-row.child { margin-left:64px; }
+.st-row.child::before { content:none; }
+.st-row.child .st-elbow { position:absolute; left:-46px; top:-34px; width:30px; height:64px; border-left:2px solid var(--brand-primary); border-bottom:2px solid var(--brand-primary); border-bottom-left-radius:14px; }
+```
+
+> The rail animates on `.plate.active`. In PDF export, force it to its final state: `body.printing-pdf .st-rail { transform:scaleY(1) !important; }`
+
+---
+
+### `figures-grid` — a factual panorama
+
+Six figures in a hairline grid, each with a one-line caption. Use when the audience needs facts without narration, typically to open a review or close a diagnosis.
+
+```css
+.figs { display:grid; grid-template-columns:repeat(3,1fr); margin-top:46px; border-top:1px solid var(--rule-strong); border-left:1px solid var(--rule-strong); }
+.fig { padding:36px 40px; border-bottom:1px solid var(--rule-strong); border-right:1px solid var(--rule-strong); }
+.fig .n { font-family:var(--font-display); font-size:60px; line-height:1; }
+.fig .l { font-size:17px; margin-top:12px; line-height:1.4; }
+```
+
+> Six cells, never five or seven: the grid must close. Units go in a smaller inline span inside `.n`, not in the caption.
+
+---
+
+### `pricing-3` — three tiers, anchored
+
+Ticks and absences mirrored across the three columns. **The absence is what sells**: a greyed line in the cheap column does more work than a tick in the expensive one.
+
+```css
+.cmp3 { display:grid; grid-template-columns:repeat(3,1fr); gap:28px; margin-top:48px; }
+.cmp3 .col { border:1px solid var(--rule); border-radius:20px; padding:34px; background:#fff; box-shadow:var(--shadow-card); position:relative; }
+.cmp3 .col.reco { border:2px solid var(--brand-primary); }
+.cmp3 .col .badge { position:absolute; top:-16px; left:34px; background:var(--brand-gradient); font-size:13px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; padding:7px 16px; border-radius:999px; }
+.cmp3 .price { font-family:var(--font-display); font-size:50px; margin:12px 0 4px; line-height:1; }
+.cmp3 .price small { font-size:19px; opacity:.6; }
+.cmp3 li { font-size:17px; padding-left:28px; position:relative; line-height:1.4; }
+.cmp3 li.y::before { content:'✓'; position:absolute; left:0; color:var(--brand-primary-deep); font-weight:700; }
+.cmp3 li.n::before { content:'·'; position:absolute; left:5px; }
+.cmp3 li.n { opacity:.55; }
+```
+
+---
+
+### `activity-wall` — volume as the argument
+
+A dense wall of small cards that deliberately overflows the plate on one or more edges. The point is not to read every card, it is to feel how many there are.
+
+```css
+.wall { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-top:34px; max-height:600px; overflow:hidden; position:relative; }
+.wall::after { content:''; position:absolute; left:0; right:0; bottom:0; height:180px; background:linear-gradient(180deg, transparent, var(--plate-bg)); pointer-events:none; }
+.acard { border:1px solid var(--rule); border-radius:14px; padding:18px 20px; background:#fff; }
+.acard .ah { font-size:16px; font-weight:700; margin-bottom:6px; }
+.acard .ad { font-size:14px; line-height:1.4; opacity:.7; }
+```
+
+> The fade-out at the bottom is what makes the overflow read as intentional rather than broken. Match its gradient to the plate background.

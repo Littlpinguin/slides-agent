@@ -150,9 +150,19 @@ See `templates/base.html` (CSS section "typography traps") for the resolved patt
 
 ---
 
-## Component library
+## Layout library
 
-Reusable layout patterns live in `templates/components/`. Each file is a paste-ready block of HTML + the scoped CSS it needs. Read `templates/components.md` for the full catalogue and selection guide.
+Three files, in the order you should reach for them:
+
+1. **`reference/LAYOUTS.md`** — the index. 104 layouts in 7 families, each with a "reach for it when" line. **Start here**, and pick layouts by the beat you need rather than by scrolling.
+2. **`reference/catalogue-layouts.html`** — all 104 executed and self-captioned in a single deck. Open it, press `O`, and look. The brand and every figure in it are fictional, which is what makes it safe to read as a layout reference (see the exception in "What this template never does").
+3. **`templates/components.md`** — paste-ready HTML and scoped CSS for the patterns that have been ported, with their known traps.
+
+**The variety rule.** No layout twice in a row, and no layout more than twice in a deck. A deck that repeats card grids reads as generated; one that uses eight different layouts reads as authored. Before building, write the beat sequence, then assign one layout per beat. If two adjacent beats want the same layout, one of them is the wrong beat.
+
+Every layout in the index is built. To add one, follow the procedure at the bottom of `LAYOUTS.md`.
+
+**Screenshots.** The catalogue ships a `.shotph` placeholder (browser chrome around a labelled empty frame). Use it instead of embedding an image while the real capture is missing: it shows the aspect ratio needed and keeps the slide legible.
 
 When generating a deck, **copy** the components you need into the new presentation file, don't `<link>` or `<script src=>`. The output must remain a single standalone `.html` for portable delivery.
 
@@ -205,7 +215,7 @@ The template assumes you have access to a typical Claude Code skill set. Invoke 
 ### Visual / UX quality (during phases 2–3, art direction and components)
 
 4. **`ui-ux-pro-max`** — primary reference for visual direction. Use it to pick a colour system, font pairing, design style (editorial, brutalism, minimalism, etc.) that matches the brand and the deck's emotional arc. Especially valuable when `brand/guidelines.md` is sparse or the brand has no strong existing visual identity. Also covers chart styles for data slides.
-5. **`frontend-design`** — for component-level visual inspiration when a slide beat doesn't fit any of the 19 patterns in `templates/components.md`. Use it to design a new pattern, then port the result into a slide-shaped (1920×1080, chrome-aware) version.
+5. **`frontend-design`** — for component-level visual inspiration when a slide beat doesn't fit any layout in `reference/LAYOUTS.md`. Use it to design a new pattern, then port the result into a slide-shaped (1920×1080, chrome-aware) version.
 6. **`mcp__magic__21st_magic_component_*`** (21st.dev MCP tools) — when you need polished component variants beyond what frontend-design produces. Useful for hero treatments, complex tables, navigation chrome details. Treat the output as inspiration, not a drop-in: rework geometry to fit the 1920×1080 frame and the chrome safe-zone, and re-apply the brand tokens.
 
 ### Asset generation (when the user has gaps in `assets/`)
@@ -248,7 +258,7 @@ Decorative illustrations / mascots stay still: no looping float/bob animation (i
 - Inline external trackers, analytics, or remote scripts. The deck must remain offline-functional.
 - Use any colour or font outside `brand/tokens.css`.
 - Ship without QA.
-- **Cite a previous deck file as a "reference to study" or "starter inspiration".** Even citing a past deck as "gold standard" contaminates new productions — Claude re-reads it and duplicates its arc, components, metaphor, and visual through-line, even when told not to. The only authorised reference is the current `templates/base.html` skeleton + the `templates/components.md` catalogue + `brand/guidelines.md`. Each new deck invents its own metaphor and compositions from the brief, not from a past deck. If a similar topic was decked before, do not look at the previous output — start fresh from the brief.
+- **Cite a previous deck file as a "reference to study" or "starter inspiration".** Even citing a past deck as "gold standard" contaminates new productions — Claude re-reads it and duplicates its arc, components, metaphor, and visual through-line, even when told not to. The only authorised references are the current `templates/base.html` skeleton, the layout library (`reference/LAYOUTS.md`, `reference/catalogue-layouts.html`, `templates/components.md`) and `brand/guidelines.md`. **The catalogue is an authorised exception precisely because it has no arc**: its slides are independent, self-captioned specimens on a fictional brand, so there is a geometry to copy and no narrative to absorb. Take geometry from it, never content, never sequence. Each new deck invents its own metaphor and compositions from the brief, not from a past deck. If a similar topic was decked before, do not look at the previous output — start fresh from the brief.
 
 ---
 
