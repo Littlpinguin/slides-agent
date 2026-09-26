@@ -45,8 +45,20 @@ When you ask Claude to generate a presentation, it will scan this folder and:
 - [ ] **5–15 brand-specific icons** in `icons/` — your custom pictogram language
 - [ ] **3–5 hero photos** in `photos/` with editorial quality (avoid stock-looking imagery)
 
+## Photos downloaded from Pexels
+
+When the optional Pexels integration is set up (`docs/pexels-setup.md`), the agent saves the photos it picks into `photos/` with a recognisable prefix:
+
+```
+photos/pexels-harbour-dawn-1234567.jpg           ← the photo (2400px wide by default)
+photos/pexels-harbour-dawn-1234567-duotone.jpg   ← optional brand-tinted variant
+photos/pexels-harbour-dawn-1234567.json          ← sidecar: photographer, links, alt text, query
+```
+
+Keep the `.json` sidecars: the deck's closing credits slide is generated from them. Your own photos (any name without the `pexels-` prefix) always take priority over Pexels.
+
 ## When you don't have an asset
 
-Tell the agent. It will fall back to typography-driven layouts (which often look better than a bad image anyway) or fetch logos for third-party tools from `cdn.simpleicons.org` / `iconify.design`.
+Tell the agent. It will fall back to typography-driven layouts (which often look better than a bad image anyway), fetch real photographs from Pexels if you've connected a free key, or fetch logos for third-party tools from `cdn.simpleicons.org` / `iconify.design`.
 
 But: **investing 15 minutes here saves hours of art-direction iteration later.**

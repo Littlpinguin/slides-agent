@@ -50,7 +50,8 @@ look on-brand. Leave them as TODO and image generation falls back to a neutral
 default. AI image generation is optional — see .env.example / the skill.
 -->
 
-- **Photography style**: TODO (editorial, warm, desaturated, etc.)
+- **Photography style**: TODO (editorial, warm, desaturated, etc. — read by `pexels-photos` to judge search results)
+- **Photo treatment**: TODO (`raw`, `mono` or `duotone` — applied to every Pexels photo in a deck by `pexels-photos`; `mono` and `duotone` are baked from the tokens in `brand/tokens.css`)
 - **Illustration style**: TODO (line, flat, atmospheric, monoline, etc. — read by `generate-image`)
 - **Banned visual tropes**: TODO (e.g. "stock photography of people in suits", "generic 3D renders", "cliché AI violet→neon gradients", "robot mascots", "lens flare" — read by `generate-image`)
 - **What we never use**: TODO (anything else off-limits visually)

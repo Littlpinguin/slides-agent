@@ -1121,6 +1121,100 @@ body.presenting.nav-peek .nav-rail { opacity:1; transform:translate(-50%, 0); po
 .ckeys .cnote { font-size:18px; line-height:1.45; }
 .ckeys .cnote b { display:block; color:var(--or-text); font-family:ui-monospace,Menlo,monospace; font-size:16px; margin-bottom:4px; }
 
+/* ---- Photographie 105-113 ----
+   Une photo est toujours un <figure class="ph"> contenant un <img> (object-fit:cover).
+   Vide, la figure affiche son data-ph : format attendu et sujet, en attendant la vraie image.
+   Le texte ne se pose jamais sur la photo dans cette famille (c'est le rôle des layouts 01 et 21).
+   Traitements de couleur cuits dans le fichier (scripts/pexels.py --treatment), jamais en CSS. */
+.ph { position:relative; margin:0; overflow:hidden; background:var(--bg-tint); }
+.ph img { width:100%; height:100%; object-fit:cover; display:block; }
+.ph:empty { display:flex; align-items:center; justify-content:center; background:linear-gradient(160deg, rgba(158,195,174,.38), var(--bg-tint)); }
+.ph:empty::after { content:attr(data-ph); max-width:80%; font-size:18px; font-weight:600; line-height:1.45; letter-spacing:.12em; text-transform:uppercase; text-align:center; color:var(--ink-soft); }
+.pcap { display:block; font-size:18px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-soft); }
+.psent { font-family:var(--font-display); font-size:24px; line-height:1.45; color:var(--ink); }
+.plate.dark .pcap { color:rgba(252,251,248,.6); }
+.plate.dark .psent { color:var(--white); }
+
+/* 105 Planche : une photo petite dans un grand vide, légende en marge */
+.plt { flex:1; display:grid; grid-template-columns:536px 164px 560px 1fr; align-items:center; }
+.plt-txt { grid-column:1; align-self:stretch; display:flex; flex-direction:column; justify-content:space-between; padding:80px 0; }
+.plt-state { font-family:var(--font-display); font-size:48px; line-height:1.15; letter-spacing:-0.01em; }
+.plt-cap { display:flex; flex-direction:column; gap:16px; }
+.plt-rule { display:block; width:64px; height:1px; background:var(--ink); opacity:.35; }
+.plt-ph { grid-column:3; width:560px; height:700px; }
+
+/* 106 Diptyque : deux photos, même format, même hauteur, une seule légende */
+.dip { display:flex; flex-direction:column; gap:40px; }
+.dip-head h2 { font-size:56px; line-height:1.12; }
+.dip-pair { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+.dip-it { display:flex; flex-direction:column; gap:14px; }
+.dip-it .ph { aspect-ratio:3/2; }
+.dip-sent { max-width:1000px; }
+
+/* 107 Bandeau panoramique : photo 3:1 bord à bord en haut, texte dessous */
+.plate.band-top .chrome-row.top .tag-meta, .plate.band-top .chrome-row.top .tag-folio { color:rgba(252,251,248,.86); }
+.plate.band-top .chrome-row.top .tag-folio strong { color:var(--white); }
+.band { flex:1; }
+.band-ph { position:absolute; top:-104px; left:-132px; width:1920px; height:560px; }
+.band-ph::before { content:''; position:absolute; inset:0 0 auto; height:150px; z-index:1; background:linear-gradient(180deg, rgba(24,39,33,.5), rgba(24,39,33,0)); }
+.band-cap { position:absolute; top:474px; right:0; }
+.band-body { position:absolute; top:540px; left:0; right:0; display:grid; grid-template-columns:6fr 1fr 5fr; align-items:start; }
+.band-body h2 { grid-column:1; font-size:64px; line-height:1.12; }
+.band-cols { grid-column:3; display:grid; grid-template-columns:1fr 1fr; gap:32px; padding-top:10px; font-size:20px; line-height:1.5; color:var(--ink-soft); }
+
+/* 108 Figure en marge : le texte porte l'argument, une petite photo en note */
+.mfig { display:grid; grid-template-columns:956px 1fr 1px 1fr 360px; align-items:center; }
+.mfig-text { font-family:var(--font-display); font-size:38px; line-height:1.4; letter-spacing:-0.005em; }
+.mfig-rule { grid-column:3; align-self:stretch; background:var(--rule-strong); }
+.mfig-side { grid-column:5; display:flex; flex-direction:column; gap:14px; }
+.mfig-side .ph { width:360px; height:450px; }
+.mfig-side .psent { font-size:20px; }
+
+/* 109 Carnet de terrain : fiche de relevé + photo du lieu */
+.fnote { display:grid; grid-template-columns:536px 1fr 956px; align-items:start; }
+.fnote-dl { border-top:1px solid var(--rule-strong); }
+.fnote-dl div { display:flex; justify-content:space-between; align-items:baseline; gap:20px; padding:13px 0; border-bottom:1px solid var(--rule); }
+.fnote-dl dt { font-size:18px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-soft); }
+.fnote-dl dd { font-size:21px; text-align:right; }
+.fnote-obs { margin-top:36px; font-family:var(--font-display); font-size:30px; line-height:1.35; }
+.fnote-ph { grid-column:3; width:956px; height:637px; }
+
+/* 110 Contraste d'échelle : le lieu entier et sa matière en gros plan */
+.scl { display:grid; grid-template-columns:956px 1fr 536px; }
+.scl-big { grid-column:1; width:956px; height:637px; }
+.scl-side { grid-column:3; display:flex; flex-direction:column; justify-content:space-between; }
+.scl-side h2 { font-size:44px; line-height:1.12; margin-bottom:18px; }
+.scl-side p { font-size:22px; line-height:1.45; color:var(--ink-soft); }
+.scl-det { display:flex; align-items:flex-start; gap:22px; }
+.scl-det .ph { width:240px; height:300px; flex-shrink:0; }
+
+/* 111 Typologie : huit sujets de même nature, même cadrage, grille stricte */
+.typo { display:grid; grid-template-columns:396px 24px 1236px; align-items:center; }
+.typo-txt h2 { font-size:44px; line-height:1.12; margin-bottom:22px; }
+.typo-grid { grid-column:3; justify-self:end; display:grid; grid-template-columns:repeat(4, 264px); gap:20px 24px; }
+.typo-it { display:flex; flex-direction:column; gap:10px; }
+.typo-it .ph { width:264px; height:264px; }
+
+/* 112 Séquence : cinq images lues comme le temps d'un geste */
+.seq { display:flex; flex-direction:column; gap:40px; }
+.seq-head h2 { font-size:48px; line-height:1.12; max-width:1100px; }
+.seq-row { display:grid; grid-template-columns:repeat(5, 1fr); gap:24px; background:linear-gradient(var(--rule-strong), var(--rule-strong)) 0 406px / 100% 1px no-repeat; }
+.seq-it { display:flex; flex-direction:column; }
+.seq-it .ph { aspect-ratio:4/5; }
+.seq-it .tick { display:block; width:1px; height:14px; margin-top:10px; background:var(--ink); opacity:.5; }
+.seq-it .pcap { margin-top:10px; }
+.seq-it p { margin-top:6px; font-family:var(--font-display); font-size:21px; line-height:1.35; }
+
+/* 113 Crédits photo : la dernière planche de tout deck qui utilise des photos Pexels */
+.pcred { display:flex; flex-direction:column; gap:40px; max-width:1440px; }
+.pcred h2 { font-size:64px; line-height:1.1; }
+.pcred h2 a { color:inherit; text-decoration:underline; text-decoration-thickness:1px; text-underline-offset:.14em; }
+.pcred-list { list-style:none; border-top:1px solid var(--rule-strong); }
+.pcred-list li { display:grid; grid-template-columns:150px 1fr; align-items:baseline; gap:20px; padding:12px 0; border-bottom:1px solid var(--rule); }
+.pcred-list .pc-n { font-size:18px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-soft); }
+.pcred-list .pc-names { font-size:21px; line-height:1.5; color:var(--ink-soft); }
+.pcred-list .pc-names a { color:var(--ink); text-decoration:none; border-bottom:1px solid var(--rule-strong); }
+
 @media print {
   @page { size:1920px 1080px; margin:0; }
   *,*::before,*::after { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
@@ -3050,6 +3144,182 @@ verification: tierce_partie</pre>
     </div>
     <aside class="legend"><span class="lg-name">Layout 104 · La demande</span><span class="lg-when">Quand : la dernière slide d'une levée ou d'un partenariat. Une seule demande, énoncée en toutes lettres.</span></aside>
   </section>
+
+  <!-- ============ FAMILLE 8 · PHOTOGRAPHIE (105-113) ============
+       Photos : Pexels, via scripts/pexels.py, stockées dans reference/photos/ avec leur sidecar.
+       Crédits : planche 113. Aucun texte posé sur une photo dans cette famille. -->
+
+  <!-- 105 PLANCHE -->
+  <section class="plate" data-meta="Layout 105 · Planche" data-family="photo">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Photographie</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · exemple fictif</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="plt">
+      <div class="plt-txt">
+        <p class="plt-state reveal">Avant les chiffres, regarder le terrain tel qu'il est</p>
+        <div class="plt-cap reveal">
+          <span class="pcap">Pl. 01 · Fenêtre d'atelier</span>
+          <p class="psent">Une image, un sujet, beaucoup de vide autour : la planche ralentit la lecture et fait de la photo une pièce à conviction</p>
+          <i class="plt-rule"></i>
+        </div>
+      </div>
+      <figure class="ph plt-ph reveal"><img src="photos/pexels-usine-fenetre-12288551.jpg" alt="Fenêtre d'un atelier industriel, la lumière du jour dessine ses carreaux sur le sol" style="object-position:50% 60%"></figure>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 105 · Planche</span><span class="lg-when">Quand : une pause après une slide dense, quand l'image est la preuve. Photo petite, décentrée, légende en marge, aucun gros titre.</span></aside>
+  </section>
+
+  <!-- 106 DIPTYQUE -->
+  <section class="plate" data-meta="Layout 106 · Diptyque" data-family="photo">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Photographie</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · exemple fictif</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="dip">
+      <div class="dip-head">
+        <span class="eyebrow reveal">Deux images, une seule question</span>
+        <h2 class="reveal">Mesurer ne suffit pas, il faut aussi <span class="grad">regarder</span></h2>
+      </div>
+      <div class="dip-pair reveal">
+        <div class="dip-it"><figure class="ph"><img src="photos/pexels-manometre-38671341-mono.jpg" alt="Manomètre ancien monté sur une conduite industrielle"></figure><span class="pcap">A · Le relevé</span></div>
+        <div class="dip-it"><figure class="ph"><img src="photos/pexels-mains-cle-7564865-mono.jpg" alt="Mains d'un mécanicien serrant une pièce de moteur à la clé"></figure><span class="pcap">B · Le geste</span></div>
+      </div>
+      <p class="psent dip-sent reveal">La paire dit ce qu'aucune des deux images ne dit seule. Même format, même hauteur, même lumière</p>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 106 · Diptyque</span><span class="lg-when">Quand : comparer sans graphique. Avant / après, ici / là-bas, problème / cible. Jamais une troisième image.</span></aside>
+  </section>
+
+  <!-- 107 BANDEAU PANORAMIQUE -->
+  <section class="plate band-top" data-meta="Layout 107 · Bandeau panoramique" data-family="photo">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Photographie</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · exemple fictif</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="band">
+      <figure class="ph band-ph" data-bleed><img src="photos/pexels-port-brume-36755399.jpg" alt="Grues portuaires émergeant de la brume du matin, montagnes à l'horizon" style="object-position:50% 58%"></figure>
+      <span class="pcap band-cap">Port industriel, brume du matin</span>
+      <div class="band-body">
+        <h2 class="reveal">Un lieu se raconte mieux en <span class="grad">largeur</span></h2>
+        <div class="band-cols reveal">
+          <p>L'ambiance sans voile sombre : la photo reste intacte, le texte vit en dessous</p>
+          <p>Partir d'une image très large : le recadrage 3:1 en garde à peine la moitié</p>
+        </div>
+      </div>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 107 · Bandeau panoramique</span><span class="lg-when">Quand : un lieu ou une ambiance, quand le message dépasse une ligne. Plus léger que le plein fond + voile.</span></aside>
+  </section>
+
+  <!-- 108 FIGURE EN MARGE -->
+  <section class="plate" data-meta="Layout 108 · Figure en marge" data-family="photo">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Photographie</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · exemple fictif</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="mfig">
+      <div class="mfig-lead">
+        <span class="eyebrow reveal">Ce que disent les équipes</span>
+        <p class="mfig-text reveal">Sur les douze sites, la même phrase revient : on sait où partent les kilowattheures, on ne sait pas qui peut décider de les couper. Le chantier n'est pas technique, il est d'organisation</p>
+      </div>
+      <i class="mfig-rule"></i>
+      <div class="mfig-side reveal">
+        <span class="pcap">Fig. 1 · Qui peut couper ?</span>
+        <figure class="ph"><img src="photos/pexels-interrupteur-38101249.jpg" alt="Interrupteur industriel ancien fixé sur un mur blanc"></figure>
+        <p class="psent">La preuve en marge, sans voler la vedette au texte</p>
+      </div>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 108 · Figure en marge</span><span class="lg-when">Quand : le texte porte l'argument et une image du réel le rend crédible. Au-delà de 12 % du cadre, passer au split visuel.</span></aside>
+  </section>
+
+  <!-- 109 CARNET DE TERRAIN -->
+  <section class="plate" data-meta="Layout 109 · Carnet de terrain" data-family="photo">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Photographie</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · exemple fictif</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="fnote">
+      <div class="fnote-meta">
+        <span class="eyebrow reveal">Carnet de terrain · visite 03</span>
+        <dl class="fnote-dl reveal">
+          <div><dt>Site</dt><dd>Site pilote 03, fictif</dd></div>
+          <div><dt>Date</dt><dd>14 mars</dd></div>
+          <div><dt>Heure</dt><dd>07 h 40</dd></div>
+          <div><dt>Lumière</dt><dd>Rasante, ciel couvert</dd></div>
+          <div><dt>Durée</dt><dd>Deux jours sur place</dd></div>
+          <div><dt>Relevé par</dt><dd>Équipe Meridian</dd></div>
+        </dl>
+        <p class="fnote-obs reveal">Les stocks débordent sur les allées : le problème se voit avant de se mesurer</p>
+      </div>
+      <figure class="ph fnote-ph reveal"><img src="photos/pexels-entrepot-allee-34221998.jpg" alt="Entrepôt aux cartons empilés jusqu'au marquage orange de l'allée"></figure>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 109 · Carnet de terrain</span><span class="lg-when">Quand : visites de site, audits, immersions. Fiche au même endroit d'une slide à l'autre. En mission, vos propres photos : une photo Pexels ne remplace pas le site du client.</span></aside>
+  </section>
+
+  <!-- 110 CONTRASTE D'ÉCHELLE -->
+  <section class="plate" data-meta="Layout 110 · Contraste d'échelle" data-family="photo">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Photographie</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · exemple fictif</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="scl">
+      <figure class="ph scl-big reveal"><img src="photos/pexels-atelier-machines-30335251.jpg" alt="Atelier ancien, machines-outils alignées sous de grandes verrières"></figure>
+      <div class="scl-side">
+        <div class="reveal">
+          <span class="eyebrow">Regarder de plus près</span>
+          <h2>La qualité se lit <span class="grad">au détail</span></h2>
+          <p>Une grande image pour le contexte, un gros plan pour la matière. L'écart de taille est le message</p>
+        </div>
+        <div class="scl-det reveal">
+          <figure class="ph"><img src="photos/pexels-tole-rouillee-11098239.jpg" alt="Gros plan d'une tôle rouillée boulonnée sur du bois usé"></figure>
+          <span class="pcap">Détail<br>tôle et bois</span>
+        </div>
+      </div>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 110 · Contraste d'échelle</span><span class="lg-when">Quand : la matière, le savoir-faire ou la qualité sont le sujet. Le détail est un vrai gros plan, pas une image réduite.</span></aside>
+  </section>
+
+  <!-- 111 TYPOLOGIE -->
+  <section class="plate" data-meta="Layout 111 · Typologie" data-family="photo">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Photographie</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · exemple fictif</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="typo">
+      <div class="typo-txt">
+        <span class="eyebrow reveal">Typologie</span>
+        <h2 class="reveal">Huit tours, une même <span class="grad">silhouette</span></h2>
+        <p class="psent reveal">Même contre-plongée, même ciel, un seul traitement : ce sont les différences qui parlent</p>
+      </div>
+      <div class="typo-grid reveal">
+        <div class="typo-it"><figure class="ph"><img src="photos/pexels-tour-01-15445740-mono.jpg" alt="Château d'eau en forme de champignon"></figure><span class="pcap">Nº 01</span></div>
+        <div class="typo-it"><figure class="ph"><img src="photos/pexels-tour-02-32360591-mono.jpg" alt="Château d'eau Svampen, en Suède"></figure><span class="pcap">Nº 02</span></div>
+        <div class="typo-it"><figure class="ph"><img src="photos/pexels-tour-03-20145180-mono.jpg" alt="Châteaux d'eau rayés de Koweït City"></figure><span class="pcap">Nº 03</span></div>
+        <div class="typo-it"><figure class="ph"><img src="photos/pexels-tour-04-30198749-mono.jpg" alt="Réservoir d'eau sur un toit de New York"></figure><span class="pcap">Nº 04</span></div>
+        <div class="typo-it"><figure class="ph"><img src="photos/pexels-tour-05-6040269-mono.jpg" alt="Château d'eau à la coupe évasée"></figure><span class="pcap">Nº 05</span></div>
+        <div class="typo-it"><figure class="ph"><img src="photos/pexels-tour-06-25355790-mono.jpg" alt="Tour à plateforme circulaire, à Hambourg"></figure><span class="pcap">Nº 06</span></div>
+        <div class="typo-it"><figure class="ph"><img src="photos/pexels-tour-07-1576002-mono.jpg" alt="Tour de télévision de Berlin"></figure><span class="pcap">Nº 07</span></div>
+        <div class="typo-it"><figure class="ph"><img src="photos/pexels-tour-08-15863354-mono.jpg" alt="Tour de télécommunication en silhouette"></figure><span class="pcap">Nº 08</span></div>
+      </div>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 111 · Typologie</span><span class="lg-when">Quand : « c'est un motif » ou « ils se ressemblent tous ». Huit à dix images au plus, un seul traitement pour toutes.</span></aside>
+  </section>
+
+  <!-- 112 SÉQUENCE -->
+  <section class="plate" data-meta="Layout 112 · Séquence" data-family="photo">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Photographie</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · exemple fictif</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="seq">
+      <div class="seq-head">
+        <span class="eyebrow reveal">Le geste, étape par étape · exemple : le tournage</span>
+        <h2 class="reveal">Montrer la méthode avec de <span class="grad">vraies mains</span></h2>
+      </div>
+      <div class="seq-row reveal">
+        <div class="seq-it"><figure class="ph"><img src="photos/pexels-poterie-01-9304554-mono.jpg" alt="Mains centrant la terre sur le tour"></figure><i class="tick"></i><span class="pcap">01</span><p>Centrer la terre</p></div>
+        <div class="seq-it"><figure class="ph"><img src="photos/pexels-poterie-02-6611393-mono.jpg" alt="Mains montant les parois d'un pot sur le tour"></figure><i class="tick"></i><span class="pcap">02</span><p>Monter la forme</p></div>
+        <div class="seq-it"><figure class="ph"><img src="photos/pexels-poterie-03-8063838-mono.jpg" alt="Mains affinant la terre humide"></figure><i class="tick"></i><span class="pcap">03</span><p>Affiner à la main</p></div>
+        <div class="seq-it"><figure class="ph"><img src="photos/pexels-poterie-04-20362430-mono.jpg" alt="Mains lissant un vase à l'estèque"></figure><i class="tick"></i><span class="pcap">04</span><p>Reprendre à l'estèque</p></div>
+        <div class="seq-it"><figure class="ph"><img src="photos/pexels-poterie-05-32877678-mono.jpg" alt="Pots crus alignés sur une étagère d'atelier"></figure><i class="tick"></i><span class="pcap">05</span><p>Laisser sécher</p></div>
+      </div>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 112 · Séquence</span><span class="lg-when">Quand : un procédé, un geste, une journée. Cinq images d'une même série, même distance, lues de gauche à droite.</span></aside>
+  </section>
+
+  <!-- 113 CRÉDITS PHOTO -->
+  <section class="plate" data-meta="Layout 113 · Crédits photo" data-family="photo">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Crédits</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Photographies · licence Pexels</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="pcred">
+      <span class="eyebrow reveal">Crédits photo</span>
+      <h2 class="reveal">Photographies issues de <a href="https://www.pexels.com">Pexels</a></h2>
+      <ol class="pcred-list reveal">
+        <li><span class="pc-n">Pl. 105</span><span class="pc-names"><a href="https://www.pexels.com/photo/wooden-framed-glass-window-of-the-building-12288551/"><bdi>Carlo Jünemann</bdi></a></span></li>
+        <li><span class="pc-n">Pl. 106</span><span class="pc-names"><a href="https://www.pexels.com/photo/industrial-pressure-gauge-in-black-and-white-38671341/"><bdi>Kamil Čičila</bdi></a> · <a href="https://www.pexels.com/photo/a-mechanic-fixing-an-engine-7564865/"><bdi>cottonbro studio</bdi></a></span></li>
+        <li><span class="pc-n">Pl. 107</span><span class="pc-names"><a href="https://www.pexels.com/photo/foggy-port-with-bridge-and-mountain-backdrop-36755399/"><bdi>Chris Liu</bdi></a></span></li>
+        <li><span class="pc-n">Pl. 108</span><span class="pc-names"><a href="https://www.pexels.com/photo/industrial-light-switch-on-minimalist-wall-38101249/"><bdi>FOX ^.ᆽ.^= ∫</bdi></a></span></li>
+        <li><span class="pc-n">Pl. 109</span><span class="pc-names"><a href="https://www.pexels.com/photo/industrial-warehouse-with-stacked-cardboard-boxes-34221998/"><bdi>Freek Wolsink</bdi></a></span></li>
+        <li><span class="pc-n">Pl. 110</span><span class="pc-names"><a href="https://www.pexels.com/photo/abandoned-industrial-factory-with-vintage-machinery-30335251/"><bdi>Sami TÜRK</bdi></a> · <a href="https://www.pexels.com/photo/rusty-metal-and-wooden-surface-11098239/"><bdi>Jessica Lewis thepaintedsquare</bdi></a></span></li>
+        <li><span class="pc-n">Pl. 111</span><span class="pc-names"><a href="https://www.pexels.com/photo/tower-under-clear-sky-15445740/"><bdi>زاهد احمد 1</bdi></a> · <a href="https://www.pexels.com/photo/iconic-svampen-water-tower-in-skane-sweden-32360591/"><bdi>Francis Joseph Serina</bdi></a> · <a href="https://www.pexels.com/photo/kuwait-water-towers-20145180/"><bdi>Elliot Fais</bdi></a> · <a href="https://www.pexels.com/photo/urban-water-tower-against-gray-overcast-sky-30198749/"><bdi>_ Whittington</bdi></a> · <a href="https://www.pexels.com/photo/white-concrete-structure-under-blue-sky-6040269/"><bdi>Piksl Makr</bdi></a> · <a href="https://www.pexels.com/photo/lighthouse-zero-in-hamburg-germany-25355790/"><bdi>Wolfgang Weiser</bdi></a> · <a href="https://www.pexels.com/photo/gray-and-red-tower-clip-art-1576002/"><bdi>Ricky Esquivel</bdi></a> · <a href="https://www.pexels.com/photo/cose-up-of-a-tower-on-the-background-of-a-purple-sunset-sky-15863354/"><bdi>Abdullah Alsaibaie</bdi></a></span></li>
+        <li><span class="pc-n">Pl. 112</span><span class="pc-names"><a href="https://www.pexels.com/photo/two-people-sculpting-a-pot-9304554/"><bdi>Mikhail Nilov</bdi></a> · <a href="https://www.pexels.com/photo/close-up-of-a-man-making-a-clay-pot-6611393/"><bdi>Yan Krukau</bdi></a> · <a href="https://www.pexels.com/photo/a-person-making-a-pot-8063838/"><bdi>ROMAN ODINTSOV</bdi></a> · <a href="https://www.pexels.com/photo/woman-making-clay-vase-20362430/"><bdi>Marafaphotos</bdi></a> · <a href="https://www.pexels.com/photo/rustic-clay-pottery-display-in-workshop-32877678/"><bdi>Hang Thu</bdi></a></span></li>
+      </ol>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 113 · Crédits photo</span><span class="lg-when">Quand : toujours en dernière slide d'un deck qui utilise des photos Pexels. Générée par scripts/pexels.py credits. Ici, les vrais crédits de ce catalogue, regroupés par planche.</span></aside>
+  </section>
   </div>
 </div>
 
@@ -3115,7 +3385,7 @@ verification: tierce_partie</pre>
 
   const overview=document.getElementById('overview');
   // Vue d'ensemble groupée par familles de layouts
-  const FAMILIES={ ouverture:'Ouverture & rythme', editorial:'Éditorial & narration', dataviz:'Data-visualisation', schema:'Schémas & processus', tableau:'Tableaux & offres', preuve:'Preuve & confiance', conclusion:'Conclusion' };
+  const FAMILIES={ ouverture:'Ouverture & rythme', editorial:'Éditorial & narration', dataviz:'Data-visualisation', schema:'Schémas & processus', tableau:'Tableaux & offres', preuve:'Preuve & confiance', conclusion:'Conclusion', photo:'Photographie' };
   function makeThumb(p,i){
     const meta=p.dataset.meta||''; const bg=p.classList.contains('dark')?'dark':(p.classList.contains('tint')?'tint':'');
     const hEl=p.querySelector('h1,h2'); const title=hEl?hEl.textContent.trim():'';

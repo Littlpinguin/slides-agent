@@ -3,7 +3,7 @@
 Helper scripts for building, checking, and exporting decks. Every script is
 brand-agnostic and operates on a deck HTML file built from `templates/base.html`.
 
-Most scripts need Python + Playwright once:
+Most scripts need Python + Playwright once (`pexels.py` also needs `requests` and `Pillow`):
 
 ```bash
 pip install playwright && playwright install chromium
@@ -17,6 +17,7 @@ pip install playwright && playwright install chromium
 | `export-pdf.sh` | Wrapper that exports a deck to PDF | `<deck>.pdf` |
 | `export_pdf.py` | Headless Chromium PDF renderer (called by `export-pdf.sh`) | `<deck>.pdf` |
 | `gen-image.py` | Generate brand illustrations via Nano Banana Pro (needs an API key) | image file(s) |
+| `pexels.py` | Search, download, brand-tint and credit Pexels photos (free API key) | `assets/photos/pexels-*` + credits slide HTML |
 
 ---
 
@@ -47,6 +48,10 @@ per-slide report and exits non-zero if any slide has issues.
 ```bash
 python scripts/qa.py presentations/your-deck.html
 ```
+
+Full-bleed images are exempt by design: anything inside `.slide-bg` and any
+element with a `data-bleed` attribute (a photo that runs to the frame edge) is
+skipped by the overflow and chrome-gap checks; the text on top is still checked.
 
 Useful flags:
 
@@ -125,3 +130,38 @@ python scripts/gen-image.py "<prompt>"
 
 **Produces:** generated image file(s) for use as deck backgrounds or section
 art. Never paste the API key into a chat or commit; keep it in `.env`.
+
+---
+
+## `pexels.py` — real photography from Pexels
+
+The engine behind the `pexels-photos` skill. Searches the free Pexels API,
+builds a numbered contact sheet so a whole search can be judged in one look,
+downloads the chosen photo with a credit sidecar, optionally bakes a
+brand-tinted variant, and generates the deck's closing credits slide. Photos are
+always downloaded (never hotlinked), so decks stay offline-functional.
+
+**Requires a free `PEXELS_API_KEY` in `.env`** (step-by-step:
+`docs/pexels-setup.md`) and `python3 -m pip install requests pillow`.
+
+```bash
+python3 scripts/pexels.py check                                   # key works? quota left?
+python3 scripts/pexels.py search "harbour at dawn fog"            # + --orientation, --color brand-primary, --per-page
+python3 scripts/pexels.py get 1234567 --slug harbour-dawn         # + --treatment mono|duotone, --width 1600
+python3 scripts/pexels.py credits presentations/your-deck.html    # + --lang fr
+```
+
+- `search` writes `.cache/pexels/<query>/sheet.jpg` (numbered contact sheet)
+  and `results.json` (git-ignored cache).
+- `get` writes `assets/photos/pexels-<slug>-<id>.jpg`, the optional
+  `-mono` / `-duotone` variant (colours from `brand/tokens.css`, baked into the
+  file so screen and PDF match), and a `.json` sidecar with the photographer
+  and source.
+- `credits` prints the `photo-credits` slide (see `templates/components.md`)
+  listing each photographer with the slides where their photo appears.
+
+Offline tests: `python3 -m pytest tests/ -q`.
+
+**Produces:** photos + sidecars in `assets/photos/`, contact sheets in
+`.cache/pexels/`, credits slide HTML on stdout. Never paste the API key into a
+chat or commit it; keep it in `.env`.

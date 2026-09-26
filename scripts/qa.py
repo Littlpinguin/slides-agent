@@ -6,6 +6,11 @@ and no content invades the bottom chrome safe zone.
 Usage:
     python scripts/qa.py presentations/your-deck.html [--viewport 1920x1080]
 
+Intentionally edge-to-edge elements are exempt from the overflow and chrome-gap
+checks: anything inside `.slide-bg` (the full-bleed image block of
+templates/base.html) and any element carrying `data-bleed` (a photo column that
+runs to the frame edge). Text laid over them is still checked.
+
 Requires:
     pip install playwright
     playwright install chromium
@@ -131,7 +136,7 @@ def main() -> int:
                     const scale = fb.width / 1920;
                     const out = { overflow: [], chrome_gap: null };
                     slide.querySelectorAll('*').forEach(el => {
-                        if (el.classList.contains('aurora') || el.classList.contains('dust-grid') || el.closest('.chrome')) return;
+                        if (el.classList.contains('aurora') || el.classList.contains('dust-grid') || el.closest('.chrome, .slide-bg, [data-bleed]')) return;
                         const r = el.getBoundingClientRect();
                         const oR = r.right - fb.right, oB = r.bottom - fb.bottom;
                         const oL = fb.left - r.left, oT = fb.top - r.top;
@@ -149,7 +154,7 @@ def main() -> int:
                         const chromeTop = (cb.top - fb.top) / scale;
                         let lowest = 0;
                         slide.querySelectorAll('*').forEach(el => {
-                            if (el.classList.contains('aurora') || el.classList.contains('dust-grid') || el.closest('.chrome')) return;
+                            if (el.classList.contains('aurora') || el.classList.contains('dust-grid') || el.closest('.chrome, .slide-bg, [data-bleed]')) return;
                             const r = el.getBoundingClientRect();
                             const y = (r.bottom - fb.top) / scale;
                             if (y > lowest && r.width > 8) lowest = y;

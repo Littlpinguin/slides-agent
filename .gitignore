@@ -26,6 +26,9 @@ out/
 .env
 .env.local
 
+# Local caches (Pexels search results and contact sheets)
+.cache/
+
 # Playwright
 test-results/
 playwright-report/

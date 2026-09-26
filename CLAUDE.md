@@ -64,6 +64,21 @@ After writing the brand files, **explicitly invite the user to populate `assets/
 
 Wait for the user to confirm they're done (or that they have nothing more to share) before moving on. **Do not skip this step** — pushing the user to invest in assets is part of your job.
 
+### Step 5b — Offer real photography (Pexels, optional, free)
+
+Skip this step if `python3 scripts/pexels.py check` already succeeds. Otherwise, once the asset conversation is over, offer it once:
+
+> *"One more optional upgrade: I can illustrate some slides with real photographs from Pexels. It's free, and every photographer is credited automatically on a closing slide. It takes a free API key, about 3 minutes, and I'll guide you step by step. Shall we set it up now?"*
+
+If the user says yes, walk them through `docs/pexels-setup.md` as a guided conversation, in their language:
+
+1. **One step per message.** Give only the current step: what to open, what to click, what to type. End with a short question ("Tell me when you see your key"). Wait for the answer before giving the next step. Never paste the whole guide at once.
+2. **Do the machine side yourself.** Create `.env` with `cp .env.example .env` if it doesn't exist, and open it for them (`open -e .env` on macOS). The user pastes the key into `.env` **themselves**: never ask for the key in chat and never write it for them. If they paste it in chat anyway, don't repeat it back, and point them to the `PEXELS_API_KEY=` line in `.env`.
+3. **Verify.** Run `python3 scripts/pexels.py check`. On success, confirm in one line (key works, remaining quota). On failure, match the message against the troubleshooting table in `docs/pexels-setup.md`, give the single fix, and run `check` again.
+4. **Close the loop.** Explain in two sentences what changes now: when a slide calls for a real place, material, object or atmosphere, you'll pick a photo, place it, and credit it on the last slide; they can ask for a swap at any time.
+
+If the user declines or wants to do it later, say how to resume (*"ask me to set up Pexels, or read docs/pexels-setup.md"*) and move on. Pexels never blocks onboarding, and onboarding is complete without it.
+
 ### Step 6 — Inline the logo if provided
 
 If the user dropped a logo SVG, open it, inspect the path data, and prepare a `<symbol id="brand-logo">` block ready to embed in `templates/base.html`. Use `fill="currentColor"` on inner paths — never `fill="url(#gradient)"` (the shadow DOM of `<use>` doesn't receive parent CSS).
@@ -90,6 +105,12 @@ If the user pastes / shares a brief, transcript, strategy doc, or research notes
 ### Path B — User starts from scratch
 
 Invoke the **`superpowers:brainstorming`** skill before any creative work. It walks the user through user/audience/intent/structure questions. Do not skip it. Once brainstorming is complete, draft the slide map (same as Path A step 3), get approval, then generate.
+
+### Photos in the slide map
+
+When you draft the slide map, mark the beats that call for a real photograph (a place, a material, an object, a gesture, an atmosphere): about one slide in four at most. For each, follow the priority order in the `pexels-photos` skill: the user's `assets/photos/` first, then Pexels, then `generate-image`, then typography.
+
+If some beats want a photo, nothing in `assets/photos/` fits, and `python3 scripts/pexels.py check` fails for lack of a key, offer the setup **once**, next to the slide map: *"Slides 1, 6 and 14 would be stronger with a real photo. I can fetch them from Pexels (free, about 3 minutes, I'll guide you), or build them with typography and illustrations instead."* If they accept, run the guided flow of onboarding Step 5b. Otherwise continue without photos and don't ask again for this deck.
 
 ### In both cases, follow the slide-craft rules below.
 
@@ -124,6 +145,7 @@ The frame is fixed. Anything below `y=1000` collides with the bottom chrome row.
 
 - After every meaningful change, run `python scripts/qa.py presentations/<your-deck>.html`. It opens the deck in headless Chromium at 1920×1080, advances every slide, and reports any element overflowing the frame or invading the chrome safe-zone (16px gap above the bottom row).
 - Don't ship a deck that returns anything other than `All slides clean`.
+- Full-bleed images are exempt by design: `.slide-bg` blocks and elements marked `data-bleed` (a photo column running to the frame edge) are skipped by the overflow and chrome-gap checks. Use `data-bleed` only on the image container, never on a text block, or QA stops protecting that text.
 
 ### 4b. Print rendering pitfalls (Chromium PDF pipeline)
 
@@ -154,8 +176,8 @@ See `templates/base.html` (CSS section "typography traps") for the resolved patt
 
 Three files, in the order you should reach for them:
 
-1. **`reference/LAYOUTS.md`** — the index. 104 layouts in 7 families, each with a "reach for it when" line. **Start here**, and pick layouts by the beat you need rather than by scrolling.
-2. **`reference/catalogue-layouts.html`** — all 104 executed and self-captioned in a single deck. Open it, press `O`, and look. The brand and every figure in it are fictional, which is what makes it safe to read as a layout reference (see the exception in "What this template never does").
+1. **`reference/LAYOUTS.md`** — the index. 113 layouts in 8 families, each with a "reach for it when" line. **Start here**, and pick layouts by the beat you need rather than by scrolling.
+2. **`reference/catalogue-layouts.html`** — all 113 executed and self-captioned in a single deck. Open it, press `O`, and look. The brand and every figure in it are fictional, which is what makes it safe to read as a layout reference (see the exception in "What this template never does").
 3. **`templates/components.md`** — paste-ready HTML and scoped CSS for the patterns that have been ported, with their known traps.
 
 **The variety rule.** No layout twice in a row, and no layout more than twice in a deck. A deck that repeats card grids reads as generated; one that uses eight different layouts reads as authored. Before building, write the beat sequence, then assign one layout per beat. If two adjacent beats want the same layout, one of them is the wrong beat.
@@ -222,6 +244,7 @@ The template assumes you have access to a typical Claude Code skill set. Invoke 
 
 7. **`design`** — generate brand-aligned assets (logos, banners, icons, social photos) when the user hasn't provided them. Especially valuable for icon sets and atmospheric hero imagery. Save outputs into the right `assets/` subfolder.
 8. **`design-system`** — when the brand has no token discipline yet, use it to formalise primitive → semantic → component tokens before populating `brand/tokens.css`.
+9. **`pexels-photos`** (project skill, `.claude/skills/pexels-photos.md`) — real photographs from Pexels for the beats that call for a place, a material, an object or an atmosphere. It carries the anti-stock doctrine, the autonomous search → contact sheet → download → placement loop, brand treatments baked into the file, and the closing credits slide. Needs a free key: guide the user with onboarding Step 5b.
 
 ### Discipline
 
@@ -273,3 +296,4 @@ Before declaring a deck done, every item must pass:
 - [ ] The chrome `tag-folio` (`Plate 0X / N` or equivalent) is correct on every slide. Auto-counter in the nav-rail and the in-slide folios are both auto-numbered from DOM order by JS (no manual edits needed).
 - [ ] Manually opened in Chrome, navigated all slides ←/→, tested O / P / F (fullscreen) / drag bar / wheel / 1-9+Enter / Esc.
 - [ ] Each `<section class="slide">` has a `data-eyebrow` and `data-heading` attribute (used by the overview panel — empty thumbs mean the attributes were forgotten).
+- [ ] If the deck uses any `pexels-*` photo: the last slide is the `photo-credits` slide, regenerated with `python3 scripts/pexels.py credits presentations/<deck>.html` after the final photo change, and the command prints no `warning:` line.
