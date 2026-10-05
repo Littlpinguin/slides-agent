@@ -76,9 +76,13 @@ Save fetched logos under `assets/logos/<slug>.<ext>` and reference relatively fr
 
 ### Phase 7 — Playwright QA (non-negotiable)
 
-19. Run `python scripts/qa.py presentations/<your-deck>.html`. It must return `All slides clean`. The script verifies:
+19. Run `python3 scripts/qa.py presentations/<your-deck>.html`. It must return `All slides clean`. The script verifies:
+    - The deck embeds the full engine of `templates/base.html` (fullscreen, overview, auto folios, PDF hooks).
     - No element overflows the 1920×1080 frame.
     - Bottom-content vs bottom-chrome gap ≥ 16px on every slide.
+    - Type floors: content text ≥ 18px; label register (`.chrome`, eyebrow / folio / signature classes, monospace text) ≥ 12px.
+    - Every text on a brand font, at WCAG AA contrast (opacity included), folios present and increasing.
+    Warnings (`tight-body` under 24px, `long-label`, contrast on a gradient) don't fail the gate but must be read.
 20. Re-test at 1366×768 and 1024×600 to confirm responsive scaling. Visually inspect each screenshot in `/tmp/`.
 
 ### Phase 8 — Delivery

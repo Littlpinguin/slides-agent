@@ -30,7 +30,7 @@ Both are used as **inspiration sources** during art direction (Phase 2) and comp
 - **Presentation mode** — fullscreen via the `F` key or the ⛶ button: the slide fills the screen and the nav-rail auto-hides.
 - **Real photography, optional and free** — connect a Pexels key (guided, about 3 minutes) and the agent picks editorial photos for the slides that need one, rejects stock clichés, tints them to your palette on request, and credits every photographer on a closing slide.
 - **Clean PDF export** at 1920×1080 (gradient text rasterised to PNG to avoid Chromium PDF artefacts).
-- **Anti-overflow QA** via Playwright — every slide is verified to stay within frame before delivery.
+- **A measured QA gate** via Playwright: every slide is checked for overflow, the chrome safe zone, type floors (18px content, 12px labels), brand fonts, WCAG contrast and folios before delivery.
 - **Zero-config hosting** — drop the folder on Netlify Drop, GitHub Pages, S3, or any static host.
 
 ---
@@ -144,8 +144,8 @@ Two ways:
 # Export a deck to clean 1920×1080 PDF
 ./scripts/export-pdf.sh presentations/your-deck.html
 
-# QA — verify no overflow on any slide
-python scripts/qa.py presentations/your-deck.html
+# QA — overflow, chrome safe zone, type floors, fonts, contrast, folios
+python3 scripts/qa.py presentations/your-deck.html
 
 # Capture specific slides for a quick visual check
 python scripts/shots.py presentations/your-deck.html 3 8 18
@@ -154,6 +154,41 @@ python scripts/shots.py presentations/your-deck.html 3 8 18
 Press **`F`** (or the ⛶ button) for fullscreen **presentation mode**: the slide fills the screen and the nav-rail auto-hides (it reappears when the cursor nears the bottom edge).
 
 For online sharing, the deck is a single self-contained HTML file. See [`docs/hosting.md`](docs/hosting.md) for Netlify Drop, GitHub Pages, S3, and other targets.
+
+---
+
+## Quality gate (QA)
+
+`scripts/qa.py` opens the deck in headless Chromium, activates every slide in its settled state (transitions finished, no half-played stagger) and measures what is actually rendered, in native 1920×1080 pixels. A deck ships only when it ends with `All slides clean`.
+
+| Check (`type`) | Rule | Level |
+|---|---|---|
+| engine parity | the deck embeds every feature of `templates/base.html`: fullscreen, overview, auto folios, PDF hooks | error |
+| `overflow` | nothing leaves the frame | error |
+| `chrome-gap` | content stays at least 16px above the bottom chrome row | error |
+| `type-floor` | content text ≥ 18px, label register ≥ 12px (see below) | error |
+| `tight-body` | content text under 24px, headings excepted | warning |
+| `long-label` | a label-register text under 18px that runs past 12 words | warning |
+| `font` | every text uses a brand family | error (undeclared monospace: warning) |
+| `contrast` | WCAG AA, 4.5:1 or 3:1 from 24px (18.66px bold); opacity counts | error (gradient or image background: warning) |
+| `folio` | present and increasing on every slide | error |
+| `pdf-weight` | with `--with-pdf`, the PDF averages at least 40 KB per slide | error |
+
+**The type floor, made measurable.** A slide is read from across a room, so the doctrine in `CLAUDE.md` becomes two numbers checked on the computed font size:
+
+- **Content text: 18px minimum** (`--min-font`). Comfortable body is 24px and up, hence the `tight-body` warning.
+- **Label register: 12px minimum** (`--min-font-chrome`). A text is a label when it sits inside `.chrome`, carries a label class (`.eyebrow`, `.meta-label`, `.signature`, `.nav-num`, and the catalogue's `.tag-meta`, `.tag-folio`, `.tag-signature`), or is set in a monospace stack (folio, signature and caption register). Labels stay short: a sentence shrunk to caption size, in mono or not, is still flagged.
+
+**Brand fonts** come from `--font`, else from a DTCG tokens file (`--tokens`, or the first `brand/tokens.json` / `01-brand/tokens.json` found up to the repository root), else from the deck's own `--font-display`, `--font-body` and `--font-mono` variables, which is where `brand/tokens.css` puts them in this template. No tokens file is needed.
+
+```bash
+python3 scripts/qa.py presentations/your-deck.html                        # the gate
+python3 scripts/qa.py presentations/your-deck.html --with-pdf             # + PDF weight check (/tmp/slides-qa/)
+python3 scripts/qa.py presentations/your-deck.html --format json          # totals by type, findings with their target
+python3 scripts/qa.py reference/catalogue-layouts.html --no-engine-check  # the catalogue: a specimen book, not a full deck
+```
+
+Other flags: `--viewport` / `--frame` (window and native frame sizes), `--bleed SELECTOR` (an intentional full-bleed layer; `.slide-bg` and `[data-bleed]` are exempt by default), `--folio SELECTOR` / `--no-folio`, `--lang CODE` (audit a bilingual deck in each language through `window.__setLang`), `--wait MS`, `--max-per-slide N` (listing cap, 0 for all), `--screenshots [DIR]`, `--min-kb-per-slide KB`. Exit codes: 0 clean (warnings allowed), 1 errors, 2 usage error. `python3 scripts/qa.py --help` documents each one.
 
 ---
 
@@ -182,13 +217,13 @@ For online sharing, the deck is a single self-contained HTML file. See [`docs/ho
 ├── presentations/             # Your generated decks live here
 ├── scripts/
 │   ├── README.md              # Index of every script
-│   ├── qa.py                  # Playwright overflow + chrome-gap check
+│   ├── qa.py                  # Playwright QA gate: overflow, chrome, type floors, fonts, contrast, folios
 │   ├── shots.py               # Capture specific slides for visual review
 │   ├── gen-image.py           # AI illustration generation (needs an API key)
 │   ├── pexels.py              # Pexels search, download, tint and credits (free key)
 │   ├── serve.sh               # Local static server
 │   └── export-pdf.sh          # Headless Chromium PDF export
-├── tests/                     # offline tests for scripts/pexels.py (pytest)
+├── tests/                     # pytest: scripts/pexels.py offline, scripts/qa.py (deck tests need Chromium)
 └── docs/
     ├── design-system.md
     ├── hosting.md

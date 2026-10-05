@@ -8,13 +8,13 @@ The aesthetic target is **editorial scientific premium** — Monocle × Bloomber
 2. **Three to four breathing slides per 24.** A single big number + one short phrase. They reset the eye.
 3. **Emotional sparkline.** Map each slide to a Duarte beat (pain ↔ hope alternation). The deck has a shape.
 4. **Visual through-line metaphor.** Pick one — an animation, a marker, an ambient watermark — that recurs and anchors the narrative.
-5. **Extreme typographic hierarchy.** Weight 200 versus 700/900. Never weights in between. Same for size: display sizes (96–380px) live very far from body sizes (15–22px).
+5. **Extreme typographic hierarchy.** Weight 200 versus 700/900. Never weights in between. Same for size: display sizes (96–380px) live very far from body sizes (18–24px, never under the 18px floor `scripts/qa.py` enforces).
 6. **Asymmetry.** Avoid centred boxes with even margins. Bias content left or right; let whitespace fall where it will.
 7. **Slow motion.** Eases of 1.1s+ on `cubic-bezier(0.16, 1, 0.3, 1)`. No bouncy springs, no fast cuts.
 8. **Brand mark every slide.** Discreet bottom-right marker in the chrome row. The reader always knows where they are.
 9. **Watermark the heroes.** A large ambient brand mark on hero / decision slides only. `mix-blend-mode: multiply` on light, `screen` on dark.
 10. **Triple navigation.** Drag bar + overview panel + quick-jump. The presenter has options under pressure.
-11. **QA every iteration.** No deck ships without `python scripts/qa.py` returning green.
+11. **QA every iteration.** No deck ships without `python3 scripts/qa.py` returning `All slides clean`.
 
 ## Anti-patterns (refuse these)
 

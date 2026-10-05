@@ -139,13 +139,14 @@ These survived contact with multiple real decks. Don't rationalise around them.
 - Margins: 80–120px slide padding. Don't crowd the edges.
 - No `glassmorphism`. No huge radial-gradient orbs. No `box-shadow: 0 0 80px rgba(...)`.
 
-### 4. Anti-overflow
+### 4. QA gate (anti-overflow, type floors, contrast)
 
 The frame is fixed. Anything below `y=1000` collides with the bottom chrome row.
 
-- After every meaningful change, run `python scripts/qa.py presentations/<your-deck>.html`. It opens the deck in headless Chromium at 1920×1080, advances every slide, and reports any element overflowing the frame or invading the chrome safe-zone (16px gap above the bottom row).
-- Don't ship a deck that returns anything other than `All slides clean`.
-- Full-bleed images are exempt by design: `.slide-bg` blocks and elements marked `data-bleed` (a photo column running to the frame edge) are skipped by the overflow and chrome-gap checks. Use `data-bleed` only on the image container, never on a text block, or QA stops protecting that text.
+- After every meaningful change, run `python3 scripts/qa.py presentations/<your-deck>.html`. It opens the deck in headless Chromium, activates every slide in its settled state and measures, in native 1920×1080 pixels: engine parity with `templates/base.html`, overflow out of the frame, the chrome safe zone (16px gap above the bottom row), the type floors (rule in "Minimum on-screen type size" below), brand fonts, WCAG AA contrast on every text (chrome included, `opacity` counts) and folios.
+- Don't ship a deck that returns anything other than `All slides clean`. Warnings (`tight-body`, `long-label`, contrast on a gradient background, an undeclared monospace) don't fail the gate, but read them: they usually mean a slide wants splitting or a colour pair wants checking by eye.
+- Full-bleed images are exempt by design: `.slide-bg` blocks and elements marked `data-bleed` (a photo column running to the frame edge) are skipped by every check, and so are `.aurora` and `.dust-grid`. Use `data-bleed` only on the image container, never on a text block, or QA stops protecting that text.
+- Never game a finding: no `data-bleed` on text, no monospace to slip a sentence under the content floor, no raising `--min-font-chrome` or lowering `--min-font` to get a green run. Fix the slide.
 
 ### 4b. Print rendering pitfalls (Chromium PDF pipeline)
 
@@ -184,6 +185,8 @@ Three files, in the order you should reach for them:
 
 Every layout in the index is built. To add one, follow the procedure at the bottom of `LAYOUTS.md`.
 
+**QA on the catalogue.** The catalogue is a specimen book, not a full deck (it has no headless PDF hooks), so skip the engine parity check: `python3 scripts/qa.py reference/catalogue-layouts.html --no-engine-check`. Its `.plate` slides and `.tag-folio` folios are detected automatically, and its `.legend` cartouche (the self-caption) is not audited. A layout taken from the catalogue must still pass the gate inside your deck.
+
 **Screenshots.** The catalogue ships a `.shotph` placeholder (browser chrome around a labelled empty frame). Use it instead of embedding an image while the real capture is missing: it shows the aspect ratio needed and keeps the slide legible.
 
 When generating a deck, **copy** the components you need into the new presentation file, don't `<link>` or `<script src=>`. The output must remain a single standalone `.html` for portable delivery.
@@ -198,7 +201,7 @@ A new presentation is born by:
 2. Inlining `brand/tokens.css` contents inside the `:root { ... }` block.
 3. Inlining the logo `<symbol>` from `assets/logos/`.
 4. Filling the `<main id="stage">` with one `<section class="slide">` per slide, composed from `templates/components/`.
-5. Running `python scripts/qa.py presentations/<name>.html`.
+5. Running `python3 scripts/qa.py presentations/<name>.html`.
 6. Iterating until QA returns clean.
 
 ---
@@ -261,8 +264,13 @@ Validated on real projected decks (mid-2026). They matter for professional, room
 ### Presentation mode (fullscreen)
 `templates/base.html` ships a `⛶` button and the `F` shortcut. They request OS fullscreen; while active, `body.presenting` is set, the slide scales to fill the whole screen (no nav reserved), and the nav-rail auto-hides — it reappears when the cursor nears the bottom edge. Nothing to wire per deck.
 
-### Minimum on-screen type size
-A slide is read from across a room. **No content text below ~18-20px** in the 1920×1080 frame (an 18pt projected floor; comfortable body is 20-24pt). Only mono chrome labels (folio, signature, eyebrow) may sit at 12-14px. Never shrink a real sentence to caption size to make it fit: split the slide or cut words instead.
+### Minimum on-screen type size (enforced by `scripts/qa.py`)
+A slide is read from across a room. Two registers, measured on the computed font size in the 1920×1080 frame:
+
+- **Content text: 18px minimum** (`type-floor` error; an 18pt projected floor). Comfortable body is 24px and up: content text under 24px, headings excepted, is a `tight-body` warning.
+- **Label register: 12px minimum** (`type-floor` error under 12px). A text is in the label register when it sits inside `.chrome`, carries a label class (`.eyebrow`, `.meta-label`, `.signature`, `.nav-num`; `.tag-meta`, `.tag-folio`, `.tag-signature` in the catalogue), or is set in a monospace stack. These are the folio, signature, eyebrow and caption labels, and they sit at 12-14px.
+
+Never shrink a real sentence to caption size to make it fit: split the slide or cut words instead. Setting a sentence in mono does not make it a label: a label-register text under 18px that runs past 12 words is a `long-label` warning.
 
 ### Block-centering to kill empty middles
 For a "title + content" slide, center the whole block (title + grid/table/cards) as one unit, not "title pinned to the top + content centered in the leftover space" (which leaves a void between them). Give the slide `justify-content: center` and make the content wrapper `flex: 0 0 auto`, so the title and its content read as one centered group.
@@ -289,8 +297,8 @@ Decorative illustrations / mascots stay still: no looping float/bob animation (i
 
 Before declaring a deck done, every item must pass:
 
-- [ ] `python scripts/qa.py presentations/<deck>.html` returns "All slides clean — no overflow"
-- [ ] `python scripts/export_pdf.py presentations/<deck>.html` produces a PDF whose size is plausible — at least ~150 KB per slide on average. A 20-slide deck with a 250 KB PDF means most pages collapsed to nothing; investigate before shipping.
+- [ ] `python3 scripts/qa.py presentations/<deck>.html` returns `All slides clean` (no overflow, no text under 18px of content or 12px of label, every text on a brand font and at WCAG AA contrast, folios in order), and its warnings have been read
+- [ ] `python3 scripts/qa.py presentations/<deck>.html --with-pdf` passes and the PDF weight it prints is plausible: a real deck averages around 150 KB per slide (the gate itself fails under 40 KB; raise it with `--min-kb-per-slide` for image-heavy decks). A 20-slide deck with a 250 KB PDF means most pages collapsed to nothing; investigate before shipping. The PDF goes through the same print hooks as `scripts/export_pdf.py`.
 - [ ] Every CSS rule that uses `background-clip: text` has its selector listed in `GRADIENT_TEXT_SELECTORS` (search the file for `background-clip: text` and cross-check). Missing entries = silent blank text in PDF, no error.
 - [ ] No em-dash `—` in user-visible text. Run: `grep "—" presentations/<deck>.html | grep -v "<!--"` — should return nothing or only matches inside CSS comments.
 - [ ] The chrome `tag-folio` (`Plate 0X / N` or equivalent) is correct on every slide. Auto-counter in the nav-rail and the in-slide folios are both auto-numbered from DOM order by JS (no manual edits needed).
