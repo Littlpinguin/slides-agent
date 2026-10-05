@@ -120,7 +120,7 @@ Before building, sketch the beat sequence, then assign one layout per beat. If t
 | `live-stage` | A screen and a phone staged together | A product that spans devices | catalogue 76 |
 | `product-shots` | A stack of overlapping captures | Several screens without several slides | catalogue 77 |
 | `activity-wall` | A dense wall of small cards, deliberately overflowing | Volume as the argument: "look how much there is" | catalogue 78 |
-| `card-wall-bleed` | Cards running off the top, bottom and right edges | A portfolio, an asset library | catalogue 79 |
+| `card-wall-bleed` | Cards running off the top, bottom and right edges; only blank cards bleed (`data-bleed`), the cards that carry text stay inside the frame | A portfolio, an asset library | catalogue 79 |
 | `logo-wall` | A mosaic of logos | Clients, integrations, partners | catalogue 50 |
 | `partners-band` | A single row of chips with partner names | Light proof, at the bottom of an argument slide | catalogue 80 |
 | `proof-grid` | Cells of evidence, each with a figure and a source | Backing a claim with several proofs at once | catalogue 81 |
@@ -131,7 +131,7 @@ Before building, sketch the beat sequence, then assign one layout per beat. If t
 | `map-coverage` | Geographic coverage | Territory, sites, footprint | catalogue 51 |
 | `screenshot-steps` | A numbered walkthrough in captures | A tutorial or a handover document | catalogue 84 |
 | `screenshot-annotated` | One capture, three numbered annotations beside it | A real screenshot carries the argument — never draw arrows on the image | catalogue 87 |
-| `screenshot-full` | A single capture, edge to edge, nothing else | One screen is the whole demonstration | catalogue 88 |
+| `screenshot-full` | A single capture filling the plate under its title, nothing else | One screen is the whole demonstration | catalogue 88 |
 | `showcase` | Three captures, each with a type, a title and one line | Showing what was actually produced | catalogue 89 |
 | `codebox` | A copyable code or prompt block | Anything the reader will retype | catalogue 85 |
 | `code-keys` | Code on the left, its two or three significant keys explained on the right | A config file where only a few keys actually matter | catalogue 97 |
