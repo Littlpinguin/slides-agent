@@ -15,7 +15,7 @@ The reference quality bar is *Monocle × Bloomberg viz × MIT Tech Review print*
 
 Before doing anything else, check whether onboarding has run. Onboarding is **complete** when:
 
-1. `brand/tokens.css` no longer contains the placeholder colors (`#23B5D3` / `#F0BA4C` / `#FAF2DF` / `#292E35` from the template defaults), AND
+1. `brand/tokens.css` no longer contains the neutral example palette shipped with the template (`#1E40AF` / `#F59E0B` / `#F8FAFC` / `#0F172A`), AND
 2. `brand/guidelines.md` no longer contains any `TODO` markers, AND
 3. `assets/logos/` contains at least one file other than `.gitkeep`.
 
@@ -129,7 +129,7 @@ These survived contact with multiple real decks. Don't rationalise around them.
 
 - Native frame is **1920×1080**. Every slide is positioned inside `.stage-frame`. Scaling to viewport is handled by the JS at the bottom of `templates/base.html`.
 - One idea per slide. If you're tempted to add a second column of bullet points: split the slide.
-- Insert "breathing" slides every 4–5 slides — a single big number or short phrase, charcoal-on-cream or vice-versa. They reset the eye.
+- Insert "breathing" slides every 4–5 slides — a single big number or short phrase, dark-on-light or vice-versa. They reset the eye.
 
 ### 2. Brand strict
 

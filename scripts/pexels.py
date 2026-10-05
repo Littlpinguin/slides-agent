@@ -509,7 +509,7 @@ def build_parser():
     search = sub.add_parser("search", help="search photos and build a numbered contact sheet")
     search.add_argument("query", help="concrete English nouns work best, e.g. 'harbour at dawn'")
     search.add_argument("--orientation", default="landscape", choices=["landscape", "portrait", "square"])
-    search.add_argument("--color", help="hex (#23B5D3), brand token (brand-primary) or Pexels colour name (blue)")
+    search.add_argument("--color", help="hex (#1E40AF), brand token (brand-primary) or Pexels colour name (blue)")
     search.add_argument("--per-page", type=int, default=12, help="results per page, 1-80 (default 12)")
     search.add_argument("--page", type=int, default=1)
     search.add_argument("--locale", help="e.g. fr-FR; English queries usually return better results")

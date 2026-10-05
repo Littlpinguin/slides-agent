@@ -213,9 +213,9 @@ def test_read_tokens_errors(tmp_path):
 
 
 def test_families_from_variables_skips_generics_and_duplicates():
-    values = ["'Outfit', system-ui, sans-serif", "Outfit, sans-serif", "monospace",
+    values = ["'Inter', system-ui, sans-serif", "Inter, sans-serif", "monospace",
               "'JetBrains Mono', ui-monospace, monospace"]
-    assert qa.families_from_variables(values) == ["Outfit", "JetBrains Mono"]
+    assert qa.families_from_variables(values) == ["Inter", "JetBrains Mono"]
 
 
 def _repo(tmp_path: Path, name: str) -> Path:

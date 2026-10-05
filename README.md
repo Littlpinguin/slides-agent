@@ -82,6 +82,8 @@ When you open the project in Claude Code, the agent will:
 4. **Offer to connect Pexels** for real photography (optional): it walks you through the free API key one step at a time and tests it for you.
 5. **Confirm setup**, then ask what you want to present.
 
+Until onboarding runs, `brand/tokens.css` and the starter carry a neutral example palette (deep blue `#1E40AF`, amber `#F59E0B`, slate `#0F172A` on `#F8FAFC`, Inter and JetBrains Mono), so a raw clone already renders and passes QA. It belongs to no brand: onboarding replaces it.
+
 > The single biggest factor in slide quality is your **`assets/` folder**.
 > Logos, illustrations, photos, custom icons — the more you provide, the more on-brand the output.
 > 15 minutes of asset preparation saves hours of art-direction iteration.

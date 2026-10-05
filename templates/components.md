@@ -63,7 +63,7 @@ A 24-slide deck typically uses 12–16 components, with 3–4 `silence` slides i
 
 Every illustrative mark in these components is an **inline Lucide-style SVG** (`stroke: currentColor`), never an emoji. See [Iconography](#iconography) for the rule and the reusable pastille pattern.
 
-Accent-coloured text under 24px (tags, step numbers, column heads, links) takes the label-register accent `--label-accent`, and small grey labels take `opacity: var(--chrome-opacity)`: both hold WCAG 4.5:1 on the light slide variants. `--brand-primary-deep` is only 3.15:1 on `--brand-neutral-light`, below 3:1 on a `--brand-primary-soft` tint, so it stays for icons and rules. On a dark card (`--brand-neutral-dark-soft`) use `--brand-secondary`; `--label-accent-dark` is meant for text set directly on `--brand-neutral-dark`.
+Accent-coloured text under 24px (tags, step numbers, column heads, links) takes the label-register accent `--label-accent`, and small grey labels take `opacity: var(--chrome-opacity)`: both are tuned in `brand/tokens.css` to hold WCAG 4.5:1 on the light slide variants, whatever the palette. `--brand-primary-deep` is not: with a light primary (a cyan, a yellow) it falls under 4.5:1 on `--brand-neutral-light` and under 3:1 on a `--brand-primary-soft` tint, so it stays for icons and rules. On a dark card (`--brand-neutral-dark-soft`) use `--brand-secondary`; `--label-accent-dark` is tuned for text set directly on `--brand-neutral-dark`.
 
 ## Brand pattern hooks
 
@@ -827,7 +827,7 @@ Four numbered steps (1 → 2 → 3 → 4) joined by arrow connectors, with a syn
 .process-banner strong { font-size:24px; font-weight:300; line-height:1.3; }
 ```
 
-> On a dark slide, swap `.process-step` to `background:var(--brand-neutral-dark-soft); border-color:var(--rule-light);`, `.process-num` to `color:var(--brand-secondary);` and the banner to `background:var(--brand-neutral-light); color:var(--brand-neutral-dark);` for contrast. The number needs the secondary there: on the tinted chip over dark-soft, `--label-accent-dark` stops at 3.6:1.
+> On a dark slide, swap `.process-step` to `background:var(--brand-neutral-dark-soft); border-color:var(--rule-light);`, `.process-num` to `color:var(--brand-secondary);` and the banner to `background:var(--brand-neutral-light); color:var(--brand-neutral-dark);` for contrast. The number takes the secondary there: `--label-accent-dark` is tuned against `--brand-neutral-dark`, not against a tinted chip over dark-soft, where it can fall under 4.5:1.
 
 ---
 
@@ -1023,7 +1023,7 @@ Two columns ("In progress" / "Up next"), each a stack of cards. Cards carry a ta
 .kanban-progress span { display:block; height:100%; width:calc(var(--p, 0.5) * 100%); background:var(--brand-gradient); border-radius:var(--radius-pill); }
 ```
 
-> On a dark slide, swap cards to `background:var(--brand-neutral-dark-soft); border-color:var(--rule-light);` and `.kanban-tag` to `color:var(--brand-secondary);` (`--label-accent-dark` reaches only 4.3:1 on dark-soft). The progress bars use a static fill (no transition), so they need no print override.
+> On a dark slide, swap cards to `background:var(--brand-neutral-dark-soft); border-color:var(--rule-light);` and `.kanban-tag` to `color:var(--brand-secondary);` (`--label-accent-dark` is tuned against `--brand-neutral-dark`, not dark-soft). The progress bars use a static fill (no transition), so they need no print override.
 
 ---
 

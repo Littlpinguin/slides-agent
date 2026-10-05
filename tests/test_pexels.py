@@ -15,18 +15,18 @@ import pexels  # noqa: E402
 
 TOKENS_CSS = """
 :root {
-  --brand-primary: #23B5D3;
-  --brand-primary-soft: rgba(35, 181, 211, 0.12);
-  --brand-neutral-light: #FAF2DF;
-  --brand-neutral-dark: #292E35; /* TODO: confirm */
+  --brand-primary: #1E40AF;
+  --brand-primary-soft: rgba(30, 64, 175, 0.12);
+  --brand-neutral-light: #F8FAFC;
+  --brand-neutral-dark: #0F172A; /* TODO: confirm */
   --rule: #abc;
 }
 """
 
 BRAND = {
-    "brand-neutral-dark": "#292E35",
-    "brand-neutral-light": "#FAF2DF",
-    "brand-primary": "#23B5D3",
+    "brand-neutral-dark": "#0F172A",
+    "brand-neutral-light": "#F8FAFC",
+    "brand-primary": "#1E40AF",
 }
 
 
@@ -52,8 +52,8 @@ def test_read_tokens_keeps_only_hex_values(tmp_path):
     css = tmp_path / "tokens.css"
     css.write_text(TOKENS_CSS)
     tokens = pexels.read_tokens(css)
-    assert tokens["brand-primary"] == "#23B5D3"
-    assert tokens["brand-neutral-dark"] == "#292E35"
+    assert tokens["brand-primary"] == "#1E40AF"
+    assert tokens["brand-neutral-dark"] == "#0F172A"
     assert tokens["rule"] == "#abc"
     assert "brand-primary-soft" not in tokens
 
@@ -64,13 +64,13 @@ def test_read_tokens_missing_file_is_empty(tmp_path):
 
 def test_hex_to_rgb_handles_short_and_long():
     assert pexels.hex_to_rgb("#abc") == (170, 187, 204)
-    assert pexels.hex_to_rgb("#23B5D3") == (35, 181, 211)
+    assert pexels.hex_to_rgb("#1E40AF") == (30, 64, 175)
 
 
 def test_resolve_color():
-    tokens = {"brand-primary": "#23B5D3"}
-    assert pexels.resolve_color("brand-primary", tokens) == "#23B5D3"
-    assert pexels.resolve_color("--brand-primary", tokens) == "#23B5D3"
+    tokens = {"brand-primary": "#1E40AF"}
+    assert pexels.resolve_color("brand-primary", tokens) == "#1E40AF"
+    assert pexels.resolve_color("--brand-primary", tokens) == "#1E40AF"
     assert pexels.resolve_color("#ffffff", tokens) == "#ffffff"
     assert pexels.resolve_color("blue", tokens) == "blue"
 
@@ -167,14 +167,14 @@ def _black_white():
 
 def test_mono_maps_luminance_onto_brand_neutrals():
     mono = pexels.apply_treatment(_black_white(), "mono", BRAND)
-    assert mono.getpixel((10, 5)) == (0x29, 0x2E, 0x35)
-    assert mono.getpixel((90, 5)) == (0xFA, 0xF2, 0xDF)
+    assert mono.getpixel((10, 5)) == (0x0F, 0x17, 0x2A)
+    assert mono.getpixel((90, 5)) == (0xF8, 0xFA, 0xFC)
 
 
 def test_duotone_maps_highlights_onto_brand_primary():
     duo = pexels.apply_treatment(_black_white(), "duotone", BRAND)
-    assert duo.getpixel((10, 5)) == (0x29, 0x2E, 0x35)
-    assert duo.getpixel((90, 5)) == (0x23, 0xB5, 0xD3)
+    assert duo.getpixel((10, 5)) == (0x0F, 0x17, 0x2A)
+    assert duo.getpixel((90, 5)) == (0x1E, 0x40, 0xAF)
 
 
 def test_treatment_requires_brand_tokens():

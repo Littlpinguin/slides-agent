@@ -4,6 +4,12 @@ Earlier releases are described by their git tags (`v0.1.0` to `v0.3.0`).
 
 ## Unreleased
 
+### Changed: a neutral default brand
+
+- **The placeholder brand is now a neutral example palette**, the one the downstream marketing-cockpit template documents in `docs/placeholders.json`: primary `#1E40AF`, secondary `#F59E0B`, dark `#0F172A`, light `#F8FAFC`, gradient `linear-gradient(90deg, #1E40AF 0%, #F59E0B 100%)`, Inter for display and body, JetBrains Mono for labels. It replaces the identity of a real company that shipped as the default in `brand/tokens.css`, `templates/base.html`, the docs, the skills, the `scripts/pexels.py` help and the test fixtures.
+- **Derived tokens follow stated formulas**, written next to each value in `brand/tokens.css` as the CSS `color-mix()` they come from (kept as literal colours, because `scripts/qa.py` and `scripts/pexels.py` read literal values): `-deep` mixes in 12% black, `-soft` is the colour at 12% alpha, `--brand-neutral-light-soft` / `-deep` mix in 35% white / 6% black, `--brand-neutral-dark-soft` / `-deep` mix in 14% white / 18% black, `--rule` / `--rule-light` are the dark / light neutral at 10% / 18% alpha. `--label-accent` stays the primary (already 7.3:1 on `--brand-neutral-light-deep`), `--label-accent-dark` is the primary mixed with 50% white (6.9:1 on `--brand-neutral-dark`, 4.6:1 on `--brand-neutral-dark-soft`). The starter passes `scripts/qa.py --with-pdf` clean with it.
+- Onboarding now detects the example palette instead of the old placeholder colours; the contrast notes of `templates/components.md` no longer quote ratios of the old palette.
+
 ### Changed: `scripts/qa.py` is now a full QA gate
 
 - **Type floors made measurable.** Content text must be at least 18px (`--min-font`, was 16px). The label register (text inside `.chrome`, the eyebrow / meta-label / signature / folio classes, and any text set in a monospace stack) has its own floor of 12px (`--min-font-chrome`) instead of being exempt. Uppercase tracked text is no longer exempt either. New warnings: `tight-body` (content under 24px) and `long-label` (a label-register text under 18px longer than 12 words).

@@ -50,7 +50,7 @@ description: Generate brand-aligned standalone HTML presentations using the slid
 ### Verified third-party logo sources
 
 ✅ Available on `https://cdn.simpleicons.org/<slug>/<hex-no-hash>`:
-`anthropic`, `n8n`, `spotify`, `youtube`, `applepodcasts`, `deezer`, `discord`, `claude`, and most major tech brands. Pass the colour as a hex without `#` (e.g. `292E35`).
+`anthropic`, `n8n`, `spotify`, `youtube`, `applepodcasts`, `deezer`, `discord`, `claude`, and most major tech brands. Pass the colour as a hex without `#` (e.g. `0F172A`).
 
 ⚠ Often missing on simpleicons (404), use these alternates:
 | Brand | Source |
@@ -153,7 +153,7 @@ See `docs/pdf-export.md` for full detail.
 - Use **only** the font families declared in `brand/tokens.css`. No third family snuck in.
 - Logo lives in the bottom-right chrome on every slide via `<use href="#brand-logo">`.
 - Border-radius is 4–50px or pill — never 0 (unless the brand explicitly requires it).
-- Alternate light vs dark slide backgrounds for rhythm. A 24-slide deck shouldn't be 24 cream slides in a row.
+- Alternate light vs dark slide backgrounds for rhythm. A 24-slide deck shouldn't be 24 light slides in a row.
 - Numbers as heroes: huge display, gradient or solid; secondary text small. Restraint everywhere.
 - Forbidden: bento grids, gratuitous glassmorphism, stock photography, fake-bold marketing copy.
 
