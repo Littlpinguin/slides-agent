@@ -116,7 +116,16 @@ html, body {
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-feature-settings: 'tnum' on;
+}
+
+/* Tabular figures, scoped to numbers read against each other: folios and
+   counters here, and .tnum for a KPI row, a column of values or the
+   numeric cells of a table. Never on the whole page, nor on a whole
+   table: Inter's tnum also widens the hyphen ("no-go" reads "no - go"),
+   and on a lone display number the fixed advance opens gaps between the
+   digits. A negative value takes the minus sign (−), not the hyphen. */
+.nav-num, .nav-counter, .overview-thumb-num, .tnum {
+  font-variant-numeric: tabular-nums;
 }
 
 @media (prefers-reduced-motion: reduce) {

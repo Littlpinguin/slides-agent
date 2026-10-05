@@ -72,6 +72,8 @@ A 24-slide deck typically uses 12–16 components, with 3–4 `silence` slides i
 
 Every illustrative mark in these components is an **inline Lucide-style SVG** (`stroke: currentColor`), never an emoji. See [Iconography](#iconography) for the rule and the reusable pastille pattern.
 
+Every size in this file holds the type floors of `scripts/qa.py`. Content text (a value, a name, a list item, a description) is set at 18px or more, comfortably 20-24px. The label register (mono, 12-14px) is kept for true labels of three words at most: an eyebrow, a tag, a unit, a column key, a step number, a short caption. A sentence never moves to mono to slip under the content floor. Figures read against each other (a KPI row, a column of values, a chart's labels, a delta) carry `font-variant-numeric: tabular-nums`; the starter gives it to folios and counters, and ships a `.tnum` utility for the rest (on a table, the numeric cells, never the whole table). Never on the whole page, and never on a lone display number: at 300px the fixed advance opens visible gaps (`7 8`), and Inter's tabular hyphen turns `no-go` into `no - go`. A negative value takes the minus sign (`−`, U+2212), never the hyphen: its bar spans a figure's width, where a tabular hyphen floats in it (`- 24%`).
+
 Accent-coloured text under 24px (tags, step numbers, column heads, links) takes the label-register accent `--label-accent`, and small grey labels take `opacity: var(--chrome-opacity)`: both are tuned in `brand/tokens.css` to hold WCAG 4.5:1 on the light slide variants, whatever the palette. `--brand-primary-deep` is not: with a light primary (a cyan, a yellow) it falls under 4.5:1 on `--brand-neutral-light` and under 3:1 on a `--brand-primary-soft` tint, so it stays for icons and rules. On a dark card (`--brand-neutral-dark-soft`) use `--brand-secondary`; `--label-accent-dark` is tuned for text set directly on `--brand-neutral-dark`.
 
 ## Brand pattern hooks
@@ -143,8 +145,8 @@ The opening slide. Big number + tagline + breathing animation.
 .hero-num { font-size:380px; font-weight:200; line-height:1; }
 .hero-num .pct { font-size:0.45em; vertical-align:top; }
 .hero-tag { font-size:48px; font-weight:300; max-width:1200px; line-height:1.2; }
-.hero-meta { display:flex; gap:80px; font-family:var(--font-mono); font-size:13px; letter-spacing:0.06em; }
-.hero-meta strong { display:block; font-family:var(--font-display); font-size:18px; font-weight:500; margin-bottom:4px; }
+.hero-meta { display:flex; gap:80px; font-size:24px; font-weight:400; }
+.hero-meta strong { display:block; font-family:var(--font-mono); font-size:13px; font-weight:500; letter-spacing:0.08em; text-transform:lowercase; opacity:var(--chrome-opacity); margin-bottom:8px; }
 ```
 
 > **Add `.hero-num` to `GRADIENT_TEXT_SELECTORS`** in base.html so it rasterises cleanly in PDF.
@@ -186,7 +188,7 @@ Editorial pull-quote, full-screen dark, italic display.
     <p class="bigquote-text reveal">
       A short, sharp quote that frames <em>the entire deck</em> in a single sentence.
     </p>
-    <span class="bigquote-attrib reveal">— Source, role, year</span>
+    <span class="bigquote-attrib reveal">Source, role, year</span>
   </div>
 </section>
 ```
@@ -195,7 +197,7 @@ Editorial pull-quote, full-screen dark, italic display.
 .bigquote { display:flex; flex-direction:column; justify-content:center; gap:48px; height:100%; max-width:1500px; }
 .bigquote-text { font-size:132px; font-weight:200; line-height:1.1; letter-spacing:-0.025em; }
 .bigquote-text em { font-weight:300; font-style:italic; color:var(--brand-secondary); }
-.bigquote-attrib { font-family:var(--font-mono); font-size:14px; letter-spacing:0.08em; opacity:0.6; }
+.bigquote-attrib { font-size:24px; font-weight:400; letter-spacing:0.01em; opacity:0.7; }
 ```
 
 ---
@@ -283,6 +285,7 @@ Text on the left, number on the right. The "explainer" pattern.
 @keyframes pulseGlow { 0%,100% { transform:scale(1); } 50% { transform:scale(1.4); } }
 .saturation-cap { display:flex; flex-direction:column; gap:24px; }
 .saturation-cap .big { font-size:120px; font-weight:200; }
+.saturation-cap p { font-size:24px; font-weight:300; line-height:1.4; max-width:560px; }
 ```
 
 ---
@@ -320,7 +323,7 @@ End-to-end process diagram with an animated SVG path. Use for "input → AI → 
 .pipeline-svg { width:100%; height:200px; }
 .pipeline-anim { animation: drawIn 1.8s cubic-bezier(0.16,1,0.3,1) 0.3s forwards; }
 @keyframes drawIn { to { stroke-dashoffset: 0; } }
-.pipeline-labels { display:flex; justify-content:space-between; margin-top:24px; font-family:var(--font-mono); font-size:13px; letter-spacing:0.08em; }
+.pipeline-labels { display:flex; justify-content:space-between; margin-top:24px; font-size:24px; font-weight:500; }
 ```
 
 > Add `body.printing-pdf .pipeline-anim { stroke-dashoffset: 0 !important; animation: none !important; }` to the print block — animations don't run in PDF.
@@ -329,7 +332,7 @@ End-to-end process diagram with an animated SVG path. Use for "input → AI → 
 
 ### `stack-grid` — tools / technologies
 
-6 cells in a 3×2 grid, each with a logo + label + cost. Plus a total bar.
+6 cells in a 3×2 grid, each with a logo + name + cost. Plus a total bar. The cells take their height from their content (no fixed ratio), so two rows and the total clear the chrome safe zone.
 
 ```html
 <section class="slide" data-eyebrow="stack" data-heading="Tool stack">
@@ -352,11 +355,12 @@ End-to-end process diagram with an animated SVG path. Use for "input → AI → 
 
 ```css
 .stack-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:24px; margin-top:48px; }
-.stack-cell { background:var(--brand-neutral-light-soft); border:1px solid var(--rule); border-radius:8px; padding:24px; display:flex; flex-direction:column; gap:12px; aspect-ratio:1.4; }
+.stack-cell { background:var(--brand-neutral-light-soft); border:1px solid var(--rule); border-radius:8px; padding:28px 32px; display:flex; flex-direction:column; gap:14px; }
 .stack-icon { width:40px; height:40px; }
-.stack-cell strong { font-size:18px; font-weight:500; }
-.stack-cell span { font-family:var(--font-mono); font-size:12px; opacity:0.6; margin-top:auto; }
-.stack-total-bar { display:flex; justify-content:space-between; align-items:baseline; padding:24px 0; border-top:1px solid var(--rule); margin-top:32px; }
+.stack-cell strong { font-size:24px; font-weight:500; }
+.stack-cell span { font-size:20px; opacity:var(--chrome-opacity); font-variant-numeric:tabular-nums; }
+.stack-total-bar { display:flex; justify-content:space-between; align-items:baseline; padding:24px 0 0; border-top:1px solid var(--rule); margin-top:32px; }
+.stack-total-bar > span:first-child { font-family:var(--font-mono); font-size:13px; letter-spacing:0.08em; text-transform:lowercase; opacity:var(--chrome-opacity); }
 .stack-total-num { font-size:64px; font-weight:200; }
 ```
 
@@ -383,7 +387,8 @@ End-to-end process diagram with an animated SVG path. Use for "input → AI → 
 
 ```css
 .funnel { display:flex; flex-direction:column; gap:18px; margin-top:48px; }
-.funnel-row { display:grid; grid-template-columns:160px 1fr 120px; gap:24px; align-items:center; font-family:var(--font-mono); font-size:13px; }
+.funnel-row { display:grid; grid-template-columns:200px 1fr 150px; gap:24px; align-items:center; font-size:24px; }
+.funnel-row span:last-child { text-align:right; font-variant-numeric:tabular-nums; }
 .funnel-bar { height:36px; background:var(--rule); border-radius:4px; position:relative; overflow:hidden; }
 .funnel-bar::before { content:''; position:absolute; inset:0; background:var(--brand-gradient); transform-origin:left; transform: scaleX(var(--width, 1)); transition: transform 1.4s cubic-bezier(0.16,1,0.3,1); }
 ```
@@ -414,15 +419,15 @@ End-to-end process diagram with an animated SVG path. Use for "input → AI → 
 
 ```css
 .roadmap { position:relative; margin-top:80px; padding:48px 0; }
-.roadmap-track { position:absolute; top:50%; left:0; right:0; height:2px; background:var(--rule); }
+.roadmap-track { position:absolute; top:48px; left:0; right:0; height:2px; background:var(--rule); }
 .roadmap-track::before { content:''; position:absolute; inset:0; background:var(--brand-gradient); transform-origin:left; transform:scaleX(0); animation:trackFill 2.5s cubic-bezier(0.16,1,0.3,1) 0.3s forwards; }
 @keyframes trackFill { to { transform:scaleX(1); } }
 .roadmap-phases { display:flex; justify-content:space-between; position:relative; }
 .roadmap-phase { display:flex; flex-direction:column; align-items:center; gap:8px; position:relative; padding-top:36px; }
 .roadmap-phase::before { content:''; position:absolute; top:-6px; width:14px; height:14px; border-radius:50%; background:var(--brand-secondary); transform:scale(0); animation:dotPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 1.5s forwards; }
 @keyframes dotPop { to { transform:scale(1); } }
-.roadmap-phase strong { font-family:var(--font-mono); font-size:13px; }
-.roadmap-phase span { font-size:14px; opacity:0.8; }
+.roadmap-phase strong { font-family:var(--font-mono); font-size:13px; font-weight:500; letter-spacing:0.06em; }
+.roadmap-phase span { font-size:24px; font-weight:500; }
 ```
 
 > Add to print overrides: `.roadmap-track::before { transform:scaleX(1) !important; }` and `.roadmap-phase::before { transform:scale(1) !important; }`.
@@ -465,8 +470,9 @@ End-to-end process diagram with an animated SVG path. Use for "input → AI → 
 .budget-grid { display:grid; grid-template-columns:1fr 1fr; gap:32px; margin-top:48px; }
 .budget-block { padding:48px; border:1px solid var(--rule); border-radius:8px; display:flex; flex-direction:column; gap:24px; }
 .budget-block.dark { background:var(--brand-neutral-dark); color:var(--brand-neutral-light); border:none; }
+.budget-block.dark .eyebrow { color:var(--label-accent-dark); }
 .budget-num { font-size:96px; font-weight:200; line-height:1; }
-.budget-list { list-style:none; font-family:var(--font-mono); font-size:13px; line-height:1.8; opacity:0.7; }
+.budget-list { list-style:none; font-size:24px; font-weight:300; line-height:1.5; opacity:0.85; }
 ```
 
 ---
@@ -494,9 +500,9 @@ The "Go or no-go?" closer.
 ```css
 .decision-stage { display:flex; flex-direction:column; justify-content:center; gap:48px; height:100%; }
 .decision-q { font-size:240px; font-weight:200; line-height:1; letter-spacing:-0.025em; }
-.decision-q .nogo { opacity:0.4; }
-.decision-meta { display:flex; gap:80px; font-family:var(--font-mono); font-size:13px; }
-.decision-meta strong { display:block; font-family:var(--font-display); font-size:18px; font-weight:500; margin-bottom:4px; }
+.decision-q .nogo { opacity:0.5; }
+.decision-meta { display:flex; gap:80px; font-size:28px; font-weight:400; }
+.decision-meta strong { display:block; font-family:var(--font-mono); font-size:13px; font-weight:500; letter-spacing:0.08em; text-transform:lowercase; opacity:var(--chrome-opacity); margin-bottom:10px; }
 ```
 
 > Add `.decision-q .go` to `GRADIENT_TEXT_SELECTORS`.
@@ -576,13 +582,13 @@ A visual rhythm chart (months × blocks per month) with stats on the right.
 .cadence-grid { display:grid; grid-template-columns: 1fr 280px; gap:80px; margin-top:48px; }
 .cadence-months { display:grid; grid-template-columns: repeat(8, 1fr); gap:12px; }
 .cadence-month { display:flex; flex-direction:column; gap:8px; }
-.cadence-month-label { font-family:var(--font-mono); font-size:11px; opacity:0.6; }
+.cadence-month-label { font-family:var(--font-mono); font-size:13px; letter-spacing:0.06em; opacity:var(--chrome-opacity); }
 .cadence-blocks { display:grid; grid-template-columns: repeat(2, 1fr); gap:4px; }
 .cadence-blocks .b { aspect-ratio:1; background:var(--rule); border-radius:2px; }
 .cadence-blocks .b.filled { background:var(--brand-primary); }
 .cadence-stats { display:flex; flex-direction:column; gap:24px; padding-left:32px; border-left:1px solid var(--rule); }
-.cadence-stats strong { display:block; font-size:48px; font-weight:200; line-height:1; }
-.cadence-stats span { font-family:var(--font-mono); font-size:12px; opacity:0.6; }
+.cadence-stats strong { display:block; font-size:48px; font-weight:200; line-height:1; font-variant-numeric:tabular-nums; }
+.cadence-stats span { font-family:var(--font-mono); font-size:13px; opacity:var(--chrome-opacity); }
 ```
 
 ---
@@ -602,7 +608,7 @@ Four phases on a horizontal timeline. Used for "the seasons of the project" or "
     <div class="chapter">
       <span class="chapter-num">01</span>
       <h3>Chapter title</h3>
-      <p>One short line per chapter — what it covers, no more.</p>
+      <p>One short line per chapter: what it covers, no more.</p>
     </div>
     <div class="chapter"><span class="chapter-num">02</span><h3>Chapter</h3><p>Line</p></div>
     <div class="chapter"><span class="chapter-num">03</span><h3>Chapter</h3><p>Line</p></div>
@@ -616,16 +622,16 @@ Four phases on a horizontal timeline. Used for "the seasons of the project" or "
 .chapters::before { content:''; position:absolute; top:32px; left:0; right:0; height:1px; background:var(--rule); }
 .chapter { display:flex; flex-direction:column; gap:16px; padding-top:56px; position:relative; }
 .chapter::before { content:''; position:absolute; top:25px; left:0; width:14px; height:14px; border-radius:50%; background:var(--brand-secondary); }
-.chapter-num { font-family:var(--font-mono); font-size:11px; letter-spacing:0.10em; opacity:0.6; }
+.chapter-num { font-family:var(--font-mono); font-size:13px; letter-spacing:0.10em; opacity:var(--chrome-opacity); }
 .chapter h3 { font-size:28px; font-weight:400; line-height:1.2; }
-.chapter p { font-size:15px; line-height:1.5; opacity:0.75; }
+.chapter p { font-size:22px; line-height:1.45; opacity:0.8; }
 ```
 
 ---
 
 ### `leadmags` — three deliverable covers
 
-Three mock "book" or document covers, used for the artefacts / lead magnets / deliverables slide.
+Three mock "book" or document covers, used for the artefacts / lead magnets / deliverables slide. The covers are 360px wide: at 3:4 they stay clear of the chrome safe zone under a section head.
 
 ```html
 <section class="slide" data-eyebrow="deliverables" data-heading="Lead magnets">
@@ -661,12 +667,12 @@ Three mock "book" or document covers, used for the artefacts / lead magnets / de
 ```
 
 ```css
-.leadmags { display:grid; grid-template-columns: repeat(3, 1fr); gap:32px; margin-top:48px; }
-.leadmag { display:flex; flex-direction:column; gap:16px; }
+.leadmags { display:grid; grid-template-columns: repeat(3, 360px); gap:80px; margin-top:48px; }
+.leadmag { display:flex; flex-direction:column; gap:18px; }
 .leadmag-cover { aspect-ratio:3/4; padding:32px; display:flex; flex-direction:column; justify-content:space-between; border-radius:6px; color:var(--brand-neutral-light); }
-.leadmag-tag { font-family:var(--font-mono); font-size:11px; letter-spacing:0.10em; text-transform:lowercase; opacity:0.7; }
-.leadmag h4 { font-size:32px; font-weight:300; line-height:1.15; }
-.leadmag-cap { font-size:14px; opacity:0.7; }
+.leadmag-tag { font-family:var(--font-mono); font-size:13px; letter-spacing:0.10em; text-transform:lowercase; opacity:0.8; }
+.leadmag h4 { font-size:34px; font-weight:300; line-height:1.15; }
+.leadmag-cap { font-size:22px; line-height:1.4; opacity:0.8; }
 ```
 
 ---
@@ -714,10 +720,10 @@ Three horizontal layers, each with its own metrics. Use for "influence / reach /
 ```css
 .kpi-strata { display:flex; flex-direction:column; gap:24px; margin-top:48px; }
 .kpi-layer { padding:32px; border:1px solid var(--rule); border-radius:6px; display:grid; grid-template-columns: 240px 1fr; gap:48px; align-items:center; }
-.kpi-level { font-family:var(--font-mono); font-size:13px; letter-spacing:0.08em; opacity:0.7; }
+.kpi-level { font-family:var(--font-mono); font-size:13px; letter-spacing:0.08em; opacity:var(--chrome-opacity); }
 .kpi-stats { display:grid; grid-template-columns: repeat(3, 1fr); gap:48px; }
-.kpi-stats strong { display:block; font-size:48px; font-weight:200; line-height:1; }
-.kpi-stats span { font-family:var(--font-mono); font-size:12px; opacity:0.6; }
+.kpi-stats strong { display:block; font-size:48px; font-weight:200; line-height:1; font-variant-numeric:tabular-nums; }
+.kpi-stats span { font-family:var(--font-mono); font-size:13px; opacity:var(--chrome-opacity); }
 ```
 
 ---
@@ -747,11 +753,11 @@ Used for the "what you commit to" / "what we ask of you" slide. Big number on th
 .engage-stage { display:grid; grid-template-columns: 1fr 1fr; gap:96px; align-items:center; height:100%; }
 .engage-num-wrap { display:flex; flex-direction:column; align-items:flex-start; gap:8px; }
 .engage-num { font-size:280px; font-weight:200; line-height:0.95; }
-.engage-num-cap { font-family:var(--font-mono); font-size:14px; letter-spacing:0.08em; opacity:0.6; }
+.engage-num-cap { font-family:var(--font-mono); font-size:14px; letter-spacing:0.08em; opacity:var(--chrome-opacity); }
 .engage-list { list-style:none; display:flex; flex-direction:column; gap:24px; }
 .engage-item { padding:24px 0; border-top:1px solid var(--rule); }
-.engage-item strong { display:block; font-size:24px; font-weight:500; margin-bottom:6px; }
-.engage-item span { font-size:16px; opacity:0.75; }
+.engage-item strong { display:block; font-size:28px; font-weight:500; margin-bottom:8px; }
+.engage-item span { font-size:22px; line-height:1.4; opacity:0.8; }
 ```
 
 > Add `.engage-num` to `GRADIENT_TEXT_SELECTORS`.
@@ -771,7 +777,7 @@ Huge date display + context. Used as the penultimate slide before the decision.
       <span class="day gradient-text">21<span class="month">.09</span></span>
       <span class="year">2026</span>
     </div>
-    <p class="date-context reveal">A short line of context — why this date, who's expected, what happens.</p>
+    <p class="date-context reveal">A short line of context: why this date, who's expected, what happens.</p>
   </div>
 </section>
 ```
@@ -857,7 +863,7 @@ Four numbered steps (1 → 2 → 3 → 4) joined by arrow connectors, with a syn
 
 ### `comparison-table` — you vs A vs B
 
-A competitive matrix: rows of criteria, one "you" column highlighted, the rest neutral. Cells are yes/no marks (inline SVG, never emoji). The classic differentiation slide.
+A competitive matrix: rows of criteria, one "you" column highlighted, the rest neutral. Cells are yes/no marks (inline SVG, never emoji). The classic differentiation slide. The column heads name who is compared, so they are content (20px), not labels.
 
 ```html
 <section class="slide" data-eyebrow="differentiation" data-heading="Comparison">
@@ -905,7 +911,7 @@ A competitive matrix: rows of criteria, one "you" column highlighted, the rest n
 .comparison { margin-top:48px; }
 .comparison-table { width:100%; border-collapse:collapse; font-size:20px; }
 .comparison-table th, .comparison-table td { padding:22px 28px; text-align:center; border-bottom:1px solid var(--rule); }
-.comparison-table thead th { font-family:var(--font-mono); font-size:13px; font-weight:500; letter-spacing:0.06em; text-transform:lowercase; opacity:var(--chrome-opacity, 0.7); border-bottom:1px solid var(--brand-neutral-dark); }
+.comparison-table thead th { font-size:20px; font-weight:600; opacity:var(--chrome-opacity, 0.7); border-bottom:1px solid var(--brand-neutral-dark); }
 .comparison-table .c-criteria, .comparison-table tbody th { text-align:left; font-weight:400; opacity:1; }
 .comparison-table tbody th { font-size:20px; }
 .comparison-table .c-you { background:var(--brand-primary-soft); }
@@ -1104,12 +1110,12 @@ Two variants. **Variant A**: 2–3 priced tiers side by side, the middle one mar
 .pricing { display:grid; grid-template-columns: repeat(3, 1fr); gap:28px; margin-top:48px; align-items:start; }
 .price-tier { position:relative; padding:40px 36px; border:1px solid var(--rule); border-radius:10px; display:flex; flex-direction:column; gap:8px; background:var(--brand-neutral-light-soft); }
 .price-tier.featured { background:var(--brand-neutral-dark); color:var(--brand-neutral-light); border-color:transparent; padding-top:52px; }
-.price-badge { position:absolute; top:24px; right:28px; font-family:var(--font-mono); font-size:11px; letter-spacing:0.08em; text-transform:lowercase; padding:6px 12px; border-radius:var(--radius-pill); background:var(--brand-secondary); color:var(--brand-neutral-dark); }
-.price-name { font-family:var(--font-mono); font-size:14px; letter-spacing:0.06em; text-transform:lowercase; opacity:0.7; }
-.price-amount { font-size:84px; font-weight:200; line-height:1; }
+.price-badge { position:absolute; top:24px; right:28px; font-family:var(--font-mono); font-size:13px; letter-spacing:0.08em; text-transform:lowercase; padding:6px 12px; border-radius:var(--radius-pill); background:var(--brand-secondary); color:var(--brand-neutral-dark); }
+.price-name { font-size:28px; font-weight:500; line-height:1.2; }
+.price-amount { font-size:84px; font-weight:200; line-height:1; font-variant-numeric:tabular-nums; }
 .price-amount .cur { font-size:0.45em; vertical-align:super; opacity:0.7; }
-.price-period { font-family:var(--font-mono); font-size:13px; opacity:0.6; margin-bottom:16px; }
-.price-list { list-style:none; display:flex; flex-direction:column; gap:12px; border-top:1px solid var(--rule); padding-top:24px; font-size:18px; }
+.price-period { font-family:var(--font-mono); font-size:13px; opacity:var(--chrome-opacity); margin-bottom:16px; }
+.price-list { list-style:none; display:flex; flex-direction:column; gap:12px; border-top:1px solid var(--rule); padding-top:24px; font-size:22px; }
 .price-tier.featured .price-list { border-top-color:var(--rule-light); }
 .price-list li { line-height:1.4; opacity:0.85; }
 ```
@@ -1150,10 +1156,10 @@ Two variants. **Variant A**: 2–3 priced tiers side by side, the middle one mar
 .offer-card { padding:48px; border:1px solid var(--rule); border-radius:12px; background:var(--brand-neutral-light-soft); display:flex; flex-direction:column; gap:28px; }
 .offer-row { display:flex; align-items:baseline; gap:16px; padding-bottom:24px; border-bottom:1px solid var(--rule); }
 .offer-row:nth-of-type(2) { border-bottom:none; padding-bottom:0; }
-.offer-row-label { font-family:var(--font-mono); font-size:14px; letter-spacing:0.06em; opacity:0.6; min-width:90px; }
-.offer-row-amount { font-size:96px; font-weight:200; line-height:0.9; }
-.offer-row-unit { font-family:var(--font-mono); font-size:15px; opacity:0.6; }
-.offer-foot { font-family:var(--font-mono); font-size:13px; letter-spacing:0.06em; opacity:0.55; padding-top:8px; }
+.offer-row-label { font-family:var(--font-mono); font-size:14px; letter-spacing:0.06em; opacity:var(--chrome-opacity); min-width:90px; }
+.offer-row-amount { font-size:96px; font-weight:200; line-height:0.9; font-variant-numeric:tabular-nums; }
+.offer-row-unit { font-family:var(--font-mono); font-size:15px; opacity:var(--chrome-opacity); }
+.offer-foot { font-size:22px; opacity:var(--chrome-opacity); padding-top:8px; }
 ```
 
 > **Add `.offer-row-amount.gradient-text`** (variant B) to `GRADIENT_TEXT_SELECTORS` in base.html so it rasterises cleanly in PDF. Variant A has no gradient text.
@@ -1252,7 +1258,7 @@ Round portraits (or initials when no photo) + name + role, in a 3-column grid. T
 .team-photo img { width:100%; height:100%; object-fit:cover; display:block; }
 .team-photo.initials { display:flex; align-items:center; justify-content:center; background:var(--brand-primary-soft); color:var(--label-accent, var(--brand-primary-deep)); font-family:var(--font-mono); font-size:48px; font-weight:500; }
 .team-member strong { font-size:26px; font-weight:500; line-height:1.1; }
-.team-member span { font-family:var(--font-mono); font-size:13px; letter-spacing:0.04em; opacity:var(--chrome-opacity, 0.7); }
+.team-member span { font-size:22px; opacity:var(--chrome-opacity, 0.7); }
 ```
 
 > For 4–6 people, keep `repeat(3, 1fr)` and let it wrap to a second row; drop `.team-photo` to `140px` square so two rows clear the chrome safe-zone.
@@ -1296,7 +1302,7 @@ The reusable unit is a **pastille**: a tokenised rounded container holding one i
 .ico-demo { display:grid; grid-template-columns: repeat(3, 1fr); gap:48px; margin-top:56px; }
 .ico-item { display:flex; flex-direction:column; align-items:flex-start; gap:14px; }
 .ico-item strong { font-size:24px; font-weight:500; }
-.ico-cap { font-family:var(--font-mono); font-size:13px; letter-spacing:0.04em; opacity:0.6; }
+.ico-cap { font-family:var(--font-mono); font-size:13px; letter-spacing:0.04em; opacity:var(--chrome-opacity); }
 
 /* Reusable pastille — copy this anywhere you need an icon chip */
 .pastille { display:inline-flex; align-items:center; justify-content:center; width:56px; height:56px; border-radius:var(--radius-tight); background:var(--brand-primary-soft); color:var(--brand-primary-deep); }
@@ -1360,7 +1366,7 @@ Eight layouts for slides where a real photograph carries the beat, built for the
 Rules shared by the whole family, from the editorial references behind it (Cereal, Aperture, NYT Magazine, Businessweek, Tufte, the Bechers, Muybridge):
 
 - **Few formats, native ratios.** 3:2, 4:5, 1:1, and 3:1 for bands only. Pick photos whose original ratio is close, so the crop stays honest.
-- **One caption grammar per deck.** A mono lowercase label (`pl. 01 · what it shows`), plus an optional sentence, always in the same place relative to the photo. No credit line on the slide: credits live on the last slide (`photo-credits`).
+- **One caption grammar per deck.** A mono lowercase label of three words at most after its number (`pl. 01 · the harbour`), plus an optional sentence in `.psent` (22px), always in the same place relative to the photo. The label sits in the label register; anything longer is a sentence and goes in `.psent`. No credit line on the slide: credits live on the last slide (`photo-credits`).
 - **One light, one treatment per deck.** Same colour temperature everywhere; `mono` / `duotone` are baked into the file by `scripts/pexels.py --treatment`, never applied with CSS `filter` or `mix-blend-mode` (they break in the PDF export).
 - **Crop on purpose.** `object-fit: cover` plus a per-photo `object-position` (e.g. `style="object-position: 30% 60%"`) to keep the focal point; never cut through a face, a joint or the horizon.
 - **Alternate weight.** Follow a photo-heavy slide (`letterbox-band`, `diptych`) with a photo-light one (`plate`, `margin-figure`) or a typographic one.
@@ -1370,7 +1376,7 @@ Shared CSS, needed once per deck by any of the eight:
 ```css
 .ph { position:relative; margin:0; overflow:hidden; background:var(--brand-neutral-light-deep); }
 .ph img { width:100%; height:100%; object-fit:cover; display:block; }
-.pcap { display:block; font-family:var(--font-mono); font-size:14px; letter-spacing:0.08em; text-transform:lowercase; opacity:0.65; }
+.pcap { display:block; font-family:var(--font-mono); font-size:14px; letter-spacing:0.08em; text-transform:lowercase; opacity:var(--chrome-opacity); }
 .psent { font-size:22px; font-weight:300; line-height:1.45; }
 ```
 
@@ -1389,7 +1395,7 @@ The photobook plate: a small photo, off-centre, a caption in the margin, no big 
     <div class="plt-txt">
       <p class="plt-state reveal">One short statement, two lines at most.</p>
       <div class="plt-cap reveal">
-        <span class="pcap">pl. 01 · what the photo shows</span>
+        <span class="pcap">pl. 01 · the subject</span>
         <p class="psent">Three lines at most: why this image is the evidence.</p>
         <i class="plt-rule"></i>
       </div>
@@ -1454,7 +1460,7 @@ A cinematic 3:1 band across the top of the slide, nothing written on it; headlin
 <section class="slide band-top" data-eyebrow="place" data-heading="The place">
   <figure class="ph band-ph" data-bleed><img src="../assets/photos/pexels-slug-1234567.jpg" alt=""></figure>
   <div class="chrome"><!-- chrome rows --></div>
-  <span class="pcap band-cap">what the band shows</span>
+  <span class="pcap band-cap">the place</span>
   <div class="band-body">
     <h2 class="band-title reveal">A place reads better in width.</h2>
     <div class="band-cols reveal">
@@ -1467,8 +1473,7 @@ A cinematic 3:1 band across the top of the slide, nothing written on it; headlin
 
 ```css
 .band-ph { position:absolute; top:0; left:0; width:1920px; height:580px; z-index:0; }
-.band-ph::after { content:""; position:absolute; inset:0 0 auto; height:140px; background:linear-gradient(180deg, color-mix(in srgb, var(--brand-neutral-dark) 45%, transparent), transparent); }
-.slide.band-top .chrome-row.top { color:var(--brand-neutral-light); }
+.slide.band-top .chrome-row.top { top:-36px; left:-60px; right:-60px; height:140px; padding:36px 60px 0; align-items:flex-start; color:var(--brand-neutral-light); background:linear-gradient(180deg, color-mix(in srgb, var(--brand-neutral-dark) 45%, transparent), transparent); }
 .slide.band-top .chrome-row.top .meta-label, .slide.band-top .chrome-row.top .nav-num { color:var(--brand-neutral-light); opacity:0.9; }
 .band-cap { position:absolute; top:596px; right:120px; }
 .band-body { position:absolute; top:650px; left:120px; right:120px; display:grid; grid-template-columns:6fr 1fr 5fr; align-items:start; }
@@ -1476,7 +1481,7 @@ A cinematic 3:1 band across the top of the slide, nothing written on it; headlin
 .band-cols { grid-column:3; display:grid; grid-template-columns:1fr 1fr; gap:32px; padding-top:10px; font-size:20px; line-height:1.5; }
 ```
 
-> `data-bleed` tells `qa.py` the band runs to the frame edge on purpose; never put it on the text. A 3:1 crop keeps half the height of a 3:2 original: download at `--width 3000` or more, and avoid tall subjects and faces. The top gradient only protects the chrome row; if the photo is very bright at the top, pick another photo rather than darkening it further.
+> `data-bleed` tells `qa.py` the band runs to the frame edge on purpose; never put it on the text. A 3:1 crop keeps half the height of a 3:2 original: download at `--width 3000` or more, and avoid tall subjects and faces. The top gradient sits on the chrome row itself (stretched to the frame edges), so QA sees the chrome on a non-uniform background and asks for a check by eye instead of measuring it against the slide paper; if the photo is very bright at the top, pick another photo rather than darkening it further.
 
 ---
 
@@ -1494,7 +1499,7 @@ Tufte's sidenote, applied to a photograph: the argument is written, a small real
     </div>
     <i class="mfig-rule"></i>
     <div class="mfig-side reveal">
-      <span class="pcap">fig. 1 · what the photo shows</span>
+      <span class="pcap">fig. 1 · the subject</span>
       <figure class="ph"><img src="../assets/photos/pexels-slug-1234567.jpg" alt=""></figure>
       <p class="psent">Two lines at most.</p>
     </div>
@@ -1543,7 +1548,7 @@ A fixed metadata block (place, date, time, light…) and the photo of the place.
 .fnote { height:100%; display:grid; grid-template-columns:544px 1fr 970px; align-items:center; }
 .fnote-dl { margin-top:18px; border-top:1px solid var(--rule); }
 .fnote-dl div { display:flex; justify-content:space-between; align-items:baseline; gap:20px; padding:13px 0; border-bottom:1px solid var(--rule); }
-.fnote-dl dt { font-family:var(--font-mono); font-size:14px; letter-spacing:0.08em; opacity:0.65; }
+.fnote-dl dt { font-family:var(--font-mono); font-size:14px; letter-spacing:0.08em; opacity:var(--chrome-opacity); }
 .fnote-dl dd { font-size:20px; text-align:right; }
 .fnote-obs { margin-top:36px; font-size:30px; font-weight:300; line-height:1.35; }
 .fnote-ph { grid-column:3; width:970px; height:647px; }
@@ -1693,16 +1698,16 @@ The strongest layout for "where does this number come from". Each step is a floa
 ```
 
 ```css
-.wf { display:flex; align-items:stretch; gap:30px; height:380px; margin-top:44px; border-bottom:2px solid var(--rule-strong); }
+.wf { display:flex; align-items:stretch; gap:30px; height:380px; margin-top:44px; border-bottom:2px solid color-mix(in srgb, var(--brand-neutral-dark) 18%, transparent); }
 .wf .wc { flex:1; display:flex; flex-direction:column; justify-content:flex-end; }
 .wf .wc .blk { border-radius:10px; }
-.wf .wc .v { text-align:center; font-family:var(--font-display); font-size:27px; margin-bottom:10px; }
+.wf .wc .v { text-align:center; font-family:var(--font-display); font-size:28px; margin-bottom:10px; font-variant-numeric:tabular-nums; }
 .wf .wc .sp { flex-shrink:0; }
 .wf .wc.up .blk { background:var(--brand-primary-soft); }
 .wf .wc.alt .blk { background:var(--brand-secondary); }
 .wf .wc.total .blk { background:var(--brand-gradient); }
 .wf-x { display:flex; gap:30px; padding-top:16px; }
-.wf-x span { flex:1; text-align:center; font-size:16px; line-height:1.3; }
+.wf-x span { flex:1; text-align:center; font-size:22px; line-height:1.3; }
 ```
 
 > **Arithmetic to respect.** `spacer + block` must equal the plate height for the first step, and each following spacer equals the running cumulative height. Get this wrong and the staircase reads as noise. Compute the pixel heights before writing the HTML.
@@ -1725,12 +1730,12 @@ Two mirrored panels. The left one is flat and grey, the right one is raised and 
 .ba .pane { border-radius:22px; padding:38px; }
 .ba .pane .bt { font-size:18px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; margin-bottom:22px; display:block; }
 .ba .before { background:var(--brand-neutral-light-soft); border:1px solid var(--rule); }
-.ba .after { background:#fff; border:2px solid var(--brand-primary); box-shadow:var(--shadow-card); }
+.ba .after { background:var(--brand-neutral-light-soft); border:2px solid var(--brand-primary); }
 .ba .after .bt { color:var(--label-accent, var(--brand-primary-deep)); }
 .ba ul { list-style:none; display:flex; flex-direction:column; gap:16px; }
-.ba li { font-size:18px; line-height:1.45; padding-left:30px; position:relative; }
-.ba .before li::before { content:''; position:absolute; left:0; top:9px; width:14px; height:2px; background:var(--rule-strong); }
-.ba .after li::before { content:''; position:absolute; left:0; top:6px; width:13px; height:13px; border-radius:50%; background:var(--brand-gradient); }
+.ba li { font-size:22px; line-height:1.45; padding-left:30px; position:relative; }
+.ba .before li::before { content:''; position:absolute; left:0; top:15px; width:14px; height:2px; background:color-mix(in srgb, var(--brand-neutral-dark) 18%, transparent); }
+.ba .after li::before { content:''; position:absolute; left:0; top:9px; width:13px; height:13px; border-radius:50%; background:var(--brand-gradient); }
 ```
 
 ---
@@ -1753,9 +1758,9 @@ Maps actors, systems or teams by proximity to a centre. Two rings is the maximum
 .orbit .oring { position:absolute; border:1.5px solid var(--rule); border-radius:50%; }
 .orbit .o1 { left:170px; top:110px; width:380px; height:380px; }
 .orbit .o2 { left:60px; top:0; width:600px; height:600px; }
-.orbit .osun { position:absolute; left:360px; top:300px; transform:translate(-50%,-50%); width:180px; height:180px; border-radius:50%; background:var(--brand-gradient); display:flex; align-items:center; justify-content:center; text-align:center; font-weight:700; font-size:20px; padding:16px; line-height:1.25; }
-.orbit .osat { position:absolute; z-index:2; transform:translate(-50%,-50%); border:1px solid var(--rule); border-radius:999px; padding:12px 22px; font-size:17px; font-weight:600; white-space:nowrap; background:#fff; }
-.orbit .osat.far { background:transparent; font-weight:500; opacity:.7; }
+.orbit .osun { position:absolute; left:360px; top:300px; transform:translate(-50%,-50%); width:180px; height:180px; border-radius:50%; background:var(--brand-gradient); display:flex; align-items:center; justify-content:center; text-align:center; font-weight:700; font-size:22px; padding:16px; line-height:1.25; }
+.orbit .osat { position:absolute; z-index:2; transform:translate(-50%,-50%); border:1px solid var(--rule); border-radius:999px; padding:10px 22px; font-size:20px; font-weight:600; white-space:nowrap; background:var(--brand-neutral-light-soft); }
+.orbit .osat.far { background:transparent; font-weight:500; opacity:var(--chrome-opacity); }
 ```
 
 > **Place satellites at the cardinal points of the inner ring and the diagonals of the outer one.** Anything else and the pills collide. Centre is `(360, 300)`; inner radius 190, outer 300. Long labels on the horizontal axis will touch the sun: shorten them or nudge outward.
@@ -1789,17 +1794,22 @@ The most distinctive schema in the library. A shared sequence that forks into tw
 .parcours { display:flex; flex-direction:column; align-items:center; margin-top:18px; }
 .shared { display:flex; align-items:stretch; justify-content:center; gap:18px; }
 .step-pill { display:flex; align-items:center; gap:16px; background:var(--brand-neutral-light-soft); border:1px solid var(--rule); border-radius:18px; padding:16px 24px; max-width:460px; }
+.step-pill .sp-n { flex-shrink:0; width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-size:16px; font-weight:600; background:var(--brand-neutral-dark); color:var(--brand-neutral-light); }
+.step-pill .sp-t { font-size:22px; font-weight:600; line-height:1.25; }
+.shared .lk { display:flex; align-items:center; font-size:24px; color:var(--label-accent); }
 .y-split { position:relative; width:100%; height:58px; margin:6px 0 2px; }
-.y-split .ys-stem { position:absolute; top:0; left:50%; transform:translateX(-50%); width:2px; height:22px; background:var(--rule-strong); }
-.y-split .ys-bar { position:absolute; top:22px; left:25%; width:50%; height:2px; background:var(--rule-strong); }
-.y-split .ys-leg { position:absolute; top:22px; width:2px; height:24px; background:var(--rule-strong); }
+.y-split .ys-stem { position:absolute; top:0; left:50%; transform:translateX(-50%); width:2px; height:22px; background:color-mix(in srgb, var(--brand-neutral-dark) 18%, transparent); }
+.y-split .ys-bar { position:absolute; top:22px; left:25%; width:50%; height:2px; background:color-mix(in srgb, var(--brand-neutral-dark) 18%, transparent); }
+.y-split .ys-leg { position:absolute; top:22px; width:2px; height:24px; background:color-mix(in srgb, var(--brand-neutral-dark) 18%, transparent); }
 .y-split .ys-leg.ys-l { left:25%; } .y-split .ys-leg.ys-r { left:75%; }
 .y-split .ys-label { position:absolute; top:11px; left:50%; transform:translateX(-50%); background:var(--brand-neutral-light); padding:0 14px; font-family:var(--font-mono); font-size:12px; letter-spacing:.16em; text-transform:uppercase; white-space:nowrap; }
 .tracks { display:grid; grid-template-columns:1fr 1fr; gap:26px; width:100%; }
 .track { border-radius:24px; padding:22px 30px 24px; display:flex; flex-direction:column; }
 .track.a { background:var(--brand-primary-soft); border:1px solid var(--brand-primary); }
 .track.b { background:var(--brand-secondary-soft); border:1px solid var(--brand-secondary); }
-.track-def { font-size:18px; line-height:1.4; margin-top:10px; padding-bottom:14px; border-bottom:1px solid var(--rule); }
+.track .th-name { font-size:20px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; }
+.track.a .th-name { color:var(--label-accent); }
+.track-def { font-size:22px; line-height:1.4; margin-top:10px; padding-bottom:14px; border-bottom:1px solid var(--rule); }
 ```
 
 > `.ys-label` needs the **slide background colour**, not transparent — it has to mask the bar it sits on. On a `.soft` or `.tint` slide, set it to `--brand-neutral-light-soft` or `--brand-neutral-light-deep`.
@@ -1819,7 +1829,7 @@ The most distinctive schema in the library. A shared sequence that forks into tw
 .tstep + .tstep { border-top:1px solid var(--rule); }
 .tstep .tn { flex-shrink:0; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-size:16px; font-weight:600; background:var(--brand-neutral-dark); color:var(--brand-neutral-light); }
 .tstep h4 { font-size:22px; font-weight:600; line-height:1.25; }
-.tstep p { font-size:18px; line-height:1.4; color:var(--brand-neutral-dark-soft); }
+.tstep p { font-size:20px; line-height:1.4; color:var(--brand-neutral-dark-soft); }
 ```
 
 > The number chip takes the dark neutral rather than the primary: white on a light primary drops under 4.5:1.
@@ -1844,19 +1854,25 @@ An indented tree with an animated rail. Built for site architecture, but works f
 ```css
 .sitetree { position:relative; margin-top:36px; }
 .st-root { display:inline-flex; align-items:center; gap:14px; }
+.st-root .fold { width:36px; height:36px; display:inline-flex; align-items:center; justify-content:center; border-radius:10px; background:var(--brand-neutral-dark); color:var(--brand-neutral-light); font-size:18px; }
+.st-root .rn { font-size:22px; font-weight:700; }
 .st-tree { position:relative; margin-top:6px; padding-left:18px; }
 .st-rail { position:absolute; left:18px; top:30px; width:2px; height:calc(100% - 62px); background:var(--brand-gradient-vertical); transform:scaleY(0); transform-origin:top; transition:transform .85s var(--ease-slow) .15s; }
-.plate.active .st-rail { transform:scaleY(1); }
+.slide.active .st-rail { transform:scaleY(1); }
 .st-row { position:relative; display:flex; align-items:center; padding:7px 0; }
-.st-row::before { content:''; position:absolute; left:18px; top:50%; transform:translateY(-50%); width:32px; height:2px; background:var(--rule-strong); }
-.st-dot { position:absolute; left:12px; top:50%; transform:translateY(-50%); width:14px; height:14px; border-radius:50%; background:var(--brand-gradient); box-shadow:0 0 0 5px #fff; z-index:2; }
-.st-bar { display:flex; align-items:center; gap:22px; margin-left:50px; background:#fff; border:1px solid var(--rule); border-radius:14px; padding:15px 26px; box-shadow:var(--shadow-card); flex:1; }
+.st-row::before { content:''; position:absolute; left:18px; top:50%; transform:translateY(-50%); width:32px; height:2px; background:color-mix(in srgb, var(--brand-neutral-dark) 18%, transparent); }
+.st-dot { position:absolute; left:12px; top:50%; transform:translateY(-50%); width:14px; height:14px; border-radius:50%; background:var(--brand-gradient); box-shadow:0 0 0 5px var(--brand-neutral-light); z-index:2; }
+.st-bar { display:flex; align-items:center; gap:22px; margin-left:50px; background:var(--brand-neutral-light-soft); border:1px solid var(--rule); border-radius:14px; padding:15px 26px; flex:1; }
+.st-bar .de { flex-shrink:0; width:120px; font-family:var(--font-mono); font-size:13px; letter-spacing:0.08em; text-transform:lowercase; color:var(--label-accent); }
+.st-bar .nm { flex-shrink:0; width:200px; font-size:22px; font-weight:700; }
+.st-bar .ds { font-size:20px; color:var(--brand-neutral-dark-soft); }
 .st-row.child { margin-left:64px; }
 .st-row.child::before { content:none; }
 .st-row.child .st-elbow { position:absolute; left:-46px; top:-34px; width:30px; height:64px; border-left:2px solid var(--brand-primary); border-bottom:2px solid var(--brand-primary); border-bottom-left-radius:14px; }
+.st-row.child .st-bar { margin-left:0; padding:11px 24px; background:var(--brand-primary-soft); border-color:var(--brand-primary); }
 ```
 
-> The rail animates on `.plate.active`. In PDF export, force it to its final state: `body.printing-pdf .st-rail { transform:scaleY(1) !important; }`
+> The rail animates on `.slide.active` (`.plate.active` in the catalogue). In PDF export, force it to its final state: `body.printing-pdf .st-rail { transform:scaleY(1) !important; }`
 
 ---
 
@@ -1864,11 +1880,18 @@ An indented tree with an animated rail. Built for site architecture, but works f
 
 Six figures in a hairline grid, each with a one-line caption. Use when the audience needs facts without narration, typically to open a review or close a diagnosis.
 
+```html
+<div class="figs" data-stagger>
+  <div class="fig"><div class="n">12</div><div class="l">sites measured every month</div></div>
+  <!-- ×6 -->
+</div>
+```
+
 ```css
-.figs { display:grid; grid-template-columns:repeat(3,1fr); margin-top:46px; border-top:1px solid var(--rule-strong); border-left:1px solid var(--rule-strong); }
-.fig { padding:36px 40px; border-bottom:1px solid var(--rule-strong); border-right:1px solid var(--rule-strong); }
-.fig .n { font-family:var(--font-display); font-size:60px; line-height:1; }
-.fig .l { font-size:17px; margin-top:12px; line-height:1.4; }
+.figs { display:grid; grid-template-columns:repeat(3,1fr); margin-top:46px; border-top:1px solid color-mix(in srgb, var(--brand-neutral-dark) 18%, transparent); border-left:1px solid color-mix(in srgb, var(--brand-neutral-dark) 18%, transparent); }
+.fig { padding:36px 40px; border-bottom:1px solid color-mix(in srgb, var(--brand-neutral-dark) 18%, transparent); border-right:1px solid color-mix(in srgb, var(--brand-neutral-dark) 18%, transparent); }
+.fig .n { font-family:var(--font-display); font-size:60px; line-height:1; font-variant-numeric:tabular-nums; }
+.fig .l { font-size:22px; margin-top:12px; line-height:1.4; }
 ```
 
 > Six cells, never five or seven: the grid must close. Units go in a smaller inline span inside `.n`, not in the caption.
@@ -1879,34 +1902,55 @@ Six figures in a hairline grid, each with a one-line caption. Use when the audie
 
 Ticks and absences mirrored across the three columns. **The absence is what sells**: a greyed line in the cheap column does more work than a tick in the expensive one.
 
+```html
+<div class="cmp3" data-stagger>
+  <div class="col"><h3>Essential</h3><div class="price">€9k<small> / year</small></div>
+    <ul><li class="y">Baseline on one perimeter</li><li class="n">Site referents trained</li></ul></div>
+  <div class="col reco"><span class="badge">recommended</span><h3>Complete</h3><div class="price">€17k<small> / year</small></div>
+    <ul><li class="y">Baseline on three scopes</li><li class="y">Site referents trained</li></ul></div>
+  <!-- third column, same rows -->
+</div>
+```
+
 ```css
 .cmp3 { display:grid; grid-template-columns:repeat(3,1fr); gap:28px; margin-top:48px; }
-.cmp3 .col { border:1px solid var(--rule); border-radius:20px; padding:34px; background:#fff; box-shadow:var(--shadow-card); position:relative; }
+.cmp3 .col { border:1px solid var(--rule); border-radius:20px; padding:34px; background:var(--brand-neutral-light-soft); position:relative; }
 .cmp3 .col.reco { border:2px solid var(--brand-primary); }
-.cmp3 .col .badge { position:absolute; top:-16px; left:34px; background:var(--brand-gradient); font-size:13px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; padding:7px 16px; border-radius:999px; }
-.cmp3 .price { font-family:var(--font-display); font-size:50px; margin:12px 0 4px; line-height:1; }
-.cmp3 .price small { font-size:19px; opacity:.6; }
-.cmp3 li { font-size:17px; padding-left:28px; position:relative; line-height:1.4; }
+.cmp3 .col .badge { position:absolute; top:-16px; left:34px; background:var(--brand-secondary); color:var(--brand-neutral-dark); font-family:var(--font-mono); font-size:13px; font-weight:500; letter-spacing:.08em; text-transform:lowercase; padding:7px 16px; border-radius:999px; }
+.cmp3 h3 { font-size:26px; font-weight:600; line-height:1.2; }
+.cmp3 .price { font-family:var(--font-display); font-size:50px; margin:12px 0 4px; line-height:1; font-variant-numeric:tabular-nums; }
+.cmp3 .price small { font-size:20px; opacity:var(--chrome-opacity); }
+.cmp3 ul { list-style:none; display:flex; flex-direction:column; gap:10px; margin-top:20px; }
+.cmp3 li { font-size:22px; padding-left:28px; position:relative; line-height:1.4; }
 .cmp3 li.y::before { content:'✓'; position:absolute; left:0; color:var(--brand-primary-deep); font-weight:700; }
 .cmp3 li.n::before { content:'·'; position:absolute; left:5px; }
-.cmp3 li.n { opacity:.55; }
+.cmp3 li.n { opacity:var(--chrome-opacity); }
 ```
+
+> The badge is a label (one word, mono) on a solid secondary chip: dark text on a gradient would drop under 4.5:1 where the gradient runs dark. The absent lines fade with `--chrome-opacity`, the fade the brand tokens tune to hold 4.5:1: a fixed lower opacity would drop under it.
 
 ---
 
 ### `activity-wall` — volume as the argument
 
-A dense wall of small cards that deliberately overflows the plate on one or more edges. The point is not to read every card, it is to feel how many there are.
+A dense wall of small cards, cut at the bottom by a fade: more than the slide can hold. The point is not to read every card, it is to feel how many there are.
 
-```css
-.wall { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-top:34px; max-height:600px; overflow:hidden; position:relative; }
-.wall::after { content:''; position:absolute; left:0; right:0; bottom:0; height:180px; background:linear-gradient(180deg, transparent, var(--brand-neutral-light)); pointer-events:none; }
-.acard { border:1px solid var(--rule); border-radius:14px; padding:18px 20px; background:#fff; }
-.acard .ah { font-size:16px; font-weight:700; margin-bottom:6px; }
-.acard .ad { font-size:14px; line-height:1.4; opacity:.7; }
+```html
+<div class="wall">
+  <div class="acard"><div class="ah">Rennes site</div><div class="ad">Electricity reading, March</div></div>
+  <!-- ×20 to ×24: one or two rows more than the wall shows -->
+</div>
 ```
 
-> The fade-out at the bottom is what makes the overflow read as intentional rather than broken. Match its gradient to the slide background (`--brand-neutral-light` here; the `-soft` or `-deep` variant on a `.soft` or `.tint` slide).
+```css
+.wall { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-top:34px; max-height:520px; overflow:hidden; position:relative; }
+.wall::after { content:''; position:absolute; left:0; right:0; bottom:0; height:180px; background:linear-gradient(180deg, transparent, var(--brand-neutral-light)); pointer-events:none; }
+.acard { border:1px solid var(--rule); border-radius:14px; padding:16px 20px; background:var(--brand-neutral-light-soft); }
+.acard .ah { font-size:20px; font-weight:700; margin-bottom:4px; }
+.acard .ad { font-size:18px; line-height:1.4; opacity:var(--chrome-opacity); }
+```
+
+> The fade-out at the bottom is what makes the cut read as intentional rather than broken. Match its gradient to the slide background (`--brand-neutral-light` here; the `-soft` or `-deep` variant on a `.soft` or `.tint` slide). Cut inside the frame, never at its edge: QA measures the hidden cards too, so the last row, even faded, must clear the chrome safe zone. Card text holds the content floor: a wall of unreadable cards reads as noise, not as volume.
 
 ---
 
@@ -1944,7 +1988,7 @@ Three small blocks that the marketing-cockpit template ships in its own starter 
 
 ```html
 <div class="kpis" data-stagger>
-  <div class="kpi"><div class="n"><span class="gradient-text">-24%</span></div><div class="l">one short caption, sourced</div></div>
+  <div class="kpi"><div class="n"><span class="gradient-text">−24%</span></div><div class="l">one short caption, sourced</div></div>
   <div class="kpi"><div class="n"><span class="gradient-text">12</span></div><div class="l">…</div></div>
   <div class="kpi"><div class="n"><span class="gradient-text">×3</span></div><div class="l">…</div></div>
 </div>
@@ -1953,7 +1997,7 @@ Three small blocks that the marketing-cockpit template ships in its own starter 
 ```css
 .kpis { display:flex; gap:30px; margin-top:46px; }
 .kpi { flex:1; border-left:3px solid; border-image:var(--brand-gradient-vertical) 1; padding:6px 0 6px 28px; }
-.kpi .n { font-size:88px; font-weight:200; line-height:1.05; }
+.kpi .n { font-size:88px; font-weight:200; line-height:1.05; font-variant-numeric:tabular-nums; }
 .kpi .l { font-size:20px; line-height:1.4; max-width:300px; margin-top:14px; color:var(--brand-neutral-dark-soft); }
 .slide.dark .kpi .l { color:var(--brand-neutral-light-soft); }
 ```
@@ -2070,9 +2114,9 @@ The delta reading of [`kpi-band`](#kpi-band--numbers-of-the-same-rank): three or
 ```html
 <div class="qr-kpi-grid" data-stagger>
   <div class="qr-kpi-card">
-    <div class="row"><span class="val">-18%</span><span class="trend good" aria-label="down, on track">↘</span></div>
+    <div class="row"><span class="val">−18%</span><span class="trend good" aria-label="down, on track">↘</span></div>
     <span class="lab">emissions on scopes 1 and 2</span>
-    <span class="delta">-4 pts vs Q3</span>
+    <span class="delta">−4 pts vs Q3</span>
   </div>
   <div class="qr-kpi-card">
     <div class="row"><span class="val">9 d</span><span class="trend watch" aria-label="up, to watch">↗</span></div>
@@ -2087,16 +2131,16 @@ The delta reading of [`kpi-band`](#kpi-band--numbers-of-the-same-rank): three or
 .qr-kpi-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:36px; margin-top:52px; }
 .qr-kpi-card { display:grid; grid-template-rows:auto 1fr auto; gap:12px; border-top:2px solid var(--brand-neutral-dark); padding-top:22px; }
 .qr-kpi-card .row { display:flex; align-items:center; gap:16px; }
-.qr-kpi-card .val { font-size:76px; font-weight:200; line-height:1.05; letter-spacing:-.02em; }
+.qr-kpi-card .val { font-size:76px; font-weight:200; line-height:1.05; letter-spacing:-.02em; font-variant-numeric:tabular-nums; }
 .qr-kpi-card .trend { display:inline-flex; align-items:center; justify-content:center; width:44px; height:44px; border-radius:50%; font-size:24px; font-weight:600; }
 .qr-kpi-card .trend.good { background:var(--brand-primary-soft); color:var(--label-accent); }
 .qr-kpi-card .trend.watch { background:var(--brand-secondary); color:var(--brand-neutral-dark); }
 .qr-kpi-card .trend.flat { background:var(--rule); color:var(--brand-neutral-dark); }
 .qr-kpi-card .lab { font-size:22px; line-height:1.4; color:var(--brand-neutral-dark-soft); }
-.qr-kpi-card .delta { font-family:var(--font-mono); font-size:13px; letter-spacing:.08em; opacity:var(--chrome-opacity); }
+.qr-kpi-card .delta { font-size:22px; font-weight:500; color:var(--brand-neutral-dark-soft); font-variant-numeric:tabular-nums; }
 ```
 
-> **The colour judges, the arrow only points.** Emissions going down is good news: colour by meaning (`good`, `watch`, `flat`), never by direction. The chip carries the colour so the arrow itself stays legible on any palette: a light secondary as text would fall under 3:1. The grid rows align the comparisons at the bottom of every card, whatever the length of the caption. On a dark slide, swap the top rule to `--brand-neutral-light` and `.trend.good` to `color:var(--label-accent-dark); background:var(--rule-light);`.
+> **The colour judges, the arrow only points.** Emissions going down is good news: colour by meaning (`good`, `watch`, `flat`), never by direction. The chip carries the colour so the arrow itself stays legible on any palette: a light secondary as text would fall under 3:1. The grid rows align the comparisons at the bottom of every card, whatever the length of the caption. On a dark slide, swap the top rule to `--brand-neutral-light`, `.trend.good` to `color:var(--label-accent-dark); background:var(--rule-light);`, and `.lab` and `.delta` to `color:var(--brand-neutral-light-soft)`. The delta is the comparison the slide exists for: it is content (22px), not a caption.
 
 ### `legend-table` — a key to the deck
 
@@ -2123,7 +2167,7 @@ Explains the symbols or categories a deck keeps reusing: swatch, name, definitio
 .mapkey { display:grid; grid-template-columns:520px 1fr; gap:72px; height:100%; align-items:center; }
 .mapkey-left { display:flex; flex-direction:column; gap:20px; }
 .mapkey-table { border-top:1px solid var(--rule); }
-.mapkey-row { display:grid; grid-template-columns:56px 240px 1fr 140px; align-items:center; gap:22px; padding:18px 0; border-bottom:1px solid var(--rule); }
+.mapkey-row { display:grid; grid-template-columns:56px 240px 1fr 160px; align-items:center; gap:22px; padding:18px 0; border-bottom:1px solid var(--rule); }
 .mapkey-symbol { display:flex; align-items:center; justify-content:center; width:52px; height:52px; }
 .mapkey-symbol i { display:block; }
 .mk-dot { width:26px; height:26px; border-radius:50%; background:var(--brand-gradient); }
@@ -2133,7 +2177,7 @@ Explains the symbols or categories a deck keeps reusing: swatch, name, definitio
 .mk-line { width:44px; border-top:3px dashed var(--brand-neutral-dark); }
 .mapkey-name { font-size:22px; font-weight:600; line-height:1.25; }
 .mapkey-desc { font-size:20px; line-height:1.45; color:var(--brand-neutral-dark-soft); }
-.mapkey-count { font-family:var(--font-mono); font-size:13px; letter-spacing:.1em; text-align:right; color:var(--label-accent); }
+.mapkey-count { font-size:22px; font-weight:500; text-align:right; color:var(--label-accent); font-variant-numeric:tabular-nums; }
 ```
 
 > Five rows at most. The symbols must be the ones the deck actually draws later: same shape, same colour, same size ratio.

@@ -62,7 +62,16 @@
 }
 * { margin:0; padding:0; box-sizing:border-box; }
 *:focus-visible { outline:2px solid var(--vert-clair); outline-offset:4px; border-radius:4px; }
-html, body { font-family:var(--font-body); background:var(--bg-dark); color:var(--ink); height:100vh; overflow:hidden; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; font-feature-settings:'tnum' on; }
+html, body { font-family:var(--font-body); background:var(--bg-dark); color:var(--ink); height:100vh; overflow:hidden; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
+/* Chiffres tabulaires, limités aux nombres qui se lisent les uns contre les autres : colonnes
+   chiffrées des tableaux, folios, compteurs, rangées de KPI, valeurs de graphiques, montants
+   comparés, deltas. Jamais sur toute la page ni sur un tableau entier : le tnum d'Inter élargit
+   aussi le trait d'union (« no-go » se lirait « no - go »), et sur un grand chiffre isolé l'avance
+   fixe ouvre des trous entre les chiffres. Un nombre négatif prend le signe moins (−), pas le tiret. */
+.cost th + th, .cost td + td, .tag-folio, .nav-counter, .thumb-num, svg text,
+.kpi .n, .mockup-kpis b, .price, .sw b, .bv .v, .bh .v, .wc .v, .bul .v, .fu .fv, .fig .n, .gs .n,
+.eqn-box .b, .urow .up, .strat .sn, .rc .rv, .mh .mp, .pcell .pn, .uc-pt b, .fy-amt,
+.kt .val, .kt .delta, .mk-count, .pc-n { font-variant-numeric:tabular-nums; }
 @media (prefers-reduced-motion: reduce){ *,*::before,*::after{ animation-duration:.01ms !important; transition-duration:.01ms !important; } }
 
 .stage { position:fixed; inset:0; width:100vw; height:100vh; background:var(--bg-dark); overflow:hidden; }
@@ -289,7 +298,7 @@ h1, h2, h3 { font-family:var(--font-display); font-weight:400; letter-spacing:-0
 .cmp .col li::before { content:''; position:absolute; left:0; top:9px; width:14px; height:14px; border-radius:50%; background:var(--grad); }
 
 /* Tableau de coûts */
-.cost { width:100%; border-collapse:collapse; margin-top:30px; font-variant-numeric:tabular-nums; }
+.cost { width:100%; border-collapse:collapse; margin-top:30px; }
 .cost th, .cost td { padding:14px 22px; border-bottom:1px solid var(--rule); font-size:19px; }
 .cost th { font-size:18px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-soft); text-align:right; }
 .cost th:first-child { text-align:left; }
@@ -2351,10 +2360,10 @@ body.presenting.nav-peek .nav-rail { opacity:1; transform:translate(-50%, 0); po
       <div class="lg"><span class="wm serif">Alpaline</span></div>
       <div class="lg"><span class="wm caps">Brumaire</span></div>
       <div class="lg"><span class="glyph round"></span><span class="wm">Cap Ferro</span></div>
-      <div class="lg"><span class="wm serif">Ligne Claire</span></div>
+      <div class="lg"><span class="wm serif">Corvaline</span></div>
       <div class="lg"><span class="glyph round"></span><span class="wm caps">Ostrea</span></div>
-      <div class="lg"><span class="wm">Vellum &amp; Cie</span></div>
-      <div class="lg"><span class="glyph"></span><span class="wm serif">Kairos</span></div>
+      <div class="lg"><span class="wm">Merlivaux &amp; Cie</span></div>
+      <div class="lg"><span class="glyph"></span><span class="wm serif">Talvérin</span></div>
     </div>
     <p class="chart-note reveal">Marques inventées pour la démonstration. En mission réelle : logos clients monochromes, jamais plus de 8</p>
     <aside class="legend"><span class="lg-name">Layout 50 · Mosaïque de logos</span><span class="lg-when">Quand : prouver par les références. Grille filaire, logos en une seule teinte pour éviter la foire aux couleurs.</span></aside>
@@ -2868,8 +2877,8 @@ body.presenting.nav-peek .nav-rail { opacity:1; transform:translate(-50%, 0); po
       <h1 class="reveal" style="font-size:60px">Les acteurs déjà <span class="grad">dans la boucle</span></h1>
     </div>
     <div class="pband" data-stagger>
-      <span class="pchip on">ADEME</span><span class="pchip">Bureau Veritas</span><span class="pchip on">CCI régionale</span>
-      <span class="pchip">Réseau Entreprendre</span><span class="pchip on">Pôle de compétitivité</span><span class="pchip">Fédération de branche</span>
+      <span class="pchip on">Agence Ventelune</span><span class="pchip">Ormelin Certification</span><span class="pchip on">Chambre de Vauclarin</span>
+      <span class="pchip">Cercle Ambrevent</span><span class="pchip on">Pôle de compétitivité</span><span class="pchip">Fédération de branche</span>
       <span class="pchip">Cabinet d'audit partenaire</span><span class="pchip on">Éditeur de la plateforme</span>
     </div>
     <p class="chart-note" style="margin-top:44px">Noms fictifs de démonstration. Une preuve légère se pose sous un argument, elle ne mérite pas une slide entière</p>
@@ -3502,7 +3511,7 @@ verification: tierce_partie</pre>
       <h1 class="reveal" style="font-size:66px">Ce qui avance, <span class="grad">ce qui dérive</span></h1>
     </div>
     <div class="ktrend" data-stagger>
-      <div class="kt"><div class="row"><span class="val">-18 %</span><span class="tr good" aria-label="en baisse">↘</span></div><span class="lab">d'émissions sur les scopes 1 et 2</span><span class="delta good">-4 pts vs T3</span></div>
+      <div class="kt"><div class="row"><span class="val">-18 %</span><span class="tr good" aria-label="en baisse">↘</span></div><span class="lab">d'émissions sur les scopes 1 et 2</span><span class="delta good">−4 pts vs T3</span></div>
       <div class="kt"><div class="row"><span class="val">71 %</span><span class="tr good" aria-label="en hausse">↗</span></div><span class="lab">des sites remontent leurs données chaque mois</span><span class="delta good">+12 pts vs T3</span></div>
       <div class="kt"><div class="row"><span class="val">9 j</span><span class="tr watch" aria-label="en hausse">↗</span></div><span class="lab">de délai moyen de consolidation</span><span class="delta watch">+2 j vs T3</span></div>
       <div class="kt"><div class="row"><span class="val">3,2 M€</span><span class="tr flat" aria-label="stable">→</span></div><span class="lab">engagés sur les leviers votés</span><span class="delta flat">stable vs T3</span></div>
