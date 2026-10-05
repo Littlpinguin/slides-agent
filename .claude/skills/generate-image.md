@@ -112,7 +112,7 @@ adjectives, a hierarchy of importance.
 
 - Bad: "cool hero, brand blue, flat, 16:9, no gradient"
 - Good: "A calm editorial hero illustration of two figures reviewing a chart
-  together, rendered in flat shapes with the brand primary blue #23B5D3 as the
+  together, rendered in flat shapes with the brand primary blue #1E40AF as the
   dominant fill and a thin dark outline for detail."
 
 ### 2. Identity Lock with explicit "Image N"

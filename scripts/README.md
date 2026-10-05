@@ -12,7 +12,7 @@ pip install playwright && playwright install chromium
 | Script | Purpose | Output |
 |---|---|---|
 | `serve.sh` | Local static server to preview decks in a browser | — (HTTP server) |
-| `qa.py` | Verify slides fit the 1920×1080 frame and respect the chrome safe-zone | pass/fail report (+ optional PNGs / PDF) |
+| `qa.py` | The QA gate: engine parity, overflow, chrome safe zone, type floors, brand fonts, contrast, folios | pass/fail report, text or JSON (+ optional PNGs / PDF) |
 | `shots.py` | Capture chosen slides with animations neutralised, for visual review | `/tmp/slide-NN.png` |
 | `export-pdf.sh` | Wrapper that exports a deck to PDF | `<deck>.pdf` |
 | `export_pdf.py` | Headless Chromium PDF renderer (called by `export-pdf.sh`) | `<deck>.pdf` |
@@ -38,31 +38,51 @@ Override the port with `PORT=8080 ./scripts/serve.sh`. Stop with `ctrl-c`.
 
 ---
 
-## `qa.py` — overflow + chrome safe-zone QA
+## `qa.py` — the QA gate
 
-The mandatory gate before delivery. Activates each slide in headless Chromium
-and checks that no element overflows the `#stage-frame` (1920×1080) and that no
-content invades the bottom chrome safe-zone (needs a ≥ 16px gap). Prints a
-per-slide report and exits non-zero if any slide has issues.
+The mandatory gate before delivery. Reads the deck for engine parity with
+`templates/base.html` (the canonical feature list is `docs/engine-parity.md`),
+then activates each slide in headless Chromium, in its
+settled state, and measures in native 1920×1080 pixels: overflow out of the
+`#stage-frame`, the bottom chrome safe zone (≥ 16px gap), type floors (content
+≥ 18px, label register ≥ 12px), brand fonts, WCAG AA contrast (opacity
+included) and folios. Prints a per-slide report and exits 1 on any error
+(warnings don't fail), 2 on a usage error.
 
 ```bash
-python scripts/qa.py presentations/your-deck.html
+python3 scripts/qa.py presentations/your-deck.html
+python3 scripts/qa.py reference/catalogue-layouts.html --no-engine-check
 ```
 
-Full-bleed images are exempt by design: anything inside `.slide-bg` and any
-element with a `data-bleed` attribute (a photo that runs to the frame edge) is
-skipped by the overflow and chrome-gap checks; the text on top is still checked.
+The label register (12px floor) is: anything inside `.chrome`, the label
+classes (`.eyebrow`, `.meta-label`, `.signature`, `.nav-num`, `.tag-meta`,
+`.tag-folio`, `.tag-signature`) and any text set in a monospace stack. Brand
+fonts come from `--font`, a DTCG tokens file (`--tokens`, `brand/tokens.json`,
+`01-brand/tokens.json`), or the deck's `--font-display` / `--font-body` /
+`--font-mono` variables.
+
+Full-bleed images are exempt by design: anything inside `.slide-bg`, `.aurora`,
+`.dust-grid` and any element with a `data-bleed` attribute (a photo that runs
+to the frame edge) is skipped; the text on top is still checked.
 
 Useful flags:
 
-- `--viewport 1920x1080` — change the test viewport (default `1920x1080`).
-- `--screenshots` — also save per-slide PNGs to `/tmp/slides-qa/`.
+- `--min-font 18` / `--min-font-chrome 12` — the two type floors.
+- `--viewport 1920x1080`, `--frame 1920x1080` — window and native frame sizes.
+- `--format json` — machine-readable report with totals by finding type.
+- `--max-per-slide 8` — findings listed per slide and type (`0` lists all).
+- `--screenshots [DIR]` — also save per-slide PNGs (default `/tmp/slides-qa/`).
 - `--with-pdf` — additionally render a PDF and fail if the average page weight
   is implausibly small (symptom of print CSS collapsing pages);
   tune with `--min-kb-per-slide`.
+- `--lang CODE`, `--bleed SELECTOR`, `--folio SELECTOR` / `--no-folio`,
+  `--no-engine-check`, `--wait MS`: see `--help`.
 
 **Produces:** a pass/fail report on stdout (`All slides clean · N / N` on
 success). With the optional flags, PNGs and/or a PDF under `/tmp/slides-qa/`.
+
+Tests: `python3 -m pytest tests -q` (the deck tests skip cleanly without
+Playwright or Chromium).
 
 ---
 
@@ -160,7 +180,7 @@ python3 scripts/pexels.py credits presentations/your-deck.html    # + --lang fr
 - `credits` prints the `photo-credits` slide (see `templates/components.md`)
   listing each photographer with the slides where their photo appears.
 
-Offline tests: `python3 -m pytest tests/ -q`.
+Offline tests: `python3 -m pytest tests/test_pexels.py -q`.
 
 **Produces:** photos + sidecars in `assets/photos/`, contact sheets in
 `.cache/pexels/`, credits slide HTML on stdout. Never paste the API key into a

@@ -42,7 +42,7 @@ If the deck must stay private:
 
 ## A note on Google Fonts
 
-`templates/base.html` loads Outfit + JetBrains Mono from Google Fonts. If your deck must work fully offline (e.g. in an air-gapped environment), self-host the fonts:
+`templates/base.html` loads Inter + JetBrains Mono from Google Fonts (the families of the neutral example palette; replace them with your brand's). If your deck must work fully offline (e.g. in an air-gapped environment), self-host the fonts:
 
 1. Run `npx google-fonts-helper download` (or visit <https://gwfh.mranftl.com/fonts>) to grab the woff2 files.
 2. Drop them into `assets/fonts/`.

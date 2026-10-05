@@ -9,19 +9,20 @@ Both are populated automatically when you first open the project — the agent w
 
 ## Editing tokens.css by hand
 
-Replace placeholder values. All colours referenced in the slide templates resolve through these custom properties, so a single edit propagates everywhere.
+The file ships a neutral example palette (deep blue `#1E40AF`, amber `#F59E0B`, slate `#0F172A` on `#F8FAFC`, Inter and JetBrains Mono) so the starter works before onboarding. Replace those values with your brand's. All colours referenced in the slide templates resolve through these custom properties, so a single edit propagates everywhere.
 
 ```css
 :root {
   --brand-primary: #YOURCOLOR;
   --brand-secondary: #YOURCOLOR;
-  --brand-accent: #YOURCOLOR;
-  --brand-neutral-light: #FAFAFA;
-  --brand-neutral-dark: #1B1F25;
-  --font-display: 'Your Display Font', sans-serif;
+  --brand-neutral-light: #YOURCOLOR;
+  --brand-neutral-dark: #YOURCOLOR;
+  --font-display: 'Your Display Font', system-ui, sans-serif;
   --font-mono: 'Your Mono Font', ui-monospace, monospace;
 }
 ```
+
+Then recompute the derived values next to them (`-deep`, `-soft`, `--rule`, `--rule-light`, `--label-accent`, `--label-accent-dark`): each one carries its formula in a comment, and `python3 scripts/qa.py` on your first deck tells you when a label falls under 4.5:1.
 
 ## Editing guidelines.md by hand
 

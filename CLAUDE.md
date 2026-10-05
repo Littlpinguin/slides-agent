@@ -15,7 +15,7 @@ The reference quality bar is *Monocle × Bloomberg viz × MIT Tech Review print*
 
 Before doing anything else, check whether onboarding has run. Onboarding is **complete** when:
 
-1. `brand/tokens.css` no longer contains the placeholder colors (`#23B5D3` / `#F0BA4C` / `#FAF2DF` / `#292E35` from the template defaults), AND
+1. `brand/tokens.css` no longer contains the neutral example palette shipped with the template (`#1E40AF` / `#F59E0B` / `#F8FAFC` / `#0F172A`), AND
 2. `brand/guidelines.md` no longer contains any `TODO` markers, AND
 3. `assets/logos/` contains at least one file other than `.gitkeep`.
 
@@ -40,12 +40,17 @@ Use `WebFetch` on the homepage and 1–2 secondary pages (about, product, blog p
 - **Colours**: primary, secondary, neutrals (light + dark backgrounds), accent. Read CSS custom properties when present, otherwise sample dominant hues from screenshots.
 - **Typography**: font families and weights actually loaded (`<link rel=stylesheet>` of Google Fonts, `@font-face` declarations).
 - **Voice**: tone, vocabulary, sentence length, pronouns (we/you/I), banned-feeling words.
-- **Visual signature**: hairlines vs heavy shapes, photography style, illustration style, animation cues, whitespace density.
+- **Visual signature**: hairlines vs heavy shapes, photography style, illustration style, animation cues, whitespace density, and any recurring motif (a pattern, a texture, a corner ornament) the brand repeats across pages.
 - **Positioning**: who the audience is, the one-line value prop, what the brand evidently is *not*.
 
 ### Step 3 — Populate `brand/tokens.css`
 
-Edit `brand/tokens.css`, replace the `--brand-*` and `--font-*` values with what you extracted. Keep the structure unchanged. If you can't determine a value, leave the default and add a `/* TODO: confirm */` comment next to it.
+Edit `brand/tokens.css`, replace the `--brand-*` and `--font-*` values with what you extracted. Keep the structure unchanged: replace values, never variable names, and never write a `{{...}}` placeholder into a value (an invalid custom property silently disables every rule that uses it). The comment next to each brand variable names the setup placeholder it maps to (`← BRAND_COLOR_PRIMARY`, `← BRAND_COLOR_ACCENT`, `← BRAND_COLOR_LIGHT`, `← BRAND_COLOR_DARK`, `← BRAND_GRADIENT`, `← BRAND_FONT_PRIMARY`, `← BRAND_FONT_SECONDARY`), and the comment next to each derived value (`-deep`, `-soft`, `--rule`, `--rule-light`) gives the `color-mix()` formula to recompute it from the new base colour. If you can't determine a value, leave the default and add a `/* TODO: confirm */` comment next to it.
+
+Two blocks of the file need a decision of their own:
+
+- **Label register.** Chrome text and eyebrows are 12-13px, so they need 4.5:1. Set `--label-accent` to the new primary darkened until it reaches 4.5:1 on `--brand-neutral-light-deep`, and leave `--chrome-opacity` / `--chrome-opacity-dark` at 0.7. QA measures them on the first deck: on a contrast error in the chrome or an eyebrow, retune these tokens (just past the threshold, never to full black), not the slide.
+- **Brand pattern.** If Step 2 found a recurring motif, it goes here: `--brand-pattern` (the motif drawn in the dark ink, for light slides), `--brand-pattern-light` (the same motif drawn light, for dark slides), `--corner-motif` (a corner ornament). Write each as an SVG data URI, or as a path relative to the deck (`../assets/illustrations/...`) for a file the user supplied. No motif found: leave them at `none`, never invent a decoration. The classes that draw them (`.texture`, `.motif`, `.corner`, `.filet-orn`) are documented in `templates/components.md`, "Brand pattern hooks".
 
 ### Step 4 — Populate `brand/guidelines.md`
 
@@ -124,7 +129,7 @@ These survived contact with multiple real decks. Don't rationalise around them.
 
 - Native frame is **1920×1080**. Every slide is positioned inside `.stage-frame`. Scaling to viewport is handled by the JS at the bottom of `templates/base.html`.
 - One idea per slide. If you're tempted to add a second column of bullet points: split the slide.
-- Insert "breathing" slides every 4–5 slides — a single big number or short phrase, charcoal-on-cream or vice-versa. They reset the eye.
+- Insert "breathing" slides every 4–5 slides — a single big number or short phrase, dark-on-light or vice-versa. They reset the eye.
 
 ### 2. Brand strict
 
@@ -139,13 +144,14 @@ These survived contact with multiple real decks. Don't rationalise around them.
 - Margins: 80–120px slide padding. Don't crowd the edges.
 - No `glassmorphism`. No huge radial-gradient orbs. No `box-shadow: 0 0 80px rgba(...)`.
 
-### 4. Anti-overflow
+### 4. QA gate (anti-overflow, type floors, contrast)
 
 The frame is fixed. Anything below `y=1000` collides with the bottom chrome row.
 
-- After every meaningful change, run `python scripts/qa.py presentations/<your-deck>.html`. It opens the deck in headless Chromium at 1920×1080, advances every slide, and reports any element overflowing the frame or invading the chrome safe-zone (16px gap above the bottom row).
-- Don't ship a deck that returns anything other than `All slides clean`.
-- Full-bleed images are exempt by design: `.slide-bg` blocks and elements marked `data-bleed` (a photo column running to the frame edge) are skipped by the overflow and chrome-gap checks. Use `data-bleed` only on the image container, never on a text block, or QA stops protecting that text.
+- After every meaningful change, run `python3 scripts/qa.py presentations/<your-deck>.html`. It opens the deck in headless Chromium, activates every slide in its settled state and measures, in native 1920×1080 pixels: engine parity with `templates/base.html`, overflow out of the frame, the chrome safe zone (16px gap above the bottom row), the type floors (rule in "Minimum on-screen type size" below), brand fonts, WCAG AA contrast on every text (chrome included, `opacity` counts) and folios.
+- Don't ship a deck that returns anything other than `All slides clean`. Warnings (`tight-body`, `long-label`, contrast on a gradient background, an undeclared monospace) don't fail the gate, but read them: they usually mean a slide wants splitting or a colour pair wants checking by eye.
+- Full-bleed images are exempt by design: `.slide-bg` blocks and elements marked `data-bleed` (a photo column running to the frame edge) are skipped by every check, and so are `.aurora` and `.dust-grid`. Use `data-bleed` only on the image container, never on a text block, or QA stops protecting that text.
+- Never game a finding: no `data-bleed` on text, no monospace to slip a sentence under the content floor, no raising `--min-font-chrome` or lowering `--min-font` to get a green run. Fix the slide.
 
 ### 4b. Print rendering pitfalls (Chromium PDF pipeline)
 
@@ -164,7 +170,7 @@ Some CSS features that look right on screen render broken in the exported PDF. T
 
 | Symptom | Cause | Fix |
 |---|---|---|
-| `%` or `O` clipped on huge display text | `line-height < 1` plus aggressive negative letter-spacing | `line-height: 1.05–1.15`, `letter-spacing: -0.025em` max, `padding: 0.08em 0.06em; margin: -0.08em -0.06em; overflow: visible` |
+| `%`, `O` or the descenders of `g j p q` clipped on display text | `background-clip: text` only paints inside the inline-block box, whose height is the line-height; tight display leading pushes glyphs out of it | `line-height` ≥ 1.1 on text titles, `letter-spacing: -0.025em` max, and on the gradient span `padding: 0.22em 0.08em; margin: -0.22em -0.08em; overflow: visible` (never reduce it) |
 | Gradient text renders differently after `transform: scale()` | `-webkit-background-clip: text` plus sub-pixel rendering | `display: inline-block; transform: translateZ(0); -webkit-font-smoothing: antialiased; text-rendering: geometricPrecision` |
 | `<use>` of a `<symbol>` shows nothing when filled with a gradient | `fill="url(#grad)"` doesn't traverse `<use>`'s shadow DOM | Always `fill="currentColor"` inside `<symbol>`, set `color:` on the wrapper |
 
@@ -176,13 +182,15 @@ See `templates/base.html` (CSS section "typography traps") for the resolved patt
 
 Three files, in the order you should reach for them:
 
-1. **`reference/LAYOUTS.md`** — the index. 113 layouts in 8 families, each with a "reach for it when" line. **Start here**, and pick layouts by the beat you need rather than by scrolling.
-2. **`reference/catalogue-layouts.html`** — all 113 executed and self-captioned in a single deck. Open it, press `O`, and look. The brand and every figure in it are fictional, which is what makes it safe to read as a layout reference (see the exception in "What this template never does").
+1. **`reference/LAYOUTS.md`** — the index. 120 layouts in 8 families, each with a "reach for it when" line. **Start here**, and pick layouts by the beat you need rather than by scrolling.
+2. **`reference/catalogue-layouts.html`** — all 120 executed and self-captioned in a single deck. Open it, press `O`, and look. The brand and every figure in it are fictional, which is what makes it safe to read as a layout reference (see the exception in "What this template never does").
 3. **`templates/components.md`** — paste-ready HTML and scoped CSS for the patterns that have been ported, with their known traps.
 
 **The variety rule.** No layout twice in a row, and no layout more than twice in a deck. A deck that repeats card grids reads as generated; one that uses eight different layouts reads as authored. Before building, write the beat sequence, then assign one layout per beat. If two adjacent beats want the same layout, one of them is the wrong beat.
 
 Every layout in the index is built. To add one, follow the procedure at the bottom of `LAYOUTS.md`.
+
+**QA on the catalogue.** The catalogue is a specimen book, not a full deck (it has no headless PDF hooks), so skip the engine parity check: `python3 scripts/qa.py reference/catalogue-layouts.html --no-engine-check`. Its `.plate` slides and `.tag-folio` folios are detected automatically, and its `.legend` cartouche (the self-caption) is not audited. A layout taken from the catalogue must still pass the gate inside your deck.
 
 **Screenshots.** The catalogue ships a `.shotph` placeholder (browser chrome around a labelled empty frame). Use it instead of embedding an image while the real capture is missing: it shows the aspect ratio needed and keeps the slide legible.
 
@@ -194,11 +202,11 @@ When generating a deck, **copy** the components you need into the new presentati
 
 A new presentation is born by:
 
-1. Copying `templates/base.html` to `presentations/<name>.html`.
+1. Copying `templates/base.html` to `presentations/<name>.html`. It carries the full engine (the canonical list is `docs/engine-parity.md`): never strip or rewrite it.
 2. Inlining `brand/tokens.css` contents inside the `:root { ... }` block.
 3. Inlining the logo `<symbol>` from `assets/logos/`.
-4. Filling the `<main id="stage">` with one `<section class="slide">` per slide, composed from `templates/components/`.
-5. Running `python scripts/qa.py presentations/<name>.html`.
+4. Filling the `<main id="stage">` with one `<section class="slide">` per slide, composed from `templates/components.md` and the catalogue. Each slide carries `data-family` (the catalogue's keys: `ouverture`, `editorial`, `dataviz`, `schema`, `tableau`, `preuve`, `conclusion`, `photo`), `data-eyebrow` and `data-heading`, and an empty `.nav-num` span: the engine numbers the folios.
+5. Running `python3 scripts/qa.py presentations/<name>.html`.
 6. Iterating until QA returns clean.
 
 ---
@@ -211,7 +219,7 @@ The user has three delivery modes. Default to (A) — never push a heavy stack o
 ```
 ./scripts/serve.sh
 ```
-Starts a static server on `http://localhost:5173`. Open the deck, press `→` to advance, `O` for overview, `P` to print to PDF. No build step. No dependencies.
+Starts a static server on `http://localhost:5173`. Open the deck, press `→` to advance, `O` for the overview (grouped by `data-family`), `F` for fullscreen, `P` to print to PDF. No build step. No dependencies.
 
 **B. PDF export**
 ```
@@ -258,11 +266,19 @@ The template assumes you have access to a typical Claude Code skill set. Invoke 
 
 Validated on real projected decks (mid-2026). They matter for professional, room-readable output.
 
+### Overview grouped by family
+The overview (`O`) groups the thumbnails by `data-family`, in the order of the catalogue's families, so a 24-slide deck reads as its structure. Keys are the catalogue's (`ouverture`, `editorial`, `dataviz`, `schema`, `tableau`, `preuve`, `conclusion`, `photo`); a slide without a known family lands in a last "Other slides" group. While the panel is open only `O` and `Esc` act, and a click outside the thumbnails closes it.
+
 ### Presentation mode (fullscreen)
 `templates/base.html` ships a `⛶` button and the `F` shortcut. They request OS fullscreen; while active, `body.presenting` is set, the slide scales to fill the whole screen (no nav reserved), and the nav-rail auto-hides — it reappears when the cursor nears the bottom edge. Nothing to wire per deck.
 
-### Minimum on-screen type size
-A slide is read from across a room. **No content text below ~18-20px** in the 1920×1080 frame (an 18pt projected floor; comfortable body is 20-24pt). Only mono chrome labels (folio, signature, eyebrow) may sit at 12-14px. Never shrink a real sentence to caption size to make it fit: split the slide or cut words instead.
+### Minimum on-screen type size (enforced by `scripts/qa.py`)
+A slide is read from across a room. Two registers, measured on the computed font size in the 1920×1080 frame:
+
+- **Content text: 18px minimum** (`type-floor` error; an 18pt projected floor). Comfortable body is 24px and up: content text under 24px, headings excepted, is a `tight-body` warning.
+- **Label register: 12px minimum** (`type-floor` error under 12px). A text is in the label register when it sits inside `.chrome`, carries a label class (`.eyebrow`, `.meta-label`, `.signature`, `.nav-num`; `.tag-meta`, `.tag-folio`, `.tag-signature` in the catalogue), or is set in a monospace stack. These are the folio, signature, eyebrow and caption labels, and they sit at 12-14px.
+
+Never shrink a real sentence to caption size to make it fit: split the slide or cut words instead. Setting a sentence in mono does not make it a label: a label-register text under 18px that runs past 12 words is a `long-label` warning.
 
 ### Block-centering to kill empty middles
 For a "title + content" slide, center the whole block (title + grid/table/cards) as one unit, not "title pinned to the top + content centered in the leftover space" (which leaves a void between them). Give the slide `justify-content: center` and make the content wrapper `flex: 0 0 auto`, so the title and its content read as one centered group.
@@ -272,6 +288,9 @@ Use inline Lucide-style SVGs (`stroke: currentColor; stroke-width: 1.75; fill: n
 
 ### Static decorative elements
 Decorative illustrations / mascots stay still: no looping float/bob animation (it distracts during a talk). Only the one-shot reveal-on-enter transition is allowed.
+
+### Ambient aurora, sparingly
+`templates/base.html` ships an optional `.aurora` layer (two blurred brand-colour discs, first child of the slide), used on its breathing slide. Rhythm slides only (cover, breathers, closing), two or three per deck, never behind a paragraph or a chart. QA skips it and the PDF export hides it. See "Ambient aurora" in `templates/components.md`.
 
 ---
 
@@ -289,11 +308,11 @@ Decorative illustrations / mascots stay still: no looping float/bob animation (i
 
 Before declaring a deck done, every item must pass:
 
-- [ ] `python scripts/qa.py presentations/<deck>.html` returns "All slides clean — no overflow"
-- [ ] `python scripts/export_pdf.py presentations/<deck>.html` produces a PDF whose size is plausible — at least ~150 KB per slide on average. A 20-slide deck with a 250 KB PDF means most pages collapsed to nothing; investigate before shipping.
+- [ ] `python3 scripts/qa.py presentations/<deck>.html` returns `All slides clean` (no overflow, no text under 18px of content or 12px of label, every text on a brand font and at WCAG AA contrast, folios in order), and its warnings have been read
+- [ ] `python3 scripts/qa.py presentations/<deck>.html --with-pdf` passes and the PDF weight it prints is plausible: a real deck averages around 150 KB per slide (the gate itself fails under 40 KB; raise it with `--min-kb-per-slide` for image-heavy decks). A 20-slide deck with a 250 KB PDF means most pages collapsed to nothing; investigate before shipping. The PDF goes through the same print hooks as `scripts/export_pdf.py`.
 - [ ] Every CSS rule that uses `background-clip: text` has its selector listed in `GRADIENT_TEXT_SELECTORS` (search the file for `background-clip: text` and cross-check). Missing entries = silent blank text in PDF, no error.
 - [ ] No em-dash `—` in user-visible text. Run: `grep "—" presentations/<deck>.html | grep -v "<!--"` — should return nothing or only matches inside CSS comments.
 - [ ] The chrome `tag-folio` (`Plate 0X / N` or equivalent) is correct on every slide. Auto-counter in the nav-rail and the in-slide folios are both auto-numbered from DOM order by JS (no manual edits needed).
 - [ ] Manually opened in Chrome, navigated all slides ←/→, tested O / P / F (fullscreen) / drag bar / wheel / 1-9+Enter / Esc.
-- [ ] Each `<section class="slide">` has a `data-eyebrow` and `data-heading` attribute (used by the overview panel — empty thumbs mean the attributes were forgotten).
+- [ ] Each `<section class="slide">` has `data-family`, `data-eyebrow` and `data-heading` attributes (the overview groups thumbnails by family and labels them with the other two — empty thumbs or an "Other slides" group mean an attribute was forgotten).
 - [ ] If the deck uses any `pexels-*` photo: the last slide is the `photo-credits` slide, regenerated with `python3 scripts/pexels.py credits presentations/<deck>.html` after the final photo change, and the command prints no `warning:` line.

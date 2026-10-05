@@ -50,7 +50,7 @@ description: Generate brand-aligned standalone HTML presentations using the slid
 ### Verified third-party logo sources
 
 ✅ Available on `https://cdn.simpleicons.org/<slug>/<hex-no-hash>`:
-`anthropic`, `n8n`, `spotify`, `youtube`, `applepodcasts`, `deezer`, `discord`, `claude`, and most major tech brands. Pass the colour as a hex without `#` (e.g. `292E35`).
+`anthropic`, `n8n`, `spotify`, `youtube`, `applepodcasts`, `deezer`, `discord`, `claude`, and most major tech brands. Pass the colour as a hex without `#` (e.g. `0F172A`).
 
 ⚠ Often missing on simpleicons (404), use these alternates:
 | Brand | Source |
@@ -71,14 +71,18 @@ Save fetched logos under `assets/logos/<slug>.<ext>` and reference relatively fr
 
 ### Phase 6 — Navigation
 
-17. Triple navigation is already wired in `templates/base.html`: drag-bar, overview panel (`O` / `Esc`), quick-jump (digits + Enter). Plus the classics: ←/→/Space/Page↑↓/Home/End, mouse wheel debounced 700ms, touch swipe. **Do not remove or reimplement.**
+17. Triple navigation is already wired in `templates/base.html`: drag-bar, overview panel (`O` / `Esc`, grouped by `data-family`: give every slide one of the catalogue's keys, `ouverture`, `editorial`, `dataviz`, `schema`, `tableau`, `preuve`, `conclusion`, `photo`), quick-jump (digits + Enter). Plus the classics: ←/→/Space/Page↑↓/Home/End, mouse wheel debounced 700ms, touch swipe, and fullscreen (`F`). Folios are numbered from `SLIDE_COUNT`: leave the `.nav-num` spans empty. **Do not remove or reimplement**: the canonical feature list is `docs/engine-parity.md`.
 18. Frame centering: `transform: translate(-50%, calc(-50% + ${yShift}px)) scale(${scale})` with `yShift = -(24 + nav.offsetHeight)/2`. CSS `place-items: center` does NOT work with `transform: scale()` — the layout box stays 1920×1080.
 
 ### Phase 7 — Playwright QA (non-negotiable)
 
-19. Run `python scripts/qa.py presentations/<your-deck>.html`. It must return `All slides clean`. The script verifies:
+19. Run `python3 scripts/qa.py presentations/<your-deck>.html`. It must return `All slides clean`. The script verifies:
+    - The deck embeds the full engine of `templates/base.html` (fullscreen, overview, auto folios, PDF hooks).
     - No element overflows the 1920×1080 frame.
     - Bottom-content vs bottom-chrome gap ≥ 16px on every slide.
+    - Type floors: content text ≥ 18px; label register (`.chrome`, eyebrow / folio / signature classes, monospace text) ≥ 12px.
+    - Every text on a brand font, at WCAG AA contrast (opacity included), folios present and increasing.
+    Warnings (`tight-body` under 24px, `long-label`, contrast on a gradient) don't fail the gate but must be read.
 20. Re-test at 1366×768 and 1024×600 to confirm responsive scaling. Visually inspect each screenshot in `/tmp/`.
 
 ### Phase 8 — Delivery
@@ -90,9 +94,9 @@ Save fetched logos under `assets/logos/<slug>.<ext>` and reference relatively fr
 
 | Symptom | Cause | Fix |
 |---|---|---|
-| `%` or `O` clipped on huge display text | `line-height < 1` plus aggressive negative letter-spacing | `line-height: 1.05–1.15`, `letter-spacing: -0.025em` max, `padding: 0.08em 0.06em; margin: -0.08em -0.06em; overflow: visible` |
+| `%`, `O` or the descenders of `g j p q` clipped on display text | `background-clip: text` only paints inside the inline-block box, whose height is the line-height | `line-height` ≥ 1.1 on text titles, `letter-spacing: -0.025em` max, `padding: 0.22em 0.08em; margin: -0.22em -0.08em; overflow: visible` on the gradient span (never reduce it) |
 | Gradient text renders differently after `transform: scale()` | `-webkit-background-clip: text` plus sub-pixel rendering | `display: inline-block; transform: translateZ(0); -webkit-font-smoothing: antialiased; text-rendering: geometricPrecision` |
-| Coloured halos around gradient text in PDF/print | `background-clip: text` plus `display: inline-block` clip incorrectly in print | In `@media print`, replace gradient with solid `var(--brand-primary-deep)` or `var(--brand-secondary-deep)` |
+| Coloured halos or a solid gradient box around gradient text in PDF/print | `background-clip: text` is not honoured by the print pipeline | Handled by the rasteriser in `templates/base.html` (overlay PNG, `background: none` while printing). Add any new gradient-text selector to `GRADIENT_TEXT_SELECTORS`; never swap the gradient for a flat colour |
 | Number + unit wrapping to two lines | `display: block` or grid column too narrow | `display: inline-flex; align-items: baseline; white-space: nowrap`, widen the column |
 | Logo invisible after embedding | `fill: url(#grad)` does not traverse `<use>` shadow DOM | `fill="currentColor"` inside `<symbol>`, set `color:` on the wrapper |
 | Element overflowing the bottom chrome row | Content component too tall, padding-bottom too short | Audit via Playwright, reduce font-sizes / paddings / gaps; never shrink slide padding-bottom below 110px |
@@ -115,7 +119,7 @@ The bottom chrome (`.chrome-row.bottom` containing the brand mark + signature) s
 
 Chromium has a documented bug in its PDF pipeline with `background-clip: text` + `linear-gradient`: coloured artefact lines appear at the edges of multi-line inline-blocks. **No CSS combination fixes it** (tested: `box-decoration-break: clone`, `display: inline`, `isolation: isolate`, padding/margin resets — all fail).
 
-The solution wired into `templates/base.html`: before `window.print()`, walk every gradient-text selector, render each into a `<canvas>` with the same gradient, replace the DOM with `<img>` PNGs, then restore on `afterprint`.
+The solution wired into `templates/base.html`: before `window.print()`, walk every gradient-text selector, draw it into a `<canvas>` character by character at the positions the browser laid out, with the element's own gradient, and lay that PNG over the text (kept in place, invisible, so the layout does not move); everything is restored on `afterprint`. See `docs/pdf-export.md`.
 
 Selectors to keep up-to-date in the rasteriser (in `templates/base.html`, `GRADIENT_TEXT_SELECTORS` constant):
 
@@ -149,7 +153,7 @@ See `docs/pdf-export.md` for full detail.
 - Use **only** the font families declared in `brand/tokens.css`. No third family snuck in.
 - Logo lives in the bottom-right chrome on every slide via `<use href="#brand-logo">`.
 - Border-radius is 4–50px or pill — never 0 (unless the brand explicitly requires it).
-- Alternate light vs dark slide backgrounds for rhythm. A 24-slide deck shouldn't be 24 cream slides in a row.
+- Alternate light vs dark slide backgrounds for rhythm. A 24-slide deck shouldn't be 24 light slides in a row.
 - Numbers as heroes: huge display, gradient or solid; secondary text small. Restraint everywhere.
 - Forbidden: bento grids, gratuitous glassmorphism, stock photography, fake-bold marketing copy.
 

@@ -2,10 +2,10 @@
 
 The index of every layout available to this project. Two sources feed it:
 
-1. **`catalogue-layouts.html`** — all 113 layouts, executed and captioned, in a single deck. Every slide carries its own legend: layout name and when to use it. Brand and data are fictional, so it is safe to open, screenshot, and share. **Open this first.** Press `O` for the grouped overview.
+1. **`catalogue-layouts.html`** — all 120 layouts, executed and captioned, in a single deck. Every slide carries its own legend: layout name and when to use it. Brand and data are fictional, so it is safe to open, screenshot, and share. **Open this first.** Press `O` for the grouped overview.
 2. **This file** — the index, for choosing by narrative beat rather than by scrolling a deck.
 
-Every layout listed here is executed in the catalogue. Nothing is described but unbuilt.
+Every layout listed here is executed in the catalogue. Nothing is described but unbuilt. Plates 114 to 120 are compositions harvested from production decks of the marketing-cockpit template, which had no equivalent among the first 113; paste-ready code for them is in `templates/components.md`, "Compositions harvested from production decks".
 
 ## How to use the library
 
@@ -44,6 +44,9 @@ Before building, sketch the beat sequence, then assign one layout per beat. If t
 | `split-visual` | 50/50 visual and text, alternating sides across the deck | Any beat that has one image and one idea | catalogue 22, 23 |
 | `fullbleed` | Edge-to-edge image under a readability veil | A mood beat, or a location | catalogue 21 |
 | `split-illus` | Chapter opener: copy on one side, brand illustration on the other | Opening a chapter in a long document. Alternate the side each time | catalogue 90 |
+| `cards` | Two to four equivalent cards, numbered | One idea with two to four facets of the same rank. Never more than four, never two levels of bullets | catalogue 04 |
+| `editorial-foreword` | A side rail (issue number, metadata) and a two-column body opened by a drop cap | A letter, a manifesto, a long opening note meant to be read | catalogue 114 |
+| `framed-cartouche` | One founding statement in a corner-bracketed frame, logo and name above, four metadata cells below | A charter, a commitment, a signed manifesto | catalogue 115 |
 
 ## Family 3 — Data visualisation
 
@@ -61,6 +64,8 @@ Before building, sketch the beat sequence, then assign one layout per beat. If t
 | `funnel` | Stacked narrowing bars | A conversion path, or a market sizing | catalogue 38 |
 | `figures-grid` | Six figures in a hairline grid, each with a caption | A factual panorama with no narration | catalogue 39 |
 | `kpi-strata` | Three stacked KPI bands, full width | Opening a results review | catalogue 63 |
+| `kpi-band` | Three or four figures in a row, each with a one-line caption | Numbers of the same rank, read side by side | catalogue 05 |
+| `kpi-trend-cards` | Value, trend chip and comparison per card; the colour judges, the arrow only points | A review where the movement matters as much as the level | catalogue 116 |
 | `equation` | Box, operator, box, equals, result | Making a formula visual and memorable | catalogue 59 |
 | `spectrum` | An axis with zones and a positioned marker | Placing something on a continuum | catalogue 60 |
 | `scen-columns` | Scenario columns, one per hypothesis | P&L cases, pessimistic to optimistic | catalogue 61 |
@@ -81,7 +86,7 @@ Before building, sketch the beat sequence, then assign one layout per beat. If t
 | `vertical-timeline` | A vertical rail with dated stops | A history, or a long sequence | catalogue 43 |
 | `org-chart` | Nested boxes | Team structure, governance | catalogue 44 |
 | `zigzag` | Alternating left-right steps down the plate | A journey with 4 to 6 stages | catalogue 45 |
-| `y-split` | A shared trunk that forks into two tracks | "Same start, two paths" — one of the most distinctive schemas | catalogue 64 |
+| `y-split` | A shared trunk that forks into two tracks (`branching-flow` in the marketing-cockpit template) | "Same start, two paths" — one of the most distinctive schemas | catalogue 64 |
 | `file-tree` | An indented tree with rails and dots | Site architecture, folder structure, information architecture | catalogue 65 |
 | `depth-doors` | Access levels, each with a filled-bar depth indicator | Comparing permission tiers or depths of access | catalogue 93 |
 | `annotated-tree` | A monospace tree with numbered call-outs explained beside it | Explaining a file or folder structure — annotate only what matters | catalogue 96 |
@@ -96,7 +101,7 @@ Before building, sketch the beat sequence, then assign one layout per beat. If t
 
 | Layout | What it does | Reach for it when | Status |
 |---|---|---|---|
-| `table-simple` | Rows and columns, hairlines only | Reference data the audience will read | catalogue 05, 13 |
+| `table-simple` | Rows and columns, hairlines only | Reference data the audience will read | catalogue 13, without the accented column |
 | `table-ab` | Two columns compared, one accented | You versus the alternative | catalogue 13 |
 | `comparison-table` | Three columns, you and two rivals | A competitive landscape | catalogue 74 |
 | `before-after` | Two panels, mirrored items, the right one accented | Selling a transformation — very high hit rate | catalogue 15 |
@@ -110,6 +115,7 @@ Before building, sketch the beat sequence, then assign one layout per beat. If t
 | `platform-columns` | One column per OS or platform, strictly parallel | A procedure that differs by environment | catalogue 92 |
 | `question-answer` | Situation on the left, decision on the right | Turning a list of cases into decisions | catalogue 94 |
 | `verdict-cases` | Real cases, each with a verdict mark and its rule | Concrete cases beat an abstract rule | catalogue 95 |
+| `legend-table` | Symbol, name, definition and count, one row per mark | A deck reuses symbols or categories: pose them once, early, then never explain them again | catalogue 117 |
 
 ## Family 6 — Proof and product
 
@@ -120,7 +126,7 @@ Before building, sketch the beat sequence, then assign one layout per beat. If t
 | `live-stage` | A screen and a phone staged together | A product that spans devices | catalogue 76 |
 | `product-shots` | A stack of overlapping captures | Several screens without several slides | catalogue 77 |
 | `activity-wall` | A dense wall of small cards, deliberately overflowing | Volume as the argument: "look how much there is" | catalogue 78 |
-| `card-wall-bleed` | Cards running off the top, bottom and right edges | A portfolio, an asset library | catalogue 79 |
+| `card-wall-bleed` | Cards running off the top, bottom and right edges; only blank cards bleed (`data-bleed`), the cards that carry text stay inside the frame | A portfolio, an asset library | catalogue 79 |
 | `logo-wall` | A mosaic of logos | Clients, integrations, partners | catalogue 50 |
 | `partners-band` | A single row of chips with partner names | Light proof, at the bottom of an argument slide | catalogue 80 |
 | `proof-grid` | Cells of evidence, each with a figure and a source | Backing a claim with several proofs at once | catalogue 81 |
@@ -131,12 +137,14 @@ Before building, sketch the beat sequence, then assign one layout per beat. If t
 | `map-coverage` | Geographic coverage | Territory, sites, footprint | catalogue 51 |
 | `screenshot-steps` | A numbered walkthrough in captures | A tutorial or a handover document | catalogue 84 |
 | `screenshot-annotated` | One capture, three numbered annotations beside it | A real screenshot carries the argument — never draw arrows on the image | catalogue 87 |
-| `screenshot-full` | A single capture, edge to edge, nothing else | One screen is the whole demonstration | catalogue 88 |
+| `screenshot-full` | A single capture filling the plate under its title, nothing else | One screen is the whole demonstration | catalogue 88 |
 | `showcase` | Three captures, each with a type, a title and one line | Showing what was actually produced | catalogue 89 |
 | `codebox` | A copyable code or prompt block | Anything the reader will retype | catalogue 85 |
 | `code-keys` | Code on the left, its two or three significant keys explained on the right | A config file where only a few keys actually matter | catalogue 97 |
 | `link-list` | Source, promise, address — three fixed columns | The reader must be able to verify for themselves | catalogue 98 |
 | `deliverable-cards` | Cards with an illustration band above the copy | Presenting the pieces of a kit or an offer | catalogue 99 |
+| `chip-cloud` | A huge count, then the inventory as a cloud of chips, three highlighted at most | A scope or a catalogue whose extent is the argument | catalogue 118 |
+| `avatar-wall` | A dense wall of round, anonymous faces and a counter | The mass of a community or a network is the proof | catalogue 119 |
 
 ## Family 7 — Offer and closing
 
@@ -153,6 +161,7 @@ Before building, sketch the beat sequence, then assign one layout per beat. If t
 | `takeaways` | Three to five things to remember | The penultimate slide of a long deck | catalogue 52 |
 | `cta-final` | One decision, one date | The last slide, always | catalogue 20 |
 | `ask` | The explicit ask, isolated | An investor deck, or a partnership | catalogue 104 |
+| `qr-closing` | Copy and benefits facing a card with one QR code and the address in clear | The ending calls for an action the room can take right now | catalogue 120 |
 
 ## Family 8 — Photography
 

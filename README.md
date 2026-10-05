@@ -24,13 +24,14 @@ Both are used as **inspiration sources** during art direction (Phase 2) and comp
 ## What this template gives you
 
 - A **brand-aware design system** that auto-configures from your website (colours, typography, voice).
-- A **layout library of 113 editorial slide layouts** in 8 families, indexed with a "reach for it when" line each, all **executed and self-captioned** in a browsable catalogue deck.
+- A **layout library of 120 editorial slide layouts** in 8 families, indexed with a "reach for it when" line each, all **executed and self-captioned** in a browsable catalogue deck.
 - A **standalone HTML output** — one file, no dependencies, fits on a USB stick, opens in any modern browser.
-- **Three navigation modes** baked in: arrow keys, drag bar, overview grid (`O`), quick-jump.
+- **Three navigation modes** baked in: arrow keys, drag bar, overview grid grouped by slide family (`O`), quick-jump.
 - **Presentation mode** — fullscreen via the `F` key or the ⛶ button: the slide fills the screen and the nav-rail auto-hides.
 - **Real photography, optional and free** — connect a Pexels key (guided, about 3 minutes) and the agent picks editorial photos for the slides that need one, rejects stock clichés, tints them to your palette on request, and credits every photographer on a closing slide.
+- **Brand-pattern hooks** for your brand's own motif: a watermark, a corner motif or an ornamental rule (`.texture`, `.motif`, `.corner`, `.filet-orn`), declared in `brand/tokens.css` and invisible until you set it.
 - **Clean PDF export** at 1920×1080 (gradient text rasterised to PNG to avoid Chromium PDF artefacts).
-- **Anti-overflow QA** via Playwright — every slide is verified to stay within frame before delivery.
+- **A measured QA gate** via Playwright: every slide is checked for overflow, the chrome safe zone, type floors (18px content, 12px labels), brand fonts, WCAG contrast and folios before delivery.
 - **Zero-config hosting** — drop the folder on Netlify Drop, GitHub Pages, S3, or any static host.
 
 ---
@@ -39,7 +40,7 @@ Both are used as **inspiration sources** during art direction (Phase 2) and comp
 
 Most decks fail the same way: three card grids, two tables, and a wall of bullets. The library exists to make that harder.
 
-- **`reference/LAYOUTS.md`** indexes 113 layouts across 8 families — opening, editorial, data-viz, schemas, tables, proof, closing, photography. Each row says what the layout does and when to reach for it, so you choose by narrative beat rather than by browsing.
+- **`reference/LAYOUTS.md`** indexes 120 layouts across 8 families — opening, editorial, data-viz, schemas, tables, proof, closing, photography. Each row says what the layout does and when to reach for it, so you choose by narrative beat rather than by browsing.
 - **`reference/catalogue-layouts.html`** is a deck where every one of them is executed on a fictional brand. Every slide carries its own caption: the layout name and its use case. Open it, press `O` for the grouped overview, and pick.
 - **`templates/components.md`** holds paste-ready HTML and scoped CSS for the ported ones, each with the traps that cost time the first time — waterfall spacer arithmetic, orbit collision points, rails that need forcing to their final state in PDF.
 
@@ -80,6 +81,8 @@ When you open the project in Claude Code, the agent will:
 3. **Ask you to drop assets** into `assets/logos/`, `assets/illustrations/`, `assets/photos/`, `assets/icons/`.
 4. **Offer to connect Pexels** for real photography (optional): it walks you through the free API key one step at a time and tests it for you.
 5. **Confirm setup**, then ask what you want to present.
+
+Until onboarding runs, `brand/tokens.css` and the starter carry a neutral example palette (deep blue `#1E40AF`, amber `#F59E0B`, slate `#0F172A` on `#F8FAFC`, Inter and JetBrains Mono), so a raw clone already renders and passes QA. It belongs to no brand: onboarding replaces it.
 
 > The single biggest factor in slide quality is your **`assets/` folder**.
 > Logos, illustrations, photos, custom icons — the more you provide, the more on-brand the output.
@@ -144,8 +147,8 @@ Two ways:
 # Export a deck to clean 1920×1080 PDF
 ./scripts/export-pdf.sh presentations/your-deck.html
 
-# QA — verify no overflow on any slide
-python scripts/qa.py presentations/your-deck.html
+# QA — overflow, chrome safe zone, type floors, fonts, contrast, folios
+python3 scripts/qa.py presentations/your-deck.html
 
 # Capture specific slides for a quick visual check
 python scripts/shots.py presentations/your-deck.html 3 8 18
@@ -154,6 +157,43 @@ python scripts/shots.py presentations/your-deck.html 3 8 18
 Press **`F`** (or the ⛶ button) for fullscreen **presentation mode**: the slide fills the screen and the nav-rail auto-hides (it reappears when the cursor nears the bottom edge).
 
 For online sharing, the deck is a single self-contained HTML file. See [`docs/hosting.md`](docs/hosting.md) for Netlify Drop, GitHub Pages, S3, and other targets.
+
+---
+
+## Quality gate (QA)
+
+`scripts/qa.py` opens the deck in headless Chromium, activates every slide in its settled state (transitions finished, no half-played stagger) and measures what is actually rendered, in native 1920×1080 pixels. A deck ships only when it ends with `All slides clean`.
+
+| Check (`type`) | Rule | Level |
+|---|---|---|
+| engine parity | the deck embeds every feature of `templates/base.html`: fullscreen, overview, auto folios, PDF hooks, brand-pattern hooks (canonical list: `docs/engine-parity.md`) | error |
+| `overflow` | nothing leaves the frame | error |
+| `chrome-gap` | content stays at least 16px above the bottom chrome row | error |
+| `type-floor` | content text ≥ 18px, label register ≥ 12px (see below) | error |
+| `tight-body` | content text under 24px, headings excepted | warning |
+| `long-label` | a label-register text under 18px that runs past 12 words | warning |
+| `font` | every text uses a brand family | error (undeclared monospace: warning) |
+| `contrast` | WCAG AA, 4.5:1 or 3:1 from 24px (18.66px bold); opacity counts | error (gradient or image background: warning) |
+| `folio` | present and increasing on every slide | error |
+| `pdf-weight` | with `--with-pdf`, the PDF averages at least 40 KB per slide | error |
+
+**The type floor, made measurable.** A slide is read from across a room, so the doctrine in `CLAUDE.md` becomes two numbers checked on the computed font size:
+
+- **Content text: 18px minimum** (`--min-font`). Comfortable body is 24px and up, hence the `tight-body` warning.
+- **Label register: 12px minimum** (`--min-font-chrome`). A text is a label when it sits inside `.chrome`, carries a label class (`.eyebrow`, `.meta-label`, `.signature`, `.nav-num`, and the catalogue's `.tag-meta`, `.tag-folio`, `.tag-signature`), or is set in a monospace stack (folio, signature and caption register). Labels stay short: a sentence shrunk to caption size, in mono or not, is still flagged.
+
+**Small labels still need 4.5:1.** The starter passes clean: its chrome and eyebrows sit just above the threshold through `--chrome-opacity`, `--chrome-opacity-dark`, `--label-accent` and `--label-accent-dark` in `brand/tokens.css`. If a new palette drops them below, retune those tokens, not the slide.
+
+**Brand fonts** come from `--font`, else from a DTCG tokens file (`--tokens`, or the first `brand/tokens.json` / `01-brand/tokens.json` found up to the repository root), else from the deck's own `--font-display`, `--font-body` and `--font-mono` variables, which is where `brand/tokens.css` puts them in this template. No tokens file is needed.
+
+```bash
+python3 scripts/qa.py presentations/your-deck.html                        # the gate
+python3 scripts/qa.py presentations/your-deck.html --with-pdf             # + PDF weight check (/tmp/slides-qa/)
+python3 scripts/qa.py presentations/your-deck.html --format json          # totals by type, findings with their target
+python3 scripts/qa.py reference/catalogue-layouts.html --no-engine-check  # the catalogue: a specimen book, not a full deck
+```
+
+Other flags: `--viewport` / `--frame` (window and native frame sizes), `--bleed SELECTOR` (an intentional full-bleed layer; `.slide-bg` and `[data-bleed]` are exempt by default), `--folio SELECTOR` / `--no-folio`, `--lang CODE` (audit a bilingual deck in each language through `window.__setLang`), `--wait MS`, `--max-per-slide N` (listing cap, 0 for all), `--screenshots [DIR]`, `--min-kb-per-slide KB`. Exit codes: 0 clean (warnings allowed), 1 errors, 2 usage error. `python3 scripts/qa.py --help` documents each one.
 
 ---
 
@@ -173,24 +213,25 @@ For online sharing, the deck is a single self-contained HTML file. See [`docs/ho
 ├── .env.example               # optional keys: GOOGLE_AI_API_KEY (AI illustrations), PEXELS_API_KEY (photos)
 ├── .claude/skills/            # create-slides, generate-image, pexels-photos
 ├── templates/
-│   ├── base.html              # Standalone deck skeleton (chrome, nav, fullscreen, print)
+│   ├── base.html              # Standalone deck skeleton: the full engine (chrome, grouped overview, fullscreen, print)
 │   └── components.md          # Paste-ready HTML + CSS for the ported layouts
 ├── reference/
 │   ├── photos/                # Pexels photos used by the catalogue's photography plates (+ credit sidecars)
-│   ├── LAYOUTS.md             # Index of 113 layouts in 8 families, with selection guidance
-│   └── catalogue-layouts.html # 113 layouts executed and captioned, on a fictional brand
+│   ├── LAYOUTS.md             # Index of 120 layouts in 8 families, with selection guidance
+│   └── catalogue-layouts.html # 120 layouts executed and captioned, on a fictional brand
 ├── presentations/             # Your generated decks live here
 ├── scripts/
 │   ├── README.md              # Index of every script
-│   ├── qa.py                  # Playwright overflow + chrome-gap check
+│   ├── qa.py                  # Playwright QA gate: overflow, chrome, type floors, fonts, contrast, folios
 │   ├── shots.py               # Capture specific slides for visual review
 │   ├── gen-image.py           # AI illustration generation (needs an API key)
 │   ├── pexels.py              # Pexels search, download, tint and credits (free key)
 │   ├── serve.sh               # Local static server
 │   └── export-pdf.sh          # Headless Chromium PDF export
-├── tests/                     # offline tests for scripts/pexels.py (pytest)
+├── tests/                     # pytest: scripts/pexels.py offline, scripts/qa.py, the engine and the PDF pipeline (deck tests need Chromium)
 └── docs/
     ├── design-system.md
+    ├── engine-parity.md       # the canonical feature list of the slides engine
     ├── hosting.md
     ├── pdf-export.md
     └── pexels-setup.md        # step-by-step Pexels key setup
