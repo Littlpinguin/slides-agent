@@ -9,8 +9,11 @@
   Chaque slide est à la fois un exemple exécuté ET sa propre légende :
   le cartouche en bas à droite donne le nom du layout et quand l'utiliser.
 
-  52 layouts en 7 familles (ouverture, éditorial, data-viz, schémas,
-  tableaux, preuve, conclusion) : voir README.md pour le tableau complet.
+  120 layouts en 8 familles (ouverture, éditorial, data-viz, schémas,
+  tableaux, preuve, conclusion, photographie) : voir LAYOUTS.md pour
+  l'index complet. Les planches 114 à 120 sont les compositions portées
+  du template marketing (édito, cartouche, KPI avec tendance, légende des
+  repères, nuage de pastilles, mur de communauté, clôture avec QR).
 
   Système : frame 1920×1080 scalé responsive, navigation clavier / molette /
   tactile / drag-bar, vue d'ensemble groupée par familles (O), mode plein
@@ -22,7 +25,8 @@
   (.motif fonds sombres, .texture fonds clairs), motif d'angle (.corner,
   slides éditoriales) et filets typographiques (.filet-orn). Hooks CSS à
   redéfinir par marque dans le :root : --brand-pattern, --brand-pattern-light,
-  --corner-motif (+ opacités). Voir README.md, section « Vie graphique ».
+  --corner-motif (+ opacités). Voir templates/components.md, section
+  « Brand pattern hooks ».
 
   Règles d'écriture : aucun tiret cadratin, aucun point final sur les titres.
   ============================================================================
@@ -1230,6 +1234,104 @@ body.presenting.nav-peek .nav-rail { opacity:1; transform:translate(-50%, 0); po
 .pcred-list .pc-n { font-size:18px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-soft); }
 .pcred-list .pc-names { font-size:21px; line-height:1.5; color:var(--ink-soft); }
 .pcred-list .pc-names a { color:var(--ink); text-decoration:none; border-bottom:1px solid var(--rule-strong); }
+
+/* ---- Compositions portées du template marketing 114-120 ----
+   Sept compositions observées en production, sans équivalent dans les 113
+   planches précédentes. Données et noms fictifs. */
+/* 114 Édito : rail latéral (numéro + métadonnées) et corps en deux colonnes à lettrine */
+.fwd { display:grid; grid-template-columns:300px 1fr; gap:80px; align-items:stretch; max-width:1560px; }
+.fwd-rail { display:flex; flex-direction:column; justify-content:space-between; gap:48px; padding:6px 56px 6px 0; border-right:1px solid var(--rule-strong); }
+.fwd-issue { font-family:var(--font-display); font-size:76px; line-height:1.1; }
+.fwd-issue small { display:block; font-family:var(--font-body); font-size:18px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--or-text); margin-top:14px; line-height:1.3; }
+.fwd-meta div { display:grid; grid-template-columns:100px 1fr; gap:12px; padding:10px 0; border-top:1px solid var(--rule); font-size:18px; }
+.fwd-meta dt { font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-soft); }
+.fwd-meta dd { color:var(--ink); }
+.fwd-drop { font-size:64px; line-height:1.12; max-width:1120px; margin-bottom:38px; }
+.fwd-body { display:grid; grid-template-columns:1fr 1fr; gap:56px; max-width:1160px; }
+.fwd-body p { font-size:24px; line-height:1.55; color:var(--ink-soft); }
+.fwd-body p:first-child::first-letter { float:left; font-family:var(--font-display); font-size:3.1em; line-height:.92; padding:6px 12px 0 0; color:var(--vert); }
+
+/* 115 Cartouche : charte encadrée à crochets d'angle */
+.cart-stage { display:flex; justify-content:center; }
+.cart { position:relative; width:1380px; padding:58px 100px 50px; background:#fff; border:1px solid var(--rule); display:flex; flex-direction:column; align-items:center; gap:22px; text-align:center; }
+.cart::before, .cart::after, .cart .ca, .cart .cb { content:''; position:absolute; width:48px; height:48px; border:1.5px solid var(--ink); }
+.cart::before { top:-1px; left:-1px; border-right:0; border-bottom:0; }
+.cart::after { bottom:-1px; right:-1px; border-left:0; border-top:0; }
+.cart .ca { top:-1px; right:-1px; border-left:0; border-bottom:0; }
+.cart .cb { bottom:-1px; left:-1px; border-right:0; border-top:0; }
+.cart .eyebrow { margin-bottom:0; }
+.cart-name { display:flex; align-items:center; gap:22px; }
+.cart-name .logo-mark { width:64px; height:64px; }
+.cart-name h2 { font-size:88px; line-height:1.1; }
+.cart-statement { font-family:var(--font-display); font-style:italic; font-weight:300; font-size:32px; line-height:1.4; max-width:1060px; }
+.cart-statement em { font-style:normal; font-weight:500; }
+.cart-row { display:grid; grid-template-columns:repeat(4,1fr); width:100%; margin-top:10px; padding-top:24px; border-top:1px solid var(--rule); }
+.cart-cell { display:flex; flex-direction:column; gap:6px; align-items:center; padding:0 12px; border-right:1px solid var(--rule); }
+.cart-cell:last-child { border-right:0; }
+.cart-cell .k { font-size:18px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-soft); }
+.cart-cell .v { font-size:22px; color:var(--ink); }
+
+/* 116 KPI avec tendance : la valeur, la direction, et une couleur qui dit si c'est bon */
+.ktrend { display:grid; grid-template-columns:repeat(4,1fr); gap:36px; margin-top:52px; max-width:1560px; }
+.kt { display:grid; grid-template-rows:auto 1fr auto; gap:12px; border-top:2px solid var(--ink); padding-top:22px; } /* le delta s'aligne en bas d'une carte à l'autre */
+.kt .row { display:flex; align-items:baseline; gap:14px; }
+.kt .val { font-family:var(--font-display); font-size:76px; line-height:1.05; letter-spacing:-.02em; }
+.kt .tr { font-size:34px; font-weight:600; line-height:1; }
+.kt .tr.good { color:var(--vert); } .kt .tr.watch { color:var(--or-text); } .kt .tr.flat { color:var(--ink-soft); }
+.kt .lab { font-size:20px; line-height:1.4; color:var(--ink-soft); }
+.kt .delta { font-size:18px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
+.kt .delta.good { color:var(--vert); } .kt .delta.watch { color:var(--or-text); } .kt .delta.flat { color:var(--ink-soft); }
+
+/* 117 Légende des repères : symbole, nom, définition, compteur */
+.mapkey { display:grid; grid-template-columns:520px 1fr; gap:72px; align-items:center; }
+.mapkey-left h2 { font-size:58px; line-height:1.1; }
+.mapkey-left .lede { font-size:24px; margin-top:24px; }
+.mapkey-table { border-top:1px solid var(--rule-strong); }
+.mk-row { display:grid; grid-template-columns:56px 240px 1fr 140px; align-items:center; gap:22px; padding:18px 0; border-bottom:1px solid var(--rule); }
+.mk-sym { display:flex; align-items:center; justify-content:center; width:52px; height:52px; }
+.mk-sym i { display:block; }
+.mk-sym .s-dot { width:26px; height:26px; border-radius:50%; background:var(--grad); }
+.mk-sym .s-ring { width:26px; height:26px; border-radius:50%; border:3px solid var(--vert); }
+.mk-sym .s-sq { width:22px; height:22px; background:var(--or); }
+.mk-sym .s-dia { width:20px; height:20px; background:var(--vert-clair); transform:rotate(45deg); }
+.mk-sym .s-line { width:44px; border-top:3px dashed var(--ink); }
+.mk-name { font-weight:700; font-size:22px; line-height:1.25; }
+.mk-desc { font-size:20px; line-height:1.45; color:var(--ink-soft); }
+.mk-count { text-align:right; font-size:18px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--or-text); }
+
+/* 118 Nuage de pastilles : un nombre géant, puis l'inventaire en pastilles */
+.chipc-head { display:grid; grid-template-columns:auto 1fr; gap:72px; align-items:end; margin-bottom:56px; }
+.chipc-num { font-family:var(--font-display); font-size:220px; line-height:1; letter-spacing:-.03em; }
+.chipc-num .plus { font-size:.5em; }
+.chipc-head h2 { font-size:56px; line-height:1.12; max-width:900px; padding-bottom:22px; }
+.chipc { display:flex; flex-wrap:wrap; gap:14px; max-width:1520px; }
+.chip { display:inline-flex; align-items:center; gap:12px; padding:12px 24px; border-radius:999px; border:1px solid var(--rule-strong); background:#fff; font-size:20px; color:var(--ink); }
+.chip.feat { background:rgba(77,165,133,.10); border-color:var(--vert-clair); }
+.chip .tag { font-size:18px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--vert); }
+.chip.dim { background:transparent; border-style:dashed; color:var(--ink-soft); }
+
+/* 119 Mur de communauté : la masse d'un réseau, en visages anonymes */
+.awall-head { display:grid; grid-template-columns:1fr auto; gap:60px; align-items:end; margin-bottom:46px; }
+.awall-head h2 { font-size:62px; line-height:1.1; max-width:1000px; }
+.awall-count { display:flex; flex-direction:column; align-items:flex-end; gap:8px; }
+.awall-count .n { font-family:var(--font-display); font-size:110px; line-height:1; }
+.awall-count .t { font-size:18px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:rgba(252,251,248,0.74); }
+.awall { display:flex; flex-wrap:wrap; gap:14px; max-width:1200px; } /* onze visages par rang : le mur s'arrête avant le cartouche */
+.awall .face { width:96px; height:96px; border-radius:50%; overflow:hidden; background:var(--bg-dark-2); border:1px solid var(--rule-dark); display:flex; align-items:flex-end; justify-content:center; color:rgba(158,195,174,.55); }
+.awall .face svg { width:72px; height:72px; display:block; }
+.awall .face:nth-child(5n+2) { color:rgba(227,205,147,.6); }
+.awall .face:nth-child(7n+3) { background:#2a4a3f; color:rgba(252,251,248,.55); }
+
+/* 120 Clôture avec QR : l'action à faire tout de suite, scannable depuis la salle */
+.qrend { display:grid; grid-template-columns:1.1fr .9fr; gap:90px; align-items:center; }
+.qrend h2 { font-size:72px; line-height:1.1; }
+.qrend .lede { margin-top:26px; font-size:26px; }
+.qrend .lede-list { margin-top:34px; }
+.qrend .lede-list .li { font-size:22px; }
+.qr-card { justify-self:center; width:460px; background:#fff; border:1px solid var(--rule); border-radius:24px; box-shadow:var(--shadow-card); padding:36px; display:flex; flex-direction:column; align-items:center; gap:18px; }
+.qr-ph { width:300px; height:300px; display:block; fill:var(--ink); }
+.qr-label { font-size:18px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-soft); }
+.qr-link { display:inline-flex; align-items:center; gap:12px; padding:12px 22px; border:1px solid var(--vert-clair); border-radius:999px; background:rgba(77,165,133,.10); font-size:19px; font-weight:600; color:var(--vert); text-decoration:none; }
 
 @media print {
   @page { size:1920px 1080px; margin:0; }
@@ -3342,6 +3444,181 @@ verification: tierce_partie</pre>
       </ol>
     </div>
     <aside class="legend"><span class="lg-name">Layout 113 · Crédits photo</span><span class="lg-when">Quand : toujours en dernière slide d'un deck qui utilise des photos Pexels. Générée par scripts/pexels.py credits. Ici, les vrais crédits de ce catalogue, regroupés par planche.</span></aside>
+  </section>
+
+  <!-- ============ COMPOSITIONS PORTÉES DU TEMPLATE MARKETING (114-120) ============
+       Sept compositions observées en production qui n'avaient pas d'équivalent dans
+       les planches 01 à 113. Elles rejoignent leur famille dans la vue d'ensemble. -->
+
+  <!-- 114 ÉDITO -->
+  <section class="plate" data-meta="Layout 114 · Édito" data-family="editorial">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Lettre d'ouverture</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="fwd">
+      <div class="fwd-rail reveal">
+        <div class="fwd-issue">Nº 01<small>Lettre aux clients</small></div>
+        <dl class="fwd-meta">
+          <div><dt>Date</dt><dd>Mars 2026</dd></div>
+          <div><dt>Signée</dt><dd>Les associés</dd></div>
+          <div><dt>Lecture</dt><dd>Trois minutes</dd></div>
+        </dl>
+      </div>
+      <div class="fwd-main">
+        <span class="eyebrow reveal">Édito</span>
+        <h2 class="fwd-drop reveal">Mesurer n'a jamais suffi, il faut <span class="grad">décider avec</span></h2>
+        <div class="fwd-body reveal">
+          <p>Pendant dix ans, nos clients ont produit des bilans plus précis chaque année. Ils savaient tout de leurs émissions et n'en changeaient presque rien.</p>
+          <p>Cette année, chaque chiffre que nous livrons arrive avec la décision qu'il permet de prendre, son coût et la date à laquelle il faudra la revoir.</p>
+        </div>
+      </div>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 114 · Édito</span><span class="lg-when">Quand : une lettre, un manifeste, une note d'ouverture longue. Le rail situe le texte, la lettrine ouvre la lecture, deux colonnes au plus.</span></aside>
+  </section>
+
+  <!-- 115 CARTOUCHE -->
+  <section class="plate tint" data-meta="Layout 115 · Cartouche" data-family="editorial">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Notre charte</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="cart-stage reveal">
+      <div class="cart">
+        <span class="ca"></span><span class="cb"></span>
+        <span class="eyebrow">Charte d'engagement</span>
+        <div class="cart-name"><svg class="logo-mark"><use href="#mrd-mark"/></svg><h2>Meridian Conseil</h2></div>
+        <p class="cart-statement">Nous ne recommandons aucun levier que nous ne savons pas mesurer, et nous publions chaque année <em class="grad">ce qui n'a pas marché</em></p>
+        <div class="cart-row">
+          <div class="cart-cell"><span class="k">Signée le</span><span class="v">12 mars 2026</span></div>
+          <div class="cart-cell"><span class="k">Par</span><span class="v">Les quatre associés</span></div>
+          <div class="cart-cell"><span class="k">Révision</span><span class="v">Chaque année</span></div>
+          <div class="cart-cell"><span class="k">Périmètre</span><span class="v">Toutes les missions</span></div>
+        </div>
+      </div>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 115 · Cartouche</span><span class="lg-when">Quand : une charte, un engagement, un manifeste signé. Un seul énoncé, des crochets d'angle pour le cadre, quatre métadonnées au plus.</span></aside>
+  </section>
+
+  <!-- 116 KPI AVEC TENDANCE -->
+  <section class="plate" data-meta="Layout 116 · KPI avec tendance" data-family="dataviz">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Revue trimestrielle</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="head" style="margin-bottom:0">
+      <span class="eyebrow reveal">Le trimestre en quatre indicateurs</span>
+      <h1 class="reveal" style="font-size:66px">Ce qui avance, <span class="grad">ce qui dérive</span></h1>
+    </div>
+    <div class="ktrend" data-stagger>
+      <div class="kt"><div class="row"><span class="val">-18 %</span><span class="tr good" aria-label="en baisse">↘</span></div><span class="lab">d'émissions sur les scopes 1 et 2</span><span class="delta good">-4 pts vs T3</span></div>
+      <div class="kt"><div class="row"><span class="val">71 %</span><span class="tr good" aria-label="en hausse">↗</span></div><span class="lab">des sites remontent leurs données chaque mois</span><span class="delta good">+12 pts vs T3</span></div>
+      <div class="kt"><div class="row"><span class="val">9 j</span><span class="tr watch" aria-label="en hausse">↗</span></div><span class="lab">de délai moyen de consolidation</span><span class="delta watch">+2 j vs T3</span></div>
+      <div class="kt"><div class="row"><span class="val">3,2 M€</span><span class="tr flat" aria-label="stable">→</span></div><span class="lab">engagés sur les leviers votés</span><span class="delta flat">stable vs T3</span></div>
+    </div>
+    <p class="chart-note reveal" style="margin-top:44px">La couleur dit si la tendance est bonne, la flèche dit seulement sa direction : des émissions qui baissent sont une bonne nouvelle</p>
+    <aside class="legend"><span class="lg-name">Layout 116 · KPI avec tendance</span><span class="lg-when">Quand : une revue où l'évolution compte autant que le niveau. Trois ou quatre cartes, une flèche, une couleur qui juge.</span></aside>
+  </section>
+
+  <!-- 117 LÉGENDE DES REPÈRES -->
+  <section class="plate" data-meta="Layout 117 · Légende des repères" data-family="tableau">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Lire nos schémas</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="mapkey">
+      <div class="mapkey-left">
+        <span class="eyebrow reveal">Mode d'emploi</span>
+        <h2 class="reveal">Cinq repères, <span class="grad">partout les mêmes</span></h2>
+        <p class="lede reveal">Chaque schéma du rapport réutilise ces symboles. Les compteurs disent combien il y en a dans ce dossier</p>
+      </div>
+      <div class="mapkey-table" data-stagger>
+        <div class="mk-row"><span class="mk-sym"><i class="s-dot"></i></span><span class="mk-name">Levier chiffré</span><span class="mk-desc">Impact et coût estimés à plus ou moins 15 %</span><span class="mk-count">64 leviers</span></div>
+        <div class="mk-row"><span class="mk-sym"><i class="s-ring"></i></span><span class="mk-name">Levier à instruire</span><span class="mk-desc">Piste identifiée, impact encore à mesurer sur site</span><span class="mk-count">21 pistes</span></div>
+        <div class="mk-row"><span class="mk-sym"><i class="s-sq"></i></span><span class="mk-name">Point de mesure</span><span class="mk-desc">Compteur ou relevé mensuel rattaché à un site</span><span class="mk-count">140 points</span></div>
+        <div class="mk-row"><span class="mk-sym"><i class="s-dia"></i></span><span class="mk-name">Jalon réglementaire</span><span class="mk-desc">Échéance externe qui fixe une date au plan</span><span class="mk-count">6 jalons</span></div>
+        <div class="mk-row"><span class="mk-sym"><i class="s-line"></i></span><span class="mk-name">Trajectoire cible</span><span class="mk-desc">Courbe votée en comité, révisée chaque année</span><span class="mk-count">1 courbe</span></div>
+      </div>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 117 · Légende des repères</span><span class="lg-when">Quand : un deck réutilise des symboles ou des catégories. Les poser une fois, tôt, avec leur nombre, puis ne plus jamais les expliquer.</span></aside>
+  </section>
+
+  <!-- 118 NUAGE DE PASTILLES -->
+  <section class="plate" data-meta="Layout 118 · Nuage de pastilles" data-family="preuve">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Le périmètre</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="chipc-head">
+      <div class="chipc-num reveal"><span class="grad">48</span><span class="plus">+</span></div>
+      <div>
+        <span class="eyebrow reveal">Ce que le portail suit déjà</span>
+        <h2 class="reveal">Des indicateurs prêts à l'emploi, site par site</h2>
+      </div>
+    </div>
+    <div class="chipc" data-stagger>
+      <span class="chip">Électricité</span><span class="chip">Gaz naturel</span><span class="chip feat"><span class="tag">nouveau</span>Froid industriel</span><span class="chip">Vapeur</span><span class="chip">Flotte de véhicules</span><span class="chip">Déplacements professionnels</span>
+      <span class="chip">Achats de matières</span><span class="chip feat"><span class="tag">nouveau</span>Fret amont</span><span class="chip">Déchets</span><span class="chip">Eau</span><span class="chip">Fluides frigorigènes</span><span class="chip">Numérique</span>
+      <span class="chip">Immobilisations</span><span class="chip">Télétravail</span><span class="chip feat"><span class="tag">nouveau</span>Fin de vie des produits</span><span class="chip">Restauration</span><span class="chip dim">et 32 autres</span>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 118 · Nuage de pastilles</span><span class="lg-when">Quand : un inventaire ou un périmètre dont l'étendue est l'argument. Le nombre d'abord, trois pastilles mises en avant au plus, la dernière dit qu'il y en a d'autres.</span></aside>
+  </section>
+
+  <!-- 119 MUR DE COMMUNAUTÉ -->
+  <section class="plate dark" data-meta="Layout 119 · Mur de communauté" data-family="preuve">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Le réseau</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · données fictives</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="av-person" viewBox="0 0 80 80"><circle cx="40" cy="30" r="15" fill="currentColor"/><path d="M10 80c0-18 13-30 30-30s30 12 30 30z" fill="currentColor"/></symbol></svg>
+    <div class="awall-head">
+      <div>
+        <span class="eyebrow reveal">Ceux qui font le réseau</span>
+        <h2 class="reveal">Des directeurs de site <span class="grad">qui s'appellent entre eux</span></h2>
+      </div>
+      <div class="awall-count reveal"><span class="n"><span class="grad">312</span>+</span><span class="t">membres actifs</span></div>
+    </div>
+    <div class="awall" data-stagger>
+      <div class="face"><svg><use href="#av-person"/></svg></div>
+      <div class="face"><svg><use href="#av-person"/></svg></div>
+      <div class="face"><svg><use href="#av-person"/></svg></div>
+      <div class="face"><svg><use href="#av-person"/></svg></div>
+      <div class="face"><svg><use href="#av-person"/></svg></div>
+      <div class="face"><svg><use href="#av-person"/></svg></div>
+      <div class="face"><svg><use href="#av-person"/></svg></div>
+      <div class="face"><svg><use href="#av-person"/></svg></div>
+      <div class="face"><svg><use href="#av-person"/></svg></div>
+      <div class="face"><svg><use href="#av-person"/></svg></div>
+      <div class="face"><svg><use href="#av-person"/></svg></div>
+      <div class="face"><svg><use href="#av-person"/></svg></div>
+      <div class="face"><svg><use href="#av-person"/></svg></div>
+      <div class="face"><svg><use href="#av-person"/></svg></div>
+      <div class="face"><svg><use href="#av-person"/></svg></div>
+      <div class="face"><svg><use href="#av-person"/></svg></div>
+      <div class="face"><svg><use href="#av-person"/></svg></div>
+      <div class="face"><svg><use href="#av-person"/></svg></div>
+      <div class="face"><svg><use href="#av-person"/></svg></div>
+      <div class="face"><svg><use href="#av-person"/></svg></div>
+      <div class="face"><svg><use href="#av-person"/></svg></div>
+      <div class="face"><svg><use href="#av-person"/></svg></div>
+      <div class="face"><svg><use href="#av-person"/></svg></div>
+      <div class="face"><svg><use href="#av-person"/></svg></div>
+      <div class="face"><svg><use href="#av-person"/></svg></div>
+      <div class="face"><svg><use href="#av-person"/></svg></div>
+      <div class="face"><svg><use href="#av-person"/></svg></div>
+      <div class="face"><svg><use href="#av-person"/></svg></div>
+      <div class="face"><svg><use href="#av-person"/></svg></div>
+      <div class="face"><svg><use href="#av-person"/></svg></div>
+      <div class="face"><svg><use href="#av-person"/></svg></div>
+      <div class="face"><svg><use href="#av-person"/></svg></div>
+      <div class="face"><svg><use href="#av-person"/></svg></div>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 119 · Mur de communauté</span><span class="lg-when">Quand : la masse d'un réseau est la preuve. Des visages anonymes et homogènes, un compteur. Ici des silhouettes, en vrai des photos cadrées pareil.</span></aside>
+  </section>
+
+  <!-- 120 CLÔTURE AVEC QR -->
+  <section class="plate tint" data-meta="Layout 120 · Clôture avec QR" data-family="conclusion">
+    <div class="chrome"><div class="chrome-row top"><span class="tag-meta">Pour aller plus loin</span><span class="tag-folio"></span></div><div class="chrome-row bottom"><span class="tag-signature">Meridian Conseil · exemple fictif · aucune adresse réelle</span><span class="logo-lockup"><svg class="logo-mark"><use href="#mrd-mark"/></svg><span class="logo-word">Meridian</span></span></div></div>
+    <div class="qrend">
+      <div>
+        <span class="eyebrow reveal">Avant de partir</span>
+        <h2 class="reveal">Scannez, <span class="grad">le diagnostic</span> vous attend</h2>
+        <p class="lede reveal">Vingt minutes en ligne pour situer votre site sur la trajectoire de votre secteur</p>
+        <div class="lede-list reveal">
+          <div class="li"><span class="k">→</span><span>Un score par poste d'émissions</span></div>
+          <div class="li"><span class="k">→</span><span>Les trois leviers les plus rentables chez vous</span></div>
+          <div class="li"><span class="k">→</span><span>Un rendez-vous de restitution, si vous le voulez</span></div>
+        </div>
+      </div>
+      <div class="qr-card reveal">
+        <svg class="qr-ph" viewBox="-2 -2 29 29" role="img" aria-label="QR code fictif"><path d="M0 0h7v1h-7zM9 0h1v1h-1zM11 0h1v1h-1zM13 0h1v1h-1zM15 0h1v1h-1zM18 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM10 1h1v1h-1zM13 1h1v1h-1zM15 1h1v1h-1zM18 1h1v1h-1zM24 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM8 2h1v1h-1zM10 2h2v1h-2zM13 2h4v1h-4zM18 2h1v1h-1zM20 2h3v1h-3zM24 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM13 3h1v1h-1zM15 3h1v1h-1zM18 3h1v1h-1zM20 3h3v1h-3zM24 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM8 4h2v1h-2zM11 4h1v1h-1zM13 4h2v1h-2zM18 4h1v1h-1zM20 4h3v1h-3zM24 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM11 5h1v1h-1zM14 5h2v1h-2zM18 5h1v1h-1zM24 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h7v1h-7zM10 7h1v1h-1zM14 7h1v1h-1zM16 7h1v1h-1zM2 8h1v1h-1zM4 8h4v1h-4zM11 8h1v1h-1zM15 8h1v1h-1zM19 8h1v1h-1zM21 8h2v1h-2zM0 9h1v1h-1zM3 9h1v1h-1zM7 9h2v1h-2zM12 9h2v1h-2zM15 9h1v1h-1zM17 9h1v1h-1zM20 9h1v1h-1zM0 10h1v1h-1zM2 10h3v1h-3zM6 10h1v1h-1zM9 10h1v1h-1zM14 10h1v1h-1zM17 10h2v1h-2zM20 10h4v1h-4zM0 11h2v1h-2zM3 11h1v1h-1zM8 11h5v1h-5zM15 11h2v1h-2zM19 11h1v1h-1zM22 11h1v1h-1zM3 12h2v1h-2zM6 12h1v1h-1zM8 12h2v1h-2zM12 12h1v1h-1zM14 12h1v1h-1zM16 12h1v1h-1zM20 12h1v1h-1zM23 12h1v1h-1zM0 13h1v1h-1zM2 13h2v1h-2zM9 13h3v1h-3zM14 13h2v1h-2zM17 13h1v1h-1zM19 13h1v1h-1zM23 13h2v1h-2zM3 14h1v1h-1zM5 14h4v1h-4zM13 14h3v1h-3zM17 14h2v1h-2zM21 14h1v1h-1zM0 15h1v1h-1zM2 15h2v1h-2zM7 15h1v1h-1zM10 15h1v1h-1zM12 15h1v1h-1zM15 15h2v1h-2zM23 15h2v1h-2zM0 16h3v1h-3zM5 16h6v1h-6zM13 16h1v1h-1zM16 16h9v1h-9zM8 17h2v1h-2zM11 17h2v1h-2zM14 17h1v1h-1zM16 17h1v1h-1zM20 17h2v1h-2zM23 17h1v1h-1zM0 18h7v1h-7zM9 18h2v1h-2zM12 18h1v1h-1zM14 18h1v1h-1zM16 18h1v1h-1zM18 18h1v1h-1zM20 18h1v1h-1zM24 18h1v1h-1zM0 19h1v1h-1zM6 19h1v1h-1zM8 19h1v1h-1zM15 19h2v1h-2zM20 19h1v1h-1zM0 20h1v1h-1zM2 20h3v1h-3zM6 20h1v1h-1zM10 20h2v1h-2zM14 20h7v1h-7zM0 21h1v1h-1zM2 21h3v1h-3zM6 21h1v1h-1zM8 21h1v1h-1zM12 21h2v1h-2zM16 21h2v1h-2zM0 22h1v1h-1zM2 22h3v1h-3zM6 22h1v1h-1zM10 22h3v1h-3zM15 22h1v1h-1zM17 22h1v1h-1zM21 22h1v1h-1zM23 22h2v1h-2zM0 23h1v1h-1zM6 23h1v1h-1zM10 23h2v1h-2zM14 23h1v1h-1zM16 23h2v1h-2zM20 23h2v1h-2zM23 23h1v1h-1zM0 24h7v1h-7zM8 24h8v1h-8zM19 24h4v1h-4zM24 24h1v1h-1z"/></svg>
+        <span class="qr-label">Diagnostic en ligne</span>
+        <a class="qr-link" href="#" onclick="return false">meridian-conseil.example/diag</a>
+      </div>
+    </div>
+    <aside class="legend"><span class="lg-name">Layout 120 · Clôture avec QR</span><span class="lg-when">Quand : la fin appelle une action immédiate, scannable depuis la salle. Un seul QR, généré pour l'adresse réelle du deck. Ici un QR fictif.</span></aside>
   </section>
   </div>
 </div>

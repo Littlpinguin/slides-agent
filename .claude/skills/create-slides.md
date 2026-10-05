@@ -71,7 +71,7 @@ Save fetched logos under `assets/logos/<slug>.<ext>` and reference relatively fr
 
 ### Phase 6 — Navigation
 
-17. Triple navigation is already wired in `templates/base.html`: drag-bar, overview panel (`O` / `Esc`), quick-jump (digits + Enter). Plus the classics: ←/→/Space/Page↑↓/Home/End, mouse wheel debounced 700ms, touch swipe. **Do not remove or reimplement.**
+17. Triple navigation is already wired in `templates/base.html`: drag-bar, overview panel (`O` / `Esc`, grouped by `data-family`: give every slide one of the catalogue's keys, `ouverture`, `editorial`, `dataviz`, `schema`, `tableau`, `preuve`, `conclusion`, `photo`), quick-jump (digits + Enter). Plus the classics: ←/→/Space/Page↑↓/Home/End, mouse wheel debounced 700ms, touch swipe, and fullscreen (`F`). Folios are numbered from `SLIDE_COUNT`: leave the `.nav-num` spans empty. **Do not remove or reimplement**: the canonical feature list is `docs/engine-parity.md`.
 18. Frame centering: `transform: translate(-50%, calc(-50% + ${yShift}px)) scale(${scale})` with `yShift = -(24 + nav.offsetHeight)/2`. CSS `place-items: center` does NOT work with `transform: scale()` — the layout box stays 1920×1080.
 
 ### Phase 7 — Playwright QA (non-negotiable)
@@ -94,7 +94,7 @@ Save fetched logos under `assets/logos/<slug>.<ext>` and reference relatively fr
 
 | Symptom | Cause | Fix |
 |---|---|---|
-| `%` or `O` clipped on huge display text | `line-height < 1` plus aggressive negative letter-spacing | `line-height: 1.05–1.15`, `letter-spacing: -0.025em` max, `padding: 0.08em 0.06em; margin: -0.08em -0.06em; overflow: visible` |
+| `%`, `O` or the descenders of `g j p q` clipped on display text | `background-clip: text` only paints inside the inline-block box, whose height is the line-height | `line-height` ≥ 1.1 on text titles, `letter-spacing: -0.025em` max, `padding: 0.22em 0.08em; margin: -0.22em -0.08em; overflow: visible` on the gradient span (never reduce it) |
 | Gradient text renders differently after `transform: scale()` | `-webkit-background-clip: text` plus sub-pixel rendering | `display: inline-block; transform: translateZ(0); -webkit-font-smoothing: antialiased; text-rendering: geometricPrecision` |
 | Coloured halos or a solid gradient box around gradient text in PDF/print | `background-clip: text` is not honoured by the print pipeline | Handled by the rasteriser in `templates/base.html` (overlay PNG, `background: none` while printing). Add any new gradient-text selector to `GRADIENT_TEXT_SELECTORS`; never swap the gradient for a flat colour |
 | Number + unit wrapping to two lines | `display: block` or grid column too narrow | `display: inline-flex; align-items: baseline; white-space: nowrap`, widen the column |

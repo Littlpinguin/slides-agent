@@ -141,7 +141,8 @@ LABEL_SELECTORS = [
 # Engine parity: the features of the slides engine in templates/base.html.
 # id -> (feature, textual markers; any one of them proves the feature).
 # A deck missing a marker has lost a feature of the engine. Keep this list in
-# step with templates/base.html: tests/test_qa.py fails if the starter misses one.
+# step with templates/base.html and with the table of docs/engine-parity.md:
+# tests/test_qa.py fails if the starter misses one.
 # ---------------------------------------------------------------------------
 ENGINE_MARKERS: dict[str, tuple[str, tuple[str, ...]]] = {
     "stage-frame": (

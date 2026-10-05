@@ -41,7 +41,8 @@ Override the port with `PORT=8080 ./scripts/serve.sh`. Stop with `ctrl-c`.
 ## `qa.py` — the QA gate
 
 The mandatory gate before delivery. Reads the deck for engine parity with
-`templates/base.html`, then activates each slide in headless Chromium, in its
+`templates/base.html` (the canonical feature list is `docs/engine-parity.md`),
+then activates each slide in headless Chromium, in its
 settled state, and measures in native 1920×1080 pixels: overflow out of the
 `#stage-frame`, the bottom chrome safe zone (≥ 16px gap), type floors (content
 ≥ 18px, label register ≥ 12px), brand fonts, WCAG AA contrast (opacity

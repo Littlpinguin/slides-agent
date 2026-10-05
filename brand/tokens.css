@@ -12,6 +12,13 @@
    this project in Claude Code and follow CLAUDE.md) to fill
    them automatically from your website.
 
+   Each brand variable carries, in a comment, the setup
+   placeholder it maps to (← BRAND_COLOR_PRIMARY...), the names
+   a setup wizard such as the marketing-cockpit template's uses:
+   a wizard replaces the VALUES, never the structure, and never
+   writes a literal {{...}} into a value (an invalid custom
+   property silently disables every rule that consumes it).
+
    Derived values (-deep, -soft, rules, label accents) are
    written as literal colours, because scripts/qa.py and
    scripts/pexels.py read literal values, but each comment gives
@@ -23,22 +30,22 @@
 :root {
   /* ---------- Colour ---------- */
   /* Primary brand colour — accents, highlights, key CTAs */
-  --brand-primary: #1E40AF;
+  --brand-primary: #1E40AF;                       /* ← BRAND_COLOR_PRIMARY */
   --brand-primary-deep: #1A389A;                  /* color-mix(in srgb, primary, black 12%) */
   --brand-primary-soft: rgba(30, 64, 175, 0.12);  /* primary at 12% alpha */
 
   /* Secondary brand colour — complementary accent, gradient pair */
-  --brand-secondary: #F59E0B;
+  --brand-secondary: #F59E0B;                      /* ← BRAND_COLOR_ACCENT */
   --brand-secondary-deep: #D88B0A;                 /* color-mix(in srgb, secondary, black 12%) */
   --brand-secondary-soft: rgba(245, 158, 11, 0.12); /* secondary at 12% alpha */
 
   /* Light neutral — primary slide background ("paper") */
-  --brand-neutral-light: #F8FAFC;
+  --brand-neutral-light: #F8FAFC;       /* ← BRAND_COLOR_LIGHT */
   --brand-neutral-light-soft: #FAFCFD;  /* color-mix(in srgb, neutral-light, white 35%) */
   --brand-neutral-light-deep: #E9EBED;  /* color-mix(in srgb, neutral-light, black 6%) */
 
   /* Dark neutral — alternating slide background, primary text on light */
-  --brand-neutral-dark: #0F172A;
+  --brand-neutral-dark: #0F172A;        /* ← BRAND_COLOR_DARK */
   --brand-neutral-dark-soft: #313748;   /* color-mix(in srgb, neutral-dark, white 14%) */
   --brand-neutral-dark-deep: #0C1322;   /* color-mix(in srgb, neutral-dark, black 18%) */
 
@@ -46,16 +53,17 @@
   --rule: rgba(15, 23, 42, 0.10);         /* neutral-dark at 10% alpha */
   --rule-light: rgba(248, 250, 252, 0.18); /* neutral-light at 18% alpha */
 
-  /* Brand gradient (primary → secondary) */
+  /* Brand gradient (primary → secondary) ← BRAND_GRADIENT: keep this
+     default unless the brand defines its own gradient */
   --brand-gradient: linear-gradient(90deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
   --brand-gradient-vertical: linear-gradient(180deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
 
   /* ---------- Type ---------- */
   /* Display family — used for headlines, hero numbers, body */
-  --font-display: 'Inter', system-ui, sans-serif;
+  --font-display: 'Inter', system-ui, sans-serif;            /* ← BRAND_FONT_PRIMARY */
 
   /* Mono family — used for captions, eyebrows, tag labels */
-  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;    /* ← BRAND_FONT_SECONDARY (else a system mono stack) */
 
   /* ---------- Motion ---------- */
   --ease-slow: 1.2s cubic-bezier(0.16, 1, 0.3, 1);

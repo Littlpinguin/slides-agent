@@ -146,7 +146,7 @@ def test_every_slide_prints_its_own_background(page):
     assert state["frame"] == TRANSPARENT
     for slide in state["slides"]:
         assert slide["background"] != TRANSPARENT, slide
-        if not any(v in slide["classes"].split() for v in ("dark", "soft", "cream")):
+        if not any(v in slide["classes"].split() for v in ("dark", "soft", "tint", "cream")):
             assert slide["background"] == state["light"], slide
 
 

@@ -13,7 +13,7 @@ The aesthetic target is **editorial scientific premium** — Monocle × Bloomber
 7. **Slow motion.** Eases of 1.1s+ on `cubic-bezier(0.16, 1, 0.3, 1)`. No bouncy springs, no fast cuts.
 8. **Brand mark every slide.** Discreet bottom-right marker in the chrome row. The reader always knows where they are.
 9. **Watermark the heroes.** A large ambient brand mark on hero / decision slides only. `mix-blend-mode: multiply` on light, `screen` on dark. When the brand has a recurring motif, the `.texture` (light), `.motif` (dark) and `.corner` classes draw it from the brand-pattern tokens, under the same rule: hero and decision slides, not every slide.
-10. **Triple navigation.** Drag bar + overview panel + quick-jump. The presenter has options under pressure.
+10. **Triple navigation.** Drag bar + overview panel (grouped by `data-family`) + quick-jump. The presenter has options under pressure. The engine behind it is listed in `docs/engine-parity.md`.
 11. **QA every iteration.** No deck ships without `python3 scripts/qa.py` returning `All slides clean`.
 
 ## Anti-patterns (refuse these)
@@ -26,14 +26,14 @@ The aesthetic target is **editorial scientific premium** — Monocle × Bloomber
 - Any colour or font outside `brand/tokens.css`.
 - `place-items: center` on a parent containing a `transform: scale`d frame — centres the original layout box, not the visible rendering. Use `position: absolute; top: 50%; left: 50%; transform: translate(-50%, calc(-50% + yShift)) scale(...)`.
 - `fill: url(#gradient)` on an inner `<path>` of a `<symbol>`. `<use>` does not propagate parent CSS into its shadow DOM. Use `fill="currentColor"` and set `color:` on the wrapper.
-- `line-height: 0.9` + `letter-spacing: -0.04em` on huge display numbers. Glyphs (`%`, `O`, `9`) clip out of their box. Use `line-height: ≥ 1.05`, `letter-spacing: ≥ -0.025em`, and add the padding/margin compensation pattern from `templates/base.html`.
+- `line-height: 0.9` + `letter-spacing: -0.04em` on huge display numbers. Glyphs (`%`, `O`, `9`) clip out of their box. Use `line-height: ≥ 1.1` on text titles (pure numerals may go tighter), `letter-spacing: ≥ -0.025em`, and keep the `.22em / .08em` padding/margin compensation of `.gradient-text` in `templates/base.html`.
 - Shipping without `python scripts/qa.py`. Don't.
 
 ## Token reference
 
 All visual tokens live in `brand/tokens.css`. Five groups:
 
-- **Colour**: `--brand-primary`, `--brand-secondary`, `--brand-neutral-light`, `--brand-neutral-dark` (each with `-soft` and `-deep` variants).
+- **Colour**: `--brand-primary`, `--brand-secondary`, `--brand-neutral-light`, `--brand-neutral-dark` (each with `-soft` and `-deep` variants, written as literal colours with their `color-mix()` formula in a comment). The template ships a neutral example palette; the comment next to each base value names the setup placeholder it maps to (`← BRAND_COLOR_PRIMARY`...).
 - **Type**: `--font-display`, `--font-mono`. The two families are the only ones loaded.
 - **Motion**: `--ease-slow` (1.2s for reveals), `--ease-med` (0.6s for transitions), `--ease-fast` (0.3s for hovers).
 - **Label register**: `--chrome-opacity` and `--chrome-opacity-dark` (chrome text), `--label-accent` and `--label-accent-dark` (eyebrows and accent labels). Small text needs WCAG 4.5:1: these values reach it on every light variant and on neutral-dark while keeping the chrome quiet. When QA flags a label, retune them, not the slide.

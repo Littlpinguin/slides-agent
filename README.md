@@ -24,9 +24,9 @@ Both are used as **inspiration sources** during art direction (Phase 2) and comp
 ## What this template gives you
 
 - A **brand-aware design system** that auto-configures from your website (colours, typography, voice).
-- A **layout library of 113 editorial slide layouts** in 8 families, indexed with a "reach for it when" line each, all **executed and self-captioned** in a browsable catalogue deck.
+- A **layout library of 120 editorial slide layouts** in 8 families, indexed with a "reach for it when" line each, all **executed and self-captioned** in a browsable catalogue deck.
 - A **standalone HTML output** — one file, no dependencies, fits on a USB stick, opens in any modern browser.
-- **Three navigation modes** baked in: arrow keys, drag bar, overview grid (`O`), quick-jump.
+- **Three navigation modes** baked in: arrow keys, drag bar, overview grid grouped by slide family (`O`), quick-jump.
 - **Presentation mode** — fullscreen via the `F` key or the ⛶ button: the slide fills the screen and the nav-rail auto-hides.
 - **Real photography, optional and free** — connect a Pexels key (guided, about 3 minutes) and the agent picks editorial photos for the slides that need one, rejects stock clichés, tints them to your palette on request, and credits every photographer on a closing slide.
 - **Brand-pattern hooks** for your brand's own motif: a watermark, a corner motif or an ornamental rule (`.texture`, `.motif`, `.corner`, `.filet-orn`), declared in `brand/tokens.css` and invisible until you set it.
@@ -40,7 +40,7 @@ Both are used as **inspiration sources** during art direction (Phase 2) and comp
 
 Most decks fail the same way: three card grids, two tables, and a wall of bullets. The library exists to make that harder.
 
-- **`reference/LAYOUTS.md`** indexes 113 layouts across 8 families — opening, editorial, data-viz, schemas, tables, proof, closing, photography. Each row says what the layout does and when to reach for it, so you choose by narrative beat rather than by browsing.
+- **`reference/LAYOUTS.md`** indexes 120 layouts across 8 families — opening, editorial, data-viz, schemas, tables, proof, closing, photography. Each row says what the layout does and when to reach for it, so you choose by narrative beat rather than by browsing.
 - **`reference/catalogue-layouts.html`** is a deck where every one of them is executed on a fictional brand. Every slide carries its own caption: the layout name and its use case. Open it, press `O` for the grouped overview, and pick.
 - **`templates/components.md`** holds paste-ready HTML and scoped CSS for the ported ones, each with the traps that cost time the first time — waterfall spacer arithmetic, orbit collision points, rails that need forcing to their final state in PDF.
 
@@ -166,7 +166,7 @@ For online sharing, the deck is a single self-contained HTML file. See [`docs/ho
 
 | Check (`type`) | Rule | Level |
 |---|---|---|
-| engine parity | the deck embeds every feature of `templates/base.html`: fullscreen, overview, auto folios, PDF hooks, brand-pattern hooks | error |
+| engine parity | the deck embeds every feature of `templates/base.html`: fullscreen, overview, auto folios, PDF hooks, brand-pattern hooks (canonical list: `docs/engine-parity.md`) | error |
 | `overflow` | nothing leaves the frame | error |
 | `chrome-gap` | content stays at least 16px above the bottom chrome row | error |
 | `type-floor` | content text ≥ 18px, label register ≥ 12px (see below) | error |
@@ -213,12 +213,12 @@ Other flags: `--viewport` / `--frame` (window and native frame sizes), `--bleed 
 ├── .env.example               # optional keys: GOOGLE_AI_API_KEY (AI illustrations), PEXELS_API_KEY (photos)
 ├── .claude/skills/            # create-slides, generate-image, pexels-photos
 ├── templates/
-│   ├── base.html              # Standalone deck skeleton (chrome, nav, fullscreen, print)
+│   ├── base.html              # Standalone deck skeleton: the full engine (chrome, grouped overview, fullscreen, print)
 │   └── components.md          # Paste-ready HTML + CSS for the ported layouts
 ├── reference/
 │   ├── photos/                # Pexels photos used by the catalogue's photography plates (+ credit sidecars)
-│   ├── LAYOUTS.md             # Index of 113 layouts in 8 families, with selection guidance
-│   └── catalogue-layouts.html # 113 layouts executed and captioned, on a fictional brand
+│   ├── LAYOUTS.md             # Index of 120 layouts in 8 families, with selection guidance
+│   └── catalogue-layouts.html # 120 layouts executed and captioned, on a fictional brand
 ├── presentations/             # Your generated decks live here
 ├── scripts/
 │   ├── README.md              # Index of every script
@@ -228,9 +228,10 @@ Other flags: `--viewport` / `--frame` (window and native frame sizes), `--bleed 
 │   ├── pexels.py              # Pexels search, download, tint and credits (free key)
 │   ├── serve.sh               # Local static server
 │   └── export-pdf.sh          # Headless Chromium PDF export
-├── tests/                     # pytest: scripts/pexels.py offline, scripts/qa.py (deck tests need Chromium)
+├── tests/                     # pytest: scripts/pexels.py offline, scripts/qa.py, the engine and the PDF pipeline (deck tests need Chromium)
 └── docs/
     ├── design-system.md
+    ├── engine-parity.md       # the canonical feature list of the slides engine
     ├── hosting.md
     ├── pdf-export.md
     └── pexels-setup.md        # step-by-step Pexels key setup
