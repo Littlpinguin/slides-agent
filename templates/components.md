@@ -303,7 +303,15 @@ End-to-end process diagram with an animated SVG path. Use for "input → AI → 
   </div>
   <div class="pipeline-stage reveal">
     <svg class="pipeline-svg" viewBox="0 0 1600 200">
-      <path class="pipeline-anim" d="M40,100 L1560,100" stroke="url(#brand-grad)" stroke-width="2" fill="none" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/>
+      <defs>
+        <!-- userSpaceOnUse, not #brand-grad: a straight path has a zero-height bounding box,
+             and a gradient in objectBoundingBox units is then not painted at all -->
+        <linearGradient id="pipeline-grad" gradientUnits="userSpaceOnUse" x1="40" y1="0" x2="1560" y2="0">
+          <stop offset="0%" style="stop-color:var(--brand-primary)"/>
+          <stop offset="100%" style="stop-color:var(--brand-secondary)"/>
+        </linearGradient>
+      </defs>
+      <path class="pipeline-anim" d="M40,100 L1560,100" stroke="url(#pipeline-grad)" stroke-width="2" fill="none" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/>
       <!-- nodes: -->
       <circle cx="40" cy="100" r="14" fill="var(--brand-primary)"/>
       <circle cx="800" cy="100" r="14" fill="var(--brand-primary)"/>
@@ -327,6 +335,8 @@ End-to-end process diagram with an animated SVG path. Use for "input → AI → 
 ```
 
 > Add `body.printing-pdf .pipeline-anim { stroke-dashoffset: 0 !important; animation: none !important; }` to the print block — animations don't run in PDF.
+
+> **Straight lines and gradients.** `#brand-grad` uses the default `objectBoundingBox` units. A perfectly horizontal or vertical path has a zero-height (or zero-width) bounding box, and per the SVG spec a gradient in those units is then not painted: the line silently disappears. For any straight stroked path, define a local gradient with `gradientUnits="userSpaceOnUse"` and coordinates matching the path, as above. If you add a second pipeline to the same deck, give its gradient a different `id`.
 
 ---
 
