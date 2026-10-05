@@ -167,6 +167,7 @@ ENGINE_MARKERS: dict[str, tuple[str, tuple[str, ...]]] = {
         "gradient-text rasterisation hook for the PDF export", ("__rasterizeGradients",)),
     "GRADIENT_TEXT_SELECTORS": (
         "list of gradient-text selectors rasterised before printing", ("GRADIENT_TEXT_SELECTORS",)),
+    "brand-pattern": ("brand-pattern hooks (.motif / .texture / .corner / .filet-orn)", ("--brand-pattern",)),
 }
 
 

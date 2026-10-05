@@ -37,6 +37,19 @@
   --ease-fast: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   --radius-tight: 4px;
   --radius-pill: 999px;
+  /* Label register: chrome text and eyebrows (12-13px) hold WCAG AA 4.5:1
+     on every light variant (neutral-light, -soft, -deep) and on neutral-dark */
+  --chrome-opacity: 0.7;
+  --chrome-opacity-dark: 0.7;
+  --label-accent: #167083;
+  --label-accent-dark: var(--brand-primary);
+  /* Brand-pattern hooks: inert (none) until the brand provides a motif */
+  --brand-pattern: none;
+  --brand-pattern-light: none;
+  --corner-motif: none;
+  --pattern-opacity: 0.05;
+  --pattern-opacity-dark: 0.07;
+  --corner-opacity: 0.09;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -81,6 +94,9 @@ html, body {
 .slide {
   position: absolute; inset: 0;
   padding: 80px 120px 110px; /* never reduce padding-bottom below 110 */
+  /* Each slide carries its own background: the print CSS makes the
+     .stage-frame transparent, so a slide without one prints white */
+  background: var(--brand-neutral-light);
   opacity: 0;
   visibility: hidden;
   transition: opacity var(--ease-med), visibility var(--ease-med);
@@ -102,6 +118,56 @@ html, body {
 .slide.cream {
   background: var(--brand-neutral-light-deep);
 }
+
+/* ============================================================
+   BRAND PATTERN — optional decoration hooks
+   Inert until the brand sets --brand-pattern / --brand-pattern-light /
+   --corner-motif in :root (default: none). Opt in per slide:
+     .motif    full-slide watermark on dark slides (--brand-pattern-light)
+     .texture  full-slide watermark on light slides (--brand-pattern)
+     .corner   motif in the top-right corner (--corner-motif)
+     .filet-orn  ornamental rule: hairline · brand mark · hairline
+   A slide carries at most one of .motif / .texture / .corner (they
+   share the slide's ::before). The layer sits under every content
+   layer: isolation keeps its z-index -1 above the slide background.
+   ============================================================ */
+.slide.motif, .slide.texture, .slide.corner { isolation: isolate; }
+.slide.motif::before, .slide.texture::before, .slide.corner::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+}
+.slide.motif::before {
+  inset: 0;
+  background: var(--brand-pattern-light) center / cover no-repeat;
+  opacity: var(--pattern-opacity-dark);
+}
+.slide.texture::before {
+  inset: 0;
+  background: var(--brand-pattern) center / cover no-repeat;
+  opacity: var(--pattern-opacity);
+}
+.slide.corner::before {
+  top: 0; right: 0;
+  width: 250px; height: 250px;
+  background: var(--corner-motif) top right / contain no-repeat;
+  opacity: var(--corner-opacity);
+}
+.filet-orn {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  color: var(--brand-primary-deep);
+}
+.filet-orn::before, .filet-orn::after {
+  content: "";
+  width: 72px; height: 1px;
+  background: currentColor;
+  opacity: 0.55;
+}
+.filet-orn svg { width: auto; height: 22px; display: block; }
+.slide.dark .filet-orn { color: var(--brand-secondary); }
 
 /* ============================================================
    SLIDE-BG — full-bleed atmospheric image layer
@@ -171,11 +237,11 @@ html, body {
   letter-spacing: 0.08em;
   text-transform: lowercase;
   color: var(--brand-neutral-dark);
-  opacity: 0.62;
+  opacity: var(--chrome-opacity, 0.7);
 }
 .slide.dark .meta-label,
 .slide.dark .signature,
-.slide.dark .nav-num { color: var(--brand-neutral-light); opacity: 0.7; }
+.slide.dark .nav-num { color: var(--brand-neutral-light); opacity: var(--chrome-opacity-dark, 0.7); }
 
 .nav-num strong { font-weight: 700; opacity: 1; }
 
@@ -261,14 +327,14 @@ h1.display strong { font-weight: 700; }
   font-weight: 500;
   letter-spacing: 0.10em;
   text-transform: lowercase;
-  color: var(--brand-primary-deep);
-  opacity: 0.85;
+  color: var(--label-accent, var(--brand-primary-deep));
 }
+.slide.dark .eyebrow { color: var(--label-accent-dark, var(--brand-primary)); }
 .lede {
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 300;
   line-height: 1.4;
-  max-width: 880px;
+  max-width: 960px;
   color: var(--brand-neutral-dark-soft);
 }
 .slide.dark .lede { color: var(--brand-neutral-light-soft); opacity: 0.8; }
@@ -393,7 +459,7 @@ body.presenting.nav-peek .nav-rail {
   font-size: 10px;
   text-transform: lowercase;
   letter-spacing: 0.08em;
-  color: var(--brand-primary-deep);
+  color: var(--label-accent, var(--brand-primary-deep));
 }
 .overview-thumb-heading {
   font-size: 14px;
@@ -523,9 +589,10 @@ body.presenting.nav-peek .nav-rail {
   <div class="stage-frame" id="stage-frame">
 
     <!-- =====================================================
-         SLIDE 1 — Hero (template)
+         SLIDE 1 — Hero (template). `texture`: brand watermark,
+         invisible until --brand-pattern is set
          ===================================================== -->
-    <section class="slide active" data-eyebrow="introduction" data-heading="Deck title goes here">
+    <section class="slide texture active" data-eyebrow="introduction" data-heading="Deck title goes here">
       <div class="chrome">
         <div class="chrome-row top">
           <span class="meta-label">01 · introduction</span>
@@ -575,9 +642,10 @@ body.presenting.nav-peek .nav-rail {
     </section>
 
     <!-- =====================================================
-         SLIDE 3 — Decision (template)
+         SLIDE 3 — Decision (template). `corner`: corner motif,
+         invisible until --corner-motif is set
          ===================================================== -->
-    <section class="slide" data-eyebrow="decision" data-heading="Go or no-go?">
+    <section class="slide corner" data-eyebrow="decision" data-heading="Go or no-go?">
       <div class="chrome">
         <div class="chrome-row top">
           <span class="meta-label">03 · decision</span>
@@ -594,10 +662,10 @@ body.presenting.nav-peek .nav-rail {
         <h1 class="display reveal" style="font-size:180px;font-weight:200;">
           <span class="gradient-text">Go</span> or no-go?
         </h1>
-        <div class="reveal" style="display:flex;gap:64px;font-family:var(--font-mono);font-size:14px;letter-spacing:0.06em;color:var(--brand-neutral-dark-soft);">
-          <div><strong style="display:block;color:var(--brand-neutral-dark);font-size:18px;font-family:var(--font-display);">budget</strong>your number</div>
-          <div><strong style="display:block;color:var(--brand-neutral-dark);font-size:18px;font-family:var(--font-display);">timeline</strong>your timeline</div>
-          <div><strong style="display:block;color:var(--brand-neutral-dark);font-size:18px;font-family:var(--font-display);">owner</strong>your name</div>
+        <div class="reveal" style="display:flex;gap:64px;font-size:28px;font-weight:400;color:var(--brand-neutral-dark);">
+          <div><span style="display:block;margin-bottom:10px;font-family:var(--font-mono);font-size:13px;letter-spacing:0.08em;color:var(--brand-neutral-dark-soft);">budget</span>your number</div>
+          <div><span style="display:block;margin-bottom:10px;font-family:var(--font-mono);font-size:13px;letter-spacing:0.08em;color:var(--brand-neutral-dark-soft);">timeline</span>your timeline</div>
+          <div><span style="display:block;margin-bottom:10px;font-family:var(--font-mono);font-size:13px;letter-spacing:0.08em;color:var(--brand-neutral-dark-soft);">owner</span>your name</div>
         </div>
       </div>
     </section>
@@ -841,9 +909,11 @@ body.presenting.nav-peek .nav-rail {
   // ----------------------------------------------------------
   // Chromium has a known bug rendering background-clip:text +
   // linear-gradient inside its PDF pipeline (coloured fringes
-  // around inline-block edges). The fix is to rasterise these
-  // texts to PNG via canvas before window.print(), then restore
-  // them on the afterprint event.
+  // around inline-block edges, or the whole gradient box painted
+  // solid). The fix is to rasterise these texts to PNG via canvas
+  // before window.print(): the text stays in place, invisible, under
+  // an image of the same glyphs, and everything is restored on the
+  // afterprint event.
   // -----------------------------------------------------------
   // ============================================================
   // ⚠️  CRITICAL — GRADIENT_TEXT_SELECTORS  ⚠️
@@ -878,174 +948,268 @@ body.presenting.nav-peek .nav-rail {
     // '.decision-q .go',     // decision-stage
   ];
 
+  // Every listed element is rasterised, nested ones included: each draws
+  // only the text it owns (a listed descendant draws its own).
   function rasterizeAllGradients() {
+    const owners = new Set();
     GRADIENT_TEXT_SELECTORS.forEach(sel => {
-      document.querySelectorAll(sel).forEach(rasterizeElement);
+      document.querySelectorAll(sel).forEach(el => owners.add(el));
     });
+    owners.forEach(el => rasterizeElement(el, owners));
   }
 
-  function rasterizeElement(el) {
-    if (el.dataset.rasterized === '1') return;
+  // The text stays where it is, made invisible, so the layout does not
+  // move by a pixel. A PNG of the same glyphs, painted with the same
+  // gradient over the same box, is laid on top of it. Each character is
+  // drawn where the browser placed it, in the font of its own parent:
+  // soft wraps, collapsed spaces, nested spans (a smaller "%"),
+  // letter-spacing and tabular figures all match the screen.
+  function rasterizeElement(el, owners) {
+    if (el.dataset.rasterized === '1' || !el.isConnected) return;
     const cs = getComputedStyle(el);
-    el.dataset.originalHTML = el.innerHTML;
+    // Gradient text only: any other listed element keeps its background
+    if (cs.backgroundClip !== 'text' && cs.webkitBackgroundClip !== 'text') return;
+    const frags = Array.from(el.getClientRects()).filter(r => r.width && r.height);
+    if (!frags.length) return; // not rendered, nothing to print
+    const inline = cs.display === 'inline';
 
-    // Walk childNodes, collecting text runs and forced line breaks
-    const runs = [];
+    // On screen the stage is scaled to the viewport: k brings every
+    // measure back to the element's own CSS pixels.
+    const px = v => parseFloat(v) || 0;
+    const bl = px(cs.borderLeftWidth), bt = px(cs.borderTopWidth);
+    const br = px(cs.borderRightWidth), bb = px(cs.borderBottomWidth);
+    const box = el.getBoundingClientRect();
+    let cssWidth = inline ? 0 : px(cs.width);
+    if (cssWidth && cs.boxSizing !== 'border-box') {
+      cssWidth += px(cs.paddingLeft) + px(cs.paddingRight) + bl + br;
+    }
+    const k = box.width / (cssWidth || el.offsetWidth || box.width) || 1;
+    const local = r => ({ x: (r.left - box.left) / k, y: (r.top - box.top) / k,
+                          w: r.width / k, h: r.height / k });
+
+    // Where the gradient is laid. Block-level: the padding box. Inline:
+    // each line fragment is a slice of one strip laid end to end (the CSS
+    // default), or a box of its own under box-decoration-break: clone.
+    // The canvas is the border box, or the union of the fragments: the
+    // gradient is never painted outside it on screen either.
+    const W = box.width / k, H = box.height / k;
+    let pieces;
+    if (!inline) {
+      pieces = [{ clip: { x: 0, y: 0, w: W, h: H },
+                  area: { x: bl, y: bt, w: W - bl - br, h: H - bt - bb } }];
+    } else {
+      const fr = frags.map(local);
+      const clone = (cs.boxDecorationBreak || cs.webkitBoxDecorationBreak) === 'clone';
+      const stripW = fr.reduce((sum, f) => sum + f.w, 0);
+      const stripH = Math.max(...fr.map(f => f.h));
+      let offset = 0;
+      pieces = fr.map(f => {
+        const area = clone ? f : { x: f.x - offset, y: f.y, w: stripW, h: stripH };
+        offset += f.w;
+        return { clip: f, area };
+      });
+    }
+    const grad = parseGradient(cs.backgroundImage, cs.backgroundColor);
+    const dpr = Math.min(4, (window.devicePixelRatio || 1) * 2);
+    const cvs = document.createElement('canvas');
+    cvs.width = Math.max(1, Math.ceil(W * dpr));
+    cvs.height = Math.max(1, Math.ceil(H * dpr));
+    const ctx = cvs.getContext('2d');
+    pieces.forEach(pc => { pc.fill = makeFill(ctx, grad, pc.area); });
+
+    // Collect the visible characters with their measured boxes
+    const glyphs = [];
+    const range = document.createRange();
+    function collect(textNode) {
+      const ps = getComputedStyle(textNode.parentElement);
+      // A descendant with a fill colour of its own is painted as usual
+      if (!isClear(ps.webkitTextFillColor)) return;
+      const font = [ps.fontStyle, ps.fontVariantCaps === 'small-caps' ? 'small-caps' : '',
+                    ps.fontWeight, ps.fontSize, ps.fontFamily].filter(Boolean).join(' ');
+      const ls = px(ps.letterSpacing);
+      const tt = ps.textTransform;
+      const text = textNode.textContent;
+      for (let i = 0; i < text.length;) {
+        const n = text.codePointAt(i) > 0xFFFF ? 2 : 1;
+        const at = i;
+        let ch = text.slice(i, i + n);
+        i += n;
+        if (/\s/.test(ch)) continue;
+        range.setStart(textNode, at);
+        range.setEnd(textNode, at + n);
+        const r = range.getBoundingClientRect();
+        if (!r.width || !r.height) continue;
+        if (tt === 'uppercase') ch = ch.toUpperCase();
+        else if (tt === 'lowercase') ch = ch.toLowerCase();
+        else if (tt === 'capitalize' && (at === 0 || /\s/.test(text[at - 1]))) ch = ch.toUpperCase();
+        glyphs.push({ ch, font, ls, r: local(r) });
+      }
+    }
     (function walk(node) {
       node.childNodes.forEach(child => {
-        if (child.nodeType === 3) {
-          if (child.textContent) runs.push({ type: 'text', node: child });
-        } else if (child.nodeType === 1) {
-          if (child.tagName === 'BR') runs.push({ type: 'br' });
-          else walk(child);
+        if (child.nodeType === 1) {
+          if (!owners || !owners.has(child)) walk(child);
+        } else if (child.nodeType === 3 && child.textContent.trim()) {
+          collect(child);
         }
       });
     })(el);
+    if (!glyphs.length) return;
 
-    // Split a text node into per-visual-line chunks using Range API.
-    // For each character index, we test whether the surrounding range is
-    // on the same visual line (same top y) as the previous one. If not,
-    // we break here. This gives correct text content per line even when
-    // a single text node soft-wraps over multiple visual lines.
-    function splitTextByLine(textNode) {
-      const text = textNode.textContent;
-      if (!text) return [];
-      const segments = [];
-      let segStart = 0;
-      let prevTop = null;
-      const range = document.createRange();
-      for (let i = 0; i < text.length; i++) {
-        range.setStart(textNode, i);
-        range.setEnd(textNode, i + 1);
-        const rect = range.getBoundingClientRect();
-        if (!rect.height) continue;
-        if (prevTop !== null && Math.abs(rect.top - prevTop) > 4) {
-          // Soft wrap detected — close previous segment, start new one
-          segments.push({ text: text.slice(segStart, i), top: prevTop });
-          segStart = i;
-        }
-        prevTop = rect.top;
-      }
-      if (segStart < text.length) {
-        segments.push({ text: text.slice(segStart), top: prevTop });
-      }
-      // Compute width bounds per segment
-      return segments.map(seg => {
-        const startIdx = text.indexOf(seg.text, segStart - seg.text.length);
-        const localStart = text.indexOf(seg.text); // first match; good enough for non-repeating fragments
-        const r2 = document.createRange();
-        const idx = Math.max(0, text.indexOf(seg.text));
-        r2.setStart(textNode, idx);
-        r2.setEnd(textNode, idx + seg.text.length);
-        const rb = r2.getBoundingClientRect();
-        return { text: seg.text, top: seg.top, left: rb.left, right: rb.right, height: rb.height };
+    const pieceOf = g => {
+      if (pieces.length === 1) return pieces[0];
+      let best = pieces[0], bestArea = -Infinity;
+      pieces.forEach(pc => {
+        const ox = Math.min(g.r.x + g.r.w, pc.clip.x + pc.clip.w) - Math.max(g.r.x, pc.clip.x);
+        const oy = Math.min(g.r.y + g.r.h, pc.clip.y + pc.clip.h) - Math.max(g.r.y, pc.clip.y);
+        const area = Math.max(0, ox) * Math.max(0, oy) + Math.min(0, oy);
+        if (area > bestArea) { best = pc; bestArea = area; }
       });
-    }
-
-    // Group runs into visual lines (real per-line text, not duplicated full text)
-    const lines = [];
-    let curLine = null;
-    runs.forEach(run => {
-      if (run.type === 'br') {
-        if (curLine) { lines.push(curLine); curLine = null; }
-        lines.push({ text: '', top: 0, height: parseFloat(cs.lineHeight) || parseFloat(cs.fontSize) * 1.2 });
-        return;
-      }
-      const segs = splitTextByLine(run.node);
-      segs.forEach(seg => {
-        if (!curLine || Math.abs(curLine.top - seg.top) > 4) {
-          if (curLine) lines.push(curLine);
-          curLine = { text: '', top: seg.top, height: seg.height, left: seg.left, right: seg.right };
-        }
-        curLine.text += seg.text;
-        curLine.right = seg.right;
-      });
+      return best;
+    };
+    ctx.scale(dpr, dpr);
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
+    glyphs.forEach(g => {
+      ctx.font = g.font;
+      const m = ctx.measureText(g.ch);
+      const asc = m.fontBoundingBoxAscent || 0.8, desc = m.fontBoundingBoxDescent || 0.2;
+      // A text box spans the font's ascent + descent: the baseline sits at
+      // the ascent's share of it.
+      const baseline = g.r.y + g.r.h * asc / (asc + desc);
+      // The box is the advance plus letter-spacing. Centring the glyph in
+      // its advance also holds for tabular figures (canvas has no tnum).
+      const x = g.r.x + (g.r.w - g.ls - m.width) / 2;
+      const pc = pieceOf(g);
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(pc.clip.x, pc.clip.y, pc.clip.w, pc.clip.h);
+      ctx.clip();
+      ctx.fillStyle = pc.fill;
+      ctx.fillText(g.ch, x, baseline);
+      ctx.restore();
     });
-    if (curLine) lines.push(curLine);
-    if (!lines.length) return;
 
-    // Resolve gradient stops from the element's background
-    const grad = parseGradient(cs.backgroundImage);
-
-    // Render each line to a canvas → <img>
-    const fontSize = parseFloat(cs.fontSize);
-    const dpr = (window.devicePixelRatio || 1) * 2;
-    const padX = Math.ceil(fontSize * 0.15);
-    const imgs = lines.map(line => {
-      if (!line.text.trim()) return '<br>';
-      const probe = document.createElement('canvas').getContext('2d');
-      probe.font = `${cs.fontStyle} ${cs.fontVariant} ${cs.fontWeight} ${cs.fontSize} / ${cs.lineHeight} ${cs.fontFamily}`;
-      const measured = probe.measureText(line.text).width;
-      const wDom = (line.right || measured) - (line.left || 0);
-      const w = Math.ceil(Math.max(wDom, measured)) + padX * 2;
-      const h = Math.ceil(parseFloat(cs.lineHeight) || fontSize * 1.2);
-      const cvs = document.createElement('canvas');
-      cvs.width = w * dpr;
-      cvs.height = h * dpr;
-      cvs.style.width = w + 'px';
-      cvs.style.height = h + 'px';
-      const ctx = cvs.getContext('2d');
-      ctx.scale(dpr, dpr);
-      ctx.font = probe.font;
-      ctx.textBaseline = 'alphabetic';
-      const lg = ctx.createLinearGradient(0, 0, w, 0);
-      grad.stops.forEach(s => lg.addColorStop(s.pos, s.color));
-      ctx.fillStyle = lg;
-      const baseline = h * 0.78;
-      ctx.fillText(line.text, padX, baseline);
-      return `<img src="${cvs.toDataURL('image/png')}" style="display:inline-block;vertical-align:baseline;width:${w}px;height:${h}px;">`;
-    });
-    el.innerHTML = imgs.join('');
+    // Absolute children are placed from the padding box (of the first
+    // line fragment when inline): offset the image back to the canvas.
+    const img = document.createElement('img');
+    img.src = cvs.toDataURL('image/png');
+    img.alt = '';
+    img.setAttribute('aria-hidden', 'true');
+    img.dataset.rasterOverlay = '1';
+    img.style.cssText =
+      `position:absolute;left:${(box.left - frags[0].left) / k - bl}px;` +
+      `top:${(box.top - frags[0].top) / k - bt}px;width:${W}px;height:${H}px;` +
+      'max-width:none;max-height:none;margin:0;padding:0;border:0;display:block;' +
+      'transform:none;opacity:1;pointer-events:none;';
+    // The element still carries its gradient background + background-clip:
+    // text. The PDF pipeline paints that background as a solid box once
+    // nothing is meant to show through, so it goes for the print; the
+    // original inline style comes back in restoreAllRaster().
+    el.dataset.originalStyle = el.getAttribute('style') || '';
+    if (cs.position === 'static') el.style.setProperty('position', 'relative');
+    el.style.setProperty('background', 'none', 'important');
+    el.appendChild(img);
     el.dataset.rasterized = '1';
   }
 
-  function parseGradient(bg) {
-    // Default fallback: brand gradient
+  function isClear(color) {
+    return !color || color === 'transparent' || /^rgba\(.*,\s*0\)$/.test(color);
+  }
+
+  // The first linear-gradient of a computed background-image: its angle
+  // (deg, rad, turn, grad, `to` a side or a corner) and its colour stops.
+  // No linear gradient (none, radial, conic): the background colour if
+  // there is one, else the brand gradient.
+  function parseGradient(bg, bgColor) {
     const fallback = {
+      angle: () => 90,
       stops: [
-        { pos: 0, color: getCss('--brand-primary') || '#23B5D3' },
-        { pos: 1, color: getCss('--brand-secondary') || '#F0BA4C' },
-      ]
+        { color: getCss('--brand-primary') || '#23B5D3', pos: 0, unit: '%' },
+        { color: getCss('--brand-secondary') || '#F0BA4C', pos: 100, unit: '%' },
+      ],
     };
-    const m = /linear-gradient\(([^]+)\)\s*$/.exec(bg) || /linear-gradient\(([^]+?)\)/.exec(bg);
-    if (!m) return fallback;
-    // Walk char-by-char to split on top-level commas only — necessary because
-    // rgb(R, G, B) and rgba(R, G, B, A) contain commas inside parens.
+    const start = (bg || '').indexOf('linear-gradient(');
+    if (start < 0) return isClear(bgColor) ? fallback : { solid: bgColor };
+    // Arguments up to the matching parenthesis, split on top-level commas
+    // only: rgb(R, G, B) carries commas of its own.
     const parts = [];
     let depth = 0, buf = '';
-    for (const ch of m[1]) {
-      if (ch === '(') { depth++; buf += ch; }
-      else if (ch === ')') { depth--; buf += ch; }
-      else if (ch === ',' && depth === 0) { parts.push(buf.trim()); buf = ''; }
-      else buf += ch;
+    for (const ch of bg.slice(start + 'linear-gradient('.length)) {
+      if (ch === '(') depth++;
+      if (ch === ')' && depth-- === 0) break;
+      if (ch === ',' && depth === 0) { parts.push(buf.trim()); buf = ''; continue; }
+      buf += ch;
     }
-    if (buf.trim()) parts.push(buf.trim());
+    parts.push(buf.trim());
 
-    // Drop the optional angle / direction (e.g. "90deg", "to right", "135deg")
-    const stopParts = parts.filter(p =>
-      /#|rgb|hsl|var\(|currentColor/i.test(p) &&
-      !/^(to\s|-?[\d.]+(deg|rad|turn|grad)\b)/i.test(p)
-    );
-    if (!stopParts.length) return fallback;
+    let angle = () => 180; // CSS default: to bottom
+    const dir = parts[0].replace(/\bin\s+[\w-]+(\s+\w+\s+hue)?/, '').trim();
+    const unit = /^(-?[\d.]+)(deg|rad|turn|grad)$/.exec(dir);
+    if (unit) {
+      const v = parseFloat(unit[1]);
+      const deg = { deg: v, rad: v * 180 / Math.PI, turn: v * 360, grad: v * 0.9 }[unit[2]];
+      angle = () => deg;
+      parts.shift();
+    } else if (/^to\s/.test(dir)) {
+      const h = /left/.test(dir) ? -1 : /right/.test(dir) ? 1 : 0;
+      const v = /top/.test(dir) ? -1 : /bottom/.test(dir) ? 1 : 0;
+      angle = (w, hgt) => {
+        if (!v) return h > 0 ? 90 : 270;
+        if (!h) return v < 0 ? 0 : 180;
+        // A corner: the gradient line is perpendicular to the diagonal
+        // joining the two other corners
+        const a = Math.atan2(hgt, w) * 180 / Math.PI;
+        return h > 0 ? (v < 0 ? a : 180 - a) : (v > 0 ? 180 + a : 360 - a);
+      };
+      parts.shift();
+    } else if (!dir) {
+      parts.shift(); // only an interpolation method
+    }
 
-    // For each stop, the position (if present) is the LAST whitespace-separated
-    // token ending in % or a length unit. The colour is everything before it.
-    const stops = stopParts.map((s, i) => {
-      const posMatch = s.match(/(\S+)\s*$/);
-      const lastTok = posMatch ? posMatch[1] : '';
-      const hasPct = /%$/.test(lastTok);
-      let color, pos;
-      if (hasPct) {
-        color = s.slice(0, posMatch.index).trim();
-        pos = parseFloat(lastTok) / 100;
-      } else {
-        color = s.trim();
-        pos = stopParts.length === 1 ? 0 : i / (stopParts.length - 1);
-      }
-      if (!isFinite(pos)) pos = stopParts.length === 1 ? 0 : i / Math.max(1, stopParts.length - 1);
-      return { pos: Math.max(0, Math.min(1, pos)), color: color || stopParts[0] };
+    const stops = [];
+    parts.forEach(p => {
+      if (/^-?[\d.]+(%|px)?$/.test(p)) return; // colour hint, ignored
+      const m = /^(.*?)\s+(-?[\d.]+)(%|px)(?:\s+(-?[\d.]+)(%|px))?$/.exec(p);
+      if (!m) { stops.push({ color: p, pos: null }); return; }
+      stops.push({ color: m[1], pos: parseFloat(m[2]), unit: m[3] });
+      if (m[4] !== undefined) stops.push({ color: m[1], pos: parseFloat(m[4]), unit: m[5] });
     });
-    return { stops };
+    return stops.length ? { angle, stops } : fallback;
+  }
+
+  // A canvas fill matching the CSS gradient over the box `a`: the gradient
+  // line runs through the centre at the angle, long enough for the corners
+  // to meet the first and last stops.
+  function makeFill(ctx, grad, a) {
+    if (grad.solid) return grad.solid;
+    const t = grad.angle(a.w, a.h) * Math.PI / 180;
+    const dx = Math.sin(t), dy = -Math.cos(t);
+    const len = Math.abs(a.w * dx) + Math.abs(a.h * dy);
+    const cx = a.x + a.w / 2, cy = a.y + a.h / 2;
+    const lg = ctx.createLinearGradient(cx - dx * len / 2, cy - dy * len / 2,
+                                        cx + dx * len / 2, cy + dy * len / 2);
+    // Stop positions as CSS resolves them: missing ends at 0 and 1, never
+    // backwards, runs without a position spread evenly.
+    const pos = grad.stops.map(s => s.pos === null ? null
+      : s.unit === 'px' ? s.pos / (len || 1) : s.pos / 100);
+    if (pos[0] === null) pos[0] = 0;
+    if (pos[pos.length - 1] === null) pos[pos.length - 1] = 1;
+    let max = -Infinity;
+    pos.forEach((p, i) => { if (p !== null) { pos[i] = Math.max(p, max); max = pos[i]; } });
+    for (let i = 1; i < pos.length - 1; i++) {
+      if (pos[i] !== null) continue;
+      let j = i;
+      while (pos[j] === null) j++;
+      for (let n = i; n < j; n++) pos[n] = pos[i - 1] + (pos[j] - pos[i - 1]) * (n - i + 1) / (j - i + 1);
+      i = j;
+    }
+    try {
+      grad.stops.forEach((s, i) => lg.addColorStop(Math.min(1, Math.max(0, pos[i])), s.color));
+    } catch (e) {
+      return grad.stops[0].color; // a colour the canvas cannot parse
+    }
+    return lg;
   }
 
   function getCss(name) {
@@ -1054,9 +1218,11 @@ body.presenting.nav-peek .nav-rail {
 
   function restoreAllRaster() {
     document.querySelectorAll('[data-rasterized="1"]').forEach(el => {
-      el.innerHTML = el.dataset.originalHTML;
+      el.querySelectorAll(':scope > img[data-raster-overlay]').forEach(img => img.remove());
+      if (el.dataset.originalStyle) el.setAttribute('style', el.dataset.originalStyle);
+      else el.removeAttribute('style');
       el.removeAttribute('data-rasterized');
-      delete el.dataset.originalHTML;
+      delete el.dataset.originalStyle;
     });
     document.body.classList.remove('printing-pdf');
   }

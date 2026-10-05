@@ -56,4 +56,31 @@
   /* ---------- Geometry ---------- */
   --radius-tight: 4px;
   --radius-pill: 999px;
+
+  /* ---------- Label register (chrome, eyebrows) ---------- */
+  /* Chrome text and eyebrows are small (12-13px), so WCAG AA asks 4.5:1.
+     These values reach it on every light variant (neutral-light, -soft,
+     -deep) and on neutral-dark, without going to full black: the chrome
+     stays secondary. After changing the neutrals or the primary, run
+     scripts/qa.py: on a contrast error, darken --label-accent or raise
+     an opacity until it passes, no further. */
+  --chrome-opacity: 0.7;        /* chrome text on light slides */
+  --chrome-opacity-dark: 0.7;   /* chrome text on dark slides */
+  --label-accent: #167083;      /* eyebrows and accent labels on light slides:
+                                   the primary, darkened to 4.5:1 on neutral-light-deep */
+  --label-accent-dark: var(--brand-primary); /* the same on dark slides */
+
+  /* ---------- Brand pattern (optional decoration) ---------- */
+  /* Inert by default: nothing shows until a brand motif is set. Consumed
+     by the .motif / .texture / .corner classes of templates/base.html.
+     Use an image: an SVG data URI (keeps the deck a single file) or a
+     path relative to the deck (../assets/...). Never a CSS gradient:
+     gradients band in the PDF export. Example:
+     --brand-pattern: url("data:image/svg+xml,...");  */
+  --brand-pattern: none;        /* watermark for light slides, drawn in ink (.texture) */
+  --brand-pattern-light: none;  /* same motif drawn light, for dark slides (.motif) */
+  --corner-motif: none;         /* corner motif, top right (.corner) */
+  --pattern-opacity: 0.05;      /* watermark on light slides */
+  --pattern-opacity-dark: 0.07; /* watermark on dark slides */
+  --corner-opacity: 0.09;       /* corner motif */
 }

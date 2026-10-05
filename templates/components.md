@@ -7,7 +7,7 @@ Reusable slide patterns, ready to copy into a new presentation. Each component i
 ## How to use
 
 1. Copy `templates/base.html` to `presentations/<your-deck>.html`.
-2. Inline `brand/tokens.css` into the `:root { ... }` block.
+2. Inline `brand/tokens.css` into the `:root { ... }` block. It carries the label-register tokens (chrome and eyebrow contrast) and the [brand pattern hooks](#brand-pattern-hooks).
 3. Embed your logo `<symbol id="brand-logo">` (replace the placeholder in base.html).
 4. For each slide you want, copy the matching component block from `templates/components/` (or from this catalogue) into the `<main class="stage">` body, between the existing `<section class="slide">` blocks.
 5. Update `data-eyebrow` and `data-heading` on every slide — they drive the overview panel.
@@ -62,6 +62,36 @@ The deck is a sparkline of emotional beats (Duarte / Reynolds). Pick components 
 A 24-slide deck typically uses 12–16 components, with 3–4 `silence` slides interleaved.
 
 Every illustrative mark in these components is an **inline Lucide-style SVG** (`stroke: currentColor`), never an emoji. See [Iconography](#iconography) for the rule and the reusable pastille pattern.
+
+Accent-coloured text under 24px (tags, step numbers, column heads, links) takes the label-register accent `--label-accent`, and small grey labels take `opacity: var(--chrome-opacity)`: both hold WCAG 4.5:1 on the light slide variants. `--brand-primary-deep` is only 3.15:1 on `--brand-neutral-light`, below 3:1 on a `--brand-primary-soft` tint, so it stays for icons and rules. On a dark card (`--brand-neutral-dark-soft`) use `--brand-secondary`; `--label-accent-dark` is meant for text set directly on `--brand-neutral-dark`.
+
+## Brand pattern hooks
+
+Optional decoration that carries the brand's own motif: a watermark, a corner motif, an ornamental rule. The engine ships it inert. `--brand-pattern`, `--brand-pattern-light` and `--corner-motif` default to `none` in `brand/tokens.css`, so the classes below draw nothing until the brand provides a motif (onboarding Step 3 in `CLAUDE.md`). A pattern is the brand's or nothing: never stand in a generic decoration.
+
+| Class | Put it on | Draws | Tokens |
+|---|---|---|---|
+| `.texture` | a light `.slide` | full-slide watermark | `--brand-pattern`, `--pattern-opacity` (0.05) |
+| `.motif` | a `.slide.dark` | full-slide watermark, light stroke | `--brand-pattern-light`, `--pattern-opacity-dark` (0.07) |
+| `.corner` | a light editorial or decision `.slide` | motif in the top-right corner, 250×250px | `--corner-motif`, `--corner-opacity` (0.09) |
+| `.filet-orn` | any block | hairline, brand mark, hairline | `currentColor`: `--brand-primary-deep`, `--brand-secondary` on dark |
+
+```html
+<section class="slide texture" data-eyebrow="..." data-heading="...">     <!-- hero on a light slide -->
+<section class="slide dark motif" data-eyebrow="..." data-heading="...">  <!-- cover or section opener on a dark slide -->
+<section class="slide corner" data-eyebrow="..." data-heading="...">      <!-- editorial or decision slide -->
+
+<div class="filet-orn reveal"><svg viewBox="0 0 100 50"><use href="#brand-logo"/></svg></div>
+```
+
+The CSS lives in `templates/base.html` (section "BRAND PATTERN"); nothing to paste.
+
+- **One per slide.** `.motif`, `.texture` and `.corner` share the slide's `::before`: a slide takes one of them.
+- **Watermark the heroes**, not every slide: cover, section openers, decision. A motif on every slide stops being a signature. The starter wires `.texture` on its hero and `.corner` on its decision slide, so a brand that sets its motif sees it at once.
+- **Under everything.** The class isolates the slide and draws the motif at `z-index: -1`: above the slide background, below text, `.slide-bg` and the chrome. Don't raise it.
+- **Faint.** Keep the opacities between 0.04 and 0.10. QA measures text contrast against the slide background, not against the motif, so a louder watermark would erode legibility without any finding.
+- **An image, not a gradient.** The tokens take an SVG data URI (the deck stays one file) or a path relative to the deck (`../assets/...`). A CSS gradient bands in the PDF export. For a tiling motif instead of a full-bleed one, override in the deck: `.slide.texture::before { background-size: 240px; background-repeat: repeat; }`.
+- **`.filet-orn`** sets its SVG 22px high and keeps the symbol's ratio. Use it above a quote, a breathing number or a closing line, not as a divider on every slide.
 
 ## Components
 
@@ -787,17 +817,17 @@ Four numbered steps (1 → 2 → 3 → 4) joined by arrow connectors, with a syn
 ```css
 .process-flow { display:grid; grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr; gap:24px; align-items:stretch; margin-top:56px; }
 .process-step { background:var(--brand-neutral-light-soft); border:1px solid var(--rule); border-radius:8px; padding:32px; display:flex; flex-direction:column; gap:14px; }
-.process-num { display:flex; align-items:center; justify-content:center; width:48px; height:48px; border-radius:var(--radius-pill); background:var(--brand-primary-soft); color:var(--brand-primary-deep); font-family:var(--font-mono); font-size:20px; font-weight:500; }
+.process-num { display:flex; align-items:center; justify-content:center; width:48px; height:48px; border-radius:var(--radius-pill); background:var(--brand-primary-soft); color:var(--label-accent, var(--brand-primary-deep)); font-family:var(--font-mono); font-size:20px; font-weight:500; }
 .process-step h3 { font-size:24px; font-weight:500; line-height:1.2; }
 .process-step p { font-size:18px; line-height:1.5; opacity:0.75; }
 .process-arrow { display:flex; align-items:center; justify-content:center; color:var(--brand-secondary-deep); }
 .process-arrow svg { width:36px; height:36px; }
 .process-banner { display:flex; align-items:baseline; gap:24px; margin-top:32px; padding:28px 36px; border-radius:8px; background:var(--brand-neutral-dark); color:var(--brand-neutral-light); }
-.process-banner span { font-family:var(--font-mono); font-size:13px; letter-spacing:0.08em; opacity:0.6; white-space:nowrap; }
+.process-banner span { font-family:var(--font-mono); font-size:13px; letter-spacing:0.08em; opacity:var(--chrome-opacity, 0.7); white-space:nowrap; }
 .process-banner strong { font-size:24px; font-weight:300; line-height:1.3; }
 ```
 
-> On a dark slide, swap `.process-step` to `background:var(--brand-neutral-dark-soft); border-color:var(--rule-light);` and the banner to `background:var(--brand-neutral-light); color:var(--brand-neutral-dark);` for contrast.
+> On a dark slide, swap `.process-step` to `background:var(--brand-neutral-dark-soft); border-color:var(--rule-light);`, `.process-num` to `color:var(--brand-secondary);` and the banner to `background:var(--brand-neutral-light); color:var(--brand-neutral-dark);` for contrast. The number needs the secondary there: on the tinted chip over dark-soft, `--label-accent-dark` stops at 3.6:1.
 
 ---
 
@@ -851,11 +881,11 @@ A competitive matrix: rows of criteria, one "you" column highlighted, the rest n
 .comparison { margin-top:48px; }
 .comparison-table { width:100%; border-collapse:collapse; font-size:20px; }
 .comparison-table th, .comparison-table td { padding:22px 28px; text-align:center; border-bottom:1px solid var(--rule); }
-.comparison-table thead th { font-family:var(--font-mono); font-size:13px; font-weight:500; letter-spacing:0.06em; text-transform:lowercase; opacity:0.6; border-bottom:1px solid var(--brand-neutral-dark); }
+.comparison-table thead th { font-family:var(--font-mono); font-size:13px; font-weight:500; letter-spacing:0.06em; text-transform:lowercase; opacity:var(--chrome-opacity, 0.7); border-bottom:1px solid var(--brand-neutral-dark); }
 .comparison-table .c-criteria, .comparison-table tbody th { text-align:left; font-weight:400; opacity:1; }
 .comparison-table tbody th { font-size:20px; }
 .comparison-table .c-you { background:var(--brand-primary-soft); }
-.comparison-table thead th.c-you { color:var(--brand-primary-deep); opacity:1; font-weight:700; border-bottom:2px solid var(--brand-primary); }
+.comparison-table thead th.c-you { color:var(--label-accent, var(--brand-primary-deep)); opacity:1; font-weight:700; border-bottom:2px solid var(--brand-primary); }
 .comparison-table .mark { display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:var(--radius-pill); }
 .comparison-table .mark svg { width:20px; height:20px; }
 .comparison-table .mark.yes { background:var(--brand-primary-soft); color:var(--brand-primary-deep); }
@@ -986,14 +1016,14 @@ Two columns ("In progress" / "Up next"), each a stack of cards. Cards carry a ta
 .kanban-dot.in { background:var(--brand-primary); }
 .kanban-dot.next { background:var(--brand-secondary); }
 .kanban-card { background:var(--brand-neutral-light-soft); border:1px solid var(--rule); border-radius:8px; padding:24px 28px; display:flex; flex-direction:column; gap:10px; }
-.kanban-tag { font-family:var(--font-mono); font-size:12px; letter-spacing:0.08em; text-transform:lowercase; color:var(--brand-primary-deep); }
+.kanban-tag { font-family:var(--font-mono); font-size:12px; letter-spacing:0.08em; text-transform:lowercase; color:var(--label-accent, var(--brand-primary-deep)); }
 .kanban-card h4 { font-size:22px; font-weight:500; line-height:1.2; }
 .kanban-card p { font-size:18px; line-height:1.45; opacity:0.72; }
 .kanban-progress { height:6px; border-radius:var(--radius-pill); background:var(--rule); overflow:hidden; margin-top:6px; }
 .kanban-progress span { display:block; height:100%; width:calc(var(--p, 0.5) * 100%); background:var(--brand-gradient); border-radius:var(--radius-pill); }
 ```
 
-> On a dark slide, swap cards to `background:var(--brand-neutral-dark-soft); border-color:var(--rule-light);`. The progress bars use a static fill (no transition), so they need no print override.
+> On a dark slide, swap cards to `background:var(--brand-neutral-dark-soft); border-color:var(--rule-light);` and `.kanban-tag` to `color:var(--brand-secondary);` (`--label-accent-dark` reaches only 4.3:1 on dark-soft). The progress bars use a static fill (no transition), so they need no print override.
 
 ---
 
@@ -1147,7 +1177,7 @@ Three boxes joined by arrows, the middle one highlighted. Use for a model / mech
 .three-step { display:grid; grid-template-columns: 1fr auto 1fr auto 1fr; gap:28px; align-items:stretch; margin-top:64px; }
 .ts-box { padding:36px 32px; border:1px solid var(--rule); border-radius:10px; background:var(--brand-neutral-light-soft); display:flex; flex-direction:column; gap:14px; }
 .ts-box.ts-feature { background:var(--brand-neutral-dark); color:var(--brand-neutral-light); border-color:transparent; box-shadow:0 24px 60px var(--brand-primary-soft); }
-.ts-label { font-family:var(--font-mono); font-size:13px; letter-spacing:0.06em; text-transform:lowercase; color:var(--brand-primary-deep); }
+.ts-label { font-family:var(--font-mono); font-size:13px; letter-spacing:0.06em; text-transform:lowercase; color:var(--label-accent, var(--brand-primary-deep)); }
 .ts-box.ts-feature .ts-label { color:var(--brand-secondary); }
 .ts-box h3 { font-size:26px; font-weight:500; line-height:1.2; }
 .ts-box p { font-size:18px; line-height:1.5; opacity:0.78; }
@@ -1196,9 +1226,9 @@ Round portraits (or initials when no photo) + name + role, in a 3-column grid. T
 .team-member { display:flex; flex-direction:column; align-items:center; text-align:center; gap:14px; }
 .team-photo { width:180px; height:180px; border-radius:var(--radius-pill); overflow:hidden; border:1px solid var(--rule); }
 .team-photo img { width:100%; height:100%; object-fit:cover; display:block; }
-.team-photo.initials { display:flex; align-items:center; justify-content:center; background:var(--brand-primary-soft); color:var(--brand-primary-deep); font-family:var(--font-mono); font-size:48px; font-weight:500; }
+.team-photo.initials { display:flex; align-items:center; justify-content:center; background:var(--brand-primary-soft); color:var(--label-accent, var(--brand-primary-deep)); font-family:var(--font-mono); font-size:48px; font-weight:500; }
 .team-member strong { font-size:26px; font-weight:500; line-height:1.1; }
-.team-member span { font-family:var(--font-mono); font-size:13px; letter-spacing:0.04em; opacity:0.65; }
+.team-member span { font-family:var(--font-mono); font-size:13px; letter-spacing:0.04em; opacity:var(--chrome-opacity, 0.7); }
 ```
 
 > For 4–6 people, keep `repeat(3, 1fr)` and let it wrap to a second row; drop `.team-photo` to `140px` square so two rows clear the chrome safe-zone.
@@ -1288,9 +1318,9 @@ Paste the printed `<section>` as the last slide. Re-run it whenever a photo is a
 .pc-list { list-style:none; display:grid; grid-template-columns:1fr; column-gap:80px; border-top:1px solid var(--rule); }
 .pc-list.pc-list--two { grid-template-columns:1fr 1fr; }
 .pc-list li { display:grid; grid-template-columns:170px 1fr auto; align-items:baseline; gap:24px; padding:16px 0; border-bottom:1px solid var(--rule); }
-.pc-slide { font-family:var(--font-mono); font-size:16px; letter-spacing:0.06em; opacity:0.6; }
+.pc-slide { font-family:var(--font-mono); font-size:16px; letter-spacing:0.06em; opacity:var(--chrome-opacity, 0.7); }
 .pc-name { font-size:24px; color:inherit; text-decoration:none; }
-.pc-link { font-family:var(--font-mono); font-size:16px; letter-spacing:0.06em; color:var(--brand-primary-deep); text-decoration:none; }
+.pc-link { font-family:var(--font-mono); font-size:16px; letter-spacing:0.06em; color:var(--label-accent, var(--brand-primary-deep)); text-decoration:none; }
 .slide.dark .pc-list, .slide.dark .pc-list li { border-color:var(--rule-light); }
 .slide.dark .pc-link { color:var(--brand-secondary); }
 ```
@@ -1669,10 +1699,10 @@ Two mirrored panels. The left one is flat and grey, the right one is raised and 
 ```css
 .ba { display:grid; grid-template-columns:1fr 1fr; gap:32px; margin-top:44px; }
 .ba .pane { border-radius:22px; padding:38px; }
-.ba .pane .bt { font-size:15px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; margin-bottom:22px; display:block; }
+.ba .pane .bt { font-size:18px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; margin-bottom:22px; display:block; }
 .ba .before { background:var(--brand-neutral-light-soft); border:1px solid var(--rule); }
 .ba .after { background:#fff; border:2px solid var(--brand-primary); box-shadow:var(--shadow-card); }
-.ba .after .bt { color:var(--brand-primary-deep); }
+.ba .after .bt { color:var(--label-accent, var(--brand-primary-deep)); }
 .ba ul { list-style:none; display:flex; flex-direction:column; gap:16px; }
 .ba li { font-size:18px; line-height:1.45; padding-left:30px; position:relative; }
 .ba .before li::before { content:''; position:absolute; left:0; top:9px; width:14px; height:2px; background:var(--rule-strong); }

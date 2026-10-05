@@ -96,7 +96,7 @@ Save fetched logos under `assets/logos/<slug>.<ext>` and reference relatively fr
 |---|---|---|
 | `%` or `O` clipped on huge display text | `line-height < 1` plus aggressive negative letter-spacing | `line-height: 1.05–1.15`, `letter-spacing: -0.025em` max, `padding: 0.08em 0.06em; margin: -0.08em -0.06em; overflow: visible` |
 | Gradient text renders differently after `transform: scale()` | `-webkit-background-clip: text` plus sub-pixel rendering | `display: inline-block; transform: translateZ(0); -webkit-font-smoothing: antialiased; text-rendering: geometricPrecision` |
-| Coloured halos around gradient text in PDF/print | `background-clip: text` plus `display: inline-block` clip incorrectly in print | In `@media print`, replace gradient with solid `var(--brand-primary-deep)` or `var(--brand-secondary-deep)` |
+| Coloured halos or a solid gradient box around gradient text in PDF/print | `background-clip: text` is not honoured by the print pipeline | Handled by the rasteriser in `templates/base.html` (overlay PNG, `background: none` while printing). Add any new gradient-text selector to `GRADIENT_TEXT_SELECTORS`; never swap the gradient for a flat colour |
 | Number + unit wrapping to two lines | `display: block` or grid column too narrow | `display: inline-flex; align-items: baseline; white-space: nowrap`, widen the column |
 | Logo invisible after embedding | `fill: url(#grad)` does not traverse `<use>` shadow DOM | `fill="currentColor"` inside `<symbol>`, set `color:` on the wrapper |
 | Element overflowing the bottom chrome row | Content component too tall, padding-bottom too short | Audit via Playwright, reduce font-sizes / paddings / gaps; never shrink slide padding-bottom below 110px |
@@ -119,7 +119,7 @@ The bottom chrome (`.chrome-row.bottom` containing the brand mark + signature) s
 
 Chromium has a documented bug in its PDF pipeline with `background-clip: text` + `linear-gradient`: coloured artefact lines appear at the edges of multi-line inline-blocks. **No CSS combination fixes it** (tested: `box-decoration-break: clone`, `display: inline`, `isolation: isolate`, padding/margin resets — all fail).
 
-The solution wired into `templates/base.html`: before `window.print()`, walk every gradient-text selector, render each into a `<canvas>` with the same gradient, replace the DOM with `<img>` PNGs, then restore on `afterprint`.
+The solution wired into `templates/base.html`: before `window.print()`, walk every gradient-text selector, draw it into a `<canvas>` character by character at the positions the browser laid out, with the element's own gradient, and lay that PNG over the text (kept in place, invisible, so the layout does not move); everything is restored on `afterprint`. See `docs/pdf-export.md`.
 
 Selectors to keep up-to-date in the rasteriser (in `templates/base.html`, `GRADIENT_TEXT_SELECTORS` constant):
 

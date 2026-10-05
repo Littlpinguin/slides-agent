@@ -40,12 +40,17 @@ Use `WebFetch` on the homepage and 1–2 secondary pages (about, product, blog p
 - **Colours**: primary, secondary, neutrals (light + dark backgrounds), accent. Read CSS custom properties when present, otherwise sample dominant hues from screenshots.
 - **Typography**: font families and weights actually loaded (`<link rel=stylesheet>` of Google Fonts, `@font-face` declarations).
 - **Voice**: tone, vocabulary, sentence length, pronouns (we/you/I), banned-feeling words.
-- **Visual signature**: hairlines vs heavy shapes, photography style, illustration style, animation cues, whitespace density.
+- **Visual signature**: hairlines vs heavy shapes, photography style, illustration style, animation cues, whitespace density, and any recurring motif (a pattern, a texture, a corner ornament) the brand repeats across pages.
 - **Positioning**: who the audience is, the one-line value prop, what the brand evidently is *not*.
 
 ### Step 3 — Populate `brand/tokens.css`
 
 Edit `brand/tokens.css`, replace the `--brand-*` and `--font-*` values with what you extracted. Keep the structure unchanged. If you can't determine a value, leave the default and add a `/* TODO: confirm */` comment next to it.
+
+Two blocks of the file need a decision of their own:
+
+- **Label register.** Chrome text and eyebrows are 12-13px, so they need 4.5:1. Set `--label-accent` to the new primary darkened until it reaches 4.5:1 on `--brand-neutral-light-deep`, and leave `--chrome-opacity` / `--chrome-opacity-dark` at 0.7. QA measures them on the first deck: on a contrast error in the chrome or an eyebrow, retune these tokens (just past the threshold, never to full black), not the slide.
+- **Brand pattern.** If Step 2 found a recurring motif, it goes here: `--brand-pattern` (the motif drawn in the dark ink, for light slides), `--brand-pattern-light` (the same motif drawn light, for dark slides), `--corner-motif` (a corner ornament). Write each as an SVG data URI, or as a path relative to the deck (`../assets/illustrations/...`) for a file the user supplied. No motif found: leave them at `none`, never invent a decoration. The classes that draw them (`.texture`, `.motif`, `.corner`, `.filet-orn`) are documented in `templates/components.md`, "Brand pattern hooks".
 
 ### Step 4 — Populate `brand/guidelines.md`
 

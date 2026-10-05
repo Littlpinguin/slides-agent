@@ -29,6 +29,7 @@ Both are used as **inspiration sources** during art direction (Phase 2) and comp
 - **Three navigation modes** baked in: arrow keys, drag bar, overview grid (`O`), quick-jump.
 - **Presentation mode** — fullscreen via the `F` key or the ⛶ button: the slide fills the screen and the nav-rail auto-hides.
 - **Real photography, optional and free** — connect a Pexels key (guided, about 3 minutes) and the agent picks editorial photos for the slides that need one, rejects stock clichés, tints them to your palette on request, and credits every photographer on a closing slide.
+- **Brand-pattern hooks** for your brand's own motif: a watermark, a corner motif or an ornamental rule (`.texture`, `.motif`, `.corner`, `.filet-orn`), declared in `brand/tokens.css` and invisible until you set it.
 - **Clean PDF export** at 1920×1080 (gradient text rasterised to PNG to avoid Chromium PDF artefacts).
 - **A measured QA gate** via Playwright: every slide is checked for overflow, the chrome safe zone, type floors (18px content, 12px labels), brand fonts, WCAG contrast and folios before delivery.
 - **Zero-config hosting** — drop the folder on Netlify Drop, GitHub Pages, S3, or any static host.
@@ -163,7 +164,7 @@ For online sharing, the deck is a single self-contained HTML file. See [`docs/ho
 
 | Check (`type`) | Rule | Level |
 |---|---|---|
-| engine parity | the deck embeds every feature of `templates/base.html`: fullscreen, overview, auto folios, PDF hooks | error |
+| engine parity | the deck embeds every feature of `templates/base.html`: fullscreen, overview, auto folios, PDF hooks, brand-pattern hooks | error |
 | `overflow` | nothing leaves the frame | error |
 | `chrome-gap` | content stays at least 16px above the bottom chrome row | error |
 | `type-floor` | content text ≥ 18px, label register ≥ 12px (see below) | error |
@@ -178,6 +179,8 @@ For online sharing, the deck is a single self-contained HTML file. See [`docs/ho
 
 - **Content text: 18px minimum** (`--min-font`). Comfortable body is 24px and up, hence the `tight-body` warning.
 - **Label register: 12px minimum** (`--min-font-chrome`). A text is a label when it sits inside `.chrome`, carries a label class (`.eyebrow`, `.meta-label`, `.signature`, `.nav-num`, and the catalogue's `.tag-meta`, `.tag-folio`, `.tag-signature`), or is set in a monospace stack (folio, signature and caption register). Labels stay short: a sentence shrunk to caption size, in mono or not, is still flagged.
+
+**Small labels still need 4.5:1.** The starter passes clean: its chrome and eyebrows sit just above the threshold through `--chrome-opacity`, `--chrome-opacity-dark`, `--label-accent` and `--label-accent-dark` in `brand/tokens.css`. If a new palette drops them below, retune those tokens, not the slide.
 
 **Brand fonts** come from `--font`, else from a DTCG tokens file (`--tokens`, or the first `brand/tokens.json` / `01-brand/tokens.json` found up to the repository root), else from the deck's own `--font-display`, `--font-body` and `--font-mono` variables, which is where `brand/tokens.css` puts them in this template. No tokens file is needed.
 
